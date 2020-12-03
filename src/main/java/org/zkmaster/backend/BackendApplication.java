@@ -36,7 +36,7 @@ public class BackendApplication {
             LOG.info("APP START");
 //            mainCode(zoo);
             ZKController serverController = factory.getOrCreateController(defaultHostUrl);
-            ZKNode getAll = serverController.getRepository().getFullNudeOrNull("/");
+            ZKNode getAll = serverController.getRepository().getAllNodes("/");
 
             print("getAll", "\r\n" + getAll);
 

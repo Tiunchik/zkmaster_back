@@ -2,6 +2,8 @@ package org.zkmaster.backend.repositories;
 
 import org.zkmaster.backend.entity.ZKNode;
 
+import java.util.List;
+
 public interface ZKDataCrudRepository {
 
     /**
@@ -9,17 +11,17 @@ public interface ZKDataCrudRepository {
      *
      * @return {@param node}.
      */
-    ZKNode create(String path, String value);
+    ZKNode createNode(String path, String value);
 
     /**
      * @return ZKNude without children, only "nude" info.
      */
-    ZKNode getNude(String path);
+    ZKNode getNode(String path);
 
     /**
      * @return ZKNude with all children(sub-nudes) OR null.
      */
-    ZKNode getFullNudeOrNull(String path);
+    ZKNode getAllNodes(String path);
 
     boolean setData(String path, String value);
 
@@ -27,5 +29,5 @@ public interface ZKDataCrudRepository {
      * @param path nude path
      * @return success delete OR not.
      */
-    boolean deleteNude(String path);
+    boolean deleteNode(String path);
 }

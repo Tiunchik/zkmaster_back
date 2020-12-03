@@ -1,11 +1,13 @@
 package org.zkmaster.backend.entity;
 
 import org.apache.zookeeper.ZooKeeper;
+import org.springframework.stereotype.Component;
 import org.zkmaster.backend.repositories.ZKControllerContext;
 import org.zkmaster.backend.repositories.ZKDataRepository;
 
 import java.io.IOException;
 
+@Component
 public class ZKFactory {
 
     private final ZKControllerContext controllerContext;
