@@ -12,6 +12,9 @@ import java.util.List;
 
 /**
  * warp default ZooKeeper for beautiful and standard API.
+ *
+ * TODO: Нужно сделать нормальный декоратор
+ *
  */
 public class ZKServer {
     private static final Logger LOG = LoggerFactory.getLogger(ZKServer.class);
