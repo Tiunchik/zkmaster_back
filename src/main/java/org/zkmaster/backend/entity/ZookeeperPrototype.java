@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.zkmaster.backend.events.MyEvent;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -17,11 +16,8 @@ public class ZookeeperPrototype {
 
     @Autowired
     ApplicationContext context;
-
     private ZooKeeper zoo;
-
     private Watcher watcher = new MyWatcher();
-
     public ZooKeeper getConnection(String host) {
 
         return zoo;
@@ -36,11 +32,9 @@ public class ZookeeperPrototype {
 
             }
             if (event.getType() == Event.EventType.NodeCreated) {
-                context.publishEvent(new MyEvent(event.getPath()));
+//                context.publishEvent(new MyEvent(event.getPath()));
             }
         }
     }
-
-    private
 
 }

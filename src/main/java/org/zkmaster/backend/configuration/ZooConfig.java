@@ -1,10 +1,11 @@
 package org.zkmaster.backend.configuration;
 
-import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.zkmaster.backend.entity.OurDefaultWatcher;
+import org.zkmaster.backend.entity.WatcherBackEnd;
+import org.zkmaster.backend.entity.ZKFactory;
+import org.zkmaster.backend.repositories.ZKControllerContext;
 
 import java.io.IOException;
 
@@ -12,18 +13,30 @@ import java.io.IOException;
 public class ZooConfig {
 
     @Bean("zoo")
-    public ZooKeeper init(Watcher stubWatcher) {
+    public ZooKeeper init() {
+        ZooKeeper rsl = null;
         try {
-            return new ZooKeeper("localhost:2181", 4000, stubWatcher);
+            String hostUrl = "localhost:2181";
+            rsl = new ZooKeeper(hostUrl, 4000, new WatcherBackEnd(hostUrl));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return rsl;
     }
 
-    @Bean("stubWatcher")
-    public Watcher createWatcher() {
-        return new OurDefaultWatcher();
+    @Bean
+    public ZKControllerContext zkControllerHolder() {
+        return new ZKControllerContext();
     }
+
+    @Bean
+    public ZKFactory zkFactory(ZKControllerContext zkControllerContext) {
+        return new ZKFactory(zkControllerContext);
+    }
+
+//    @Bean("stubWatcher")
+//    public Watcher createWatcher() {
+//        return new WatcherBackEnd(hostUrl);
+//    }
 
 }

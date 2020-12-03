@@ -2,7 +2,7 @@ package org.zkmaster.backend.repositories;
 
 import org.zkmaster.backend.entity.ZKNode;
 
-public interface ZKCrudRep {
+public interface ZKDataCrudRepository {
 
     /**
      * !!! Maybe will be better that it will be line ZKNude constructor.

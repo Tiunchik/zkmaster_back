@@ -1,4 +1,4 @@
-package org.zkmaster.backend.events;
+package org.zkmaster.events;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;

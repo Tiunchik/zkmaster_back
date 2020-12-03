@@ -7,10 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.zkmaster.backend.entity.ZKController;
+import org.zkmaster.backend.entity.ZKFactory;
 import org.zkmaster.backend.entity.ZKNode;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -27,77 +28,61 @@ public class BackendApplication {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(BackendApplication.class, args);
         ZooKeeper zoo = context.getBean("zoo", ZooKeeper.class);
+        ZKFactory factory = context.getBean("zkFactory", ZKFactory.class);
+        String defaultHostUrl = "localhost:2181";
         try {
 
             System.out.println();
             LOG.info("APP START");
-            mainCode(zoo);
+//            mainCode(zoo);
+            ZKController serverController = factory.getOrCreateController(defaultHostUrl);
+            ZKNode getAll = serverController.getRepository().getFullNudeOrNull("/");
+
+            print("getAll", "\r\n" + getAll);
+
+
             LOG.info("APP FINISH");
 
-        } catch (KeeperException | InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    private static ZKNode getNode(ZooKeeper zoo, String path) throws KeeperException, InterruptedException {
-//        print("path(current)", path);
-        String nodeValue = new String(zoo.getData(path, false, null), StandardCharsets.UTF_8);
 
-        List<ZKNode> children = null;
-        var getChildren = zoo.getChildren(path, false);
-        if (getChildren != null && !getChildren.isEmpty()) {
-            children = new ArrayList<>();
-            for (var childName : getChildren) {
+//    private static ZKNode getNode(ZooKeeper zoo, String path) throws KeeperException, InterruptedException {
+////        print("path(current)", path);
+//        String nodeValue = new String(zoo.getData(path, false, null), StandardCharsets.UTF_8);
+//
+//        List<ZKNode> children = null;
+//        var getChildren = zoo.getChildren(path, false);
+//        if (getChildren != null && !getChildren.isEmpty()) {
+//            children = new ArrayList<>();
+//            for (var childName : getChildren) {
+//
+//                String childPath = ("/".equals(path))
+//                        ? path + childName
+//                        : path + "/" + childName;
+//                children.add(getNode(zoo, childPath));
+//            }
+//        }
+//        return new ZKNode(path, nodeValue, children);
+//    }
 
-                String childPath = ("/".equals(path))
-                        ? path + childName
-                        : path + "/" + childName;
-                children.add(getNode(zoo, childPath));
-            }
-        }
-        return new ZKNode(path, nodeValue, children);
-    }
-
+    /**
+     * like a psvm
+     *
+     * @param zoo -
+     * @throws KeeperException      -
+     * @throws InterruptedException -
+     */
     private static void mainCode(ZooKeeper zoo) throws KeeperException, InterruptedException {
 //        final String firstPath = "/firstNode";
         final String rootPath = "/";
 
-        var rsl = getNode(zoo, rootPath);
+//        var rsl = getNode(zoo, rootPath);
 
-        print("rsl", "\r\n" + rsl);
-
-
-//        // dynamic nude
-//        String parent;
-//        String path;
-//        String value;
-//        List<String> children;
-//
-//
-//        parent = "/";
-//        path = firstPath;
-//        byte[] temp = zoo.getData(path, false, null);
-//        value = new String(temp, StandardCharsets.UTF_8);
-//        children = zoo.getChildren("/", false);
-
-
-//        print("parent", parent);
-//        print("path", path);
-//        print("value", value);
-//        print("children", children);
-//        var root = new ZKNode(fullPath, parent, path, value, null, null);
-
-
-//        byte[] rootValue = zoo.getData("/firstNode", false, null);
-
-//                print("children: ");
-//                children.forEach(BackendApplication::print);
-
-//                var scanner = new Scanner(System.in);
-//                if (scanner.nextLine().equals("close")) {
-//                    run = false;
-//                }
+//        print("rsl", "\r\n" + rsl);
 
     }
 
@@ -112,6 +97,7 @@ public class BackendApplication {
     private static void print(String info, String string) {
         System.out.println("Main - " + info + " : |" + string + '|');
     }
+
     private static void print(String info, List<String> strings) {
         System.out.println("Main - " + info + " :");
         for (var each : strings) {

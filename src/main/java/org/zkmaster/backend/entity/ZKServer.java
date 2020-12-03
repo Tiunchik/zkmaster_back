@@ -10,12 +10,18 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class ZKSession {
-    private static final Logger LOG = LoggerFactory.getLogger(ZKSession.class);
+/**
+ * warp default ZooKeeper for beautiful and standard API.
+ */
+public class ZKServer {
+    private static final Logger LOG = LoggerFactory.getLogger(ZKServer.class);
     private final ZooKeeper zoo;
 
-    public ZKSession(ZooKeeper zoo) {
+    private final String hostUrl;
+
+    public ZKServer(ZooKeeper zoo, String hostUrl) {
         this.zoo = zoo;
+        this.hostUrl = hostUrl;
     }
 
     public void create(String path, String value) {
@@ -58,5 +64,9 @@ public class ZKSession {
      */
     public List<String> getChildren(String path) throws KeeperException, InterruptedException {
         return zoo.getChildren(path, false, null);
+    }
+
+    public String getHostUrl() {
+        return hostUrl;
     }
 }

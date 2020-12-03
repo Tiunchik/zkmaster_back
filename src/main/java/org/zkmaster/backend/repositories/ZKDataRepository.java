@@ -4,24 +4,24 @@ import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.entity.ZKSession;
+import org.zkmaster.backend.entity.ZKServer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ZKRepository implements ZKCrudRep {
-    private static final Logger LOG = LoggerFactory.getLogger(ZKRepository.class);
+public class ZKDataRepository implements ZKDataCrudRepository {
+    private static final Logger LOG = LoggerFactory.getLogger(ZKDataRepository.class);
 
-    private final ZKSession zkSession;
+    private final ZKServer zkServer;
 
-    public ZKRepository(ZKSession zkSession) {
-        this.zkSession = zkSession;
+    public ZKDataRepository(ZKServer zkServer) {
+        this.zkServer = zkServer;
     }
 
 
     @Override
     public ZKNode create(String path, String value) {
-        zkSession.create(path, value);
+        zkServer.create(path, value);
         return null;
     }
 
@@ -35,10 +35,10 @@ public class ZKRepository implements ZKCrudRep {
     public ZKNode getFullNudeOrNull(String path) {
         try {
 //        print("path(current)", path);
-            String nodeValue = zkSession.read(path);
+            String nodeValue = zkServer.read(path);
 
             List<ZKNode> children = null;
-            var getChildren = zkSession.getChildren(path);
+            var getChildren = zkServer.getChildren(path);
             if (getChildren != null && !getChildren.isEmpty()) {
                 children = new ArrayList<>();
                 for (var childName : getChildren) {
