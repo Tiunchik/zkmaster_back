@@ -7,6 +7,8 @@ import org.apache.zookeeper.Watcher;
  * Just Comunizden from:
  * @see org.apache.zookeeper.ZooKeeperMain.MyWatcher
  * * It red cause, it's private class.
+ *
+ * Also, this using as param in constructor {@link org.apache.zookeeper.ZooKeeper} - it could be null.
  */
 public class OurDefaultWatcher implements Watcher {
 //    private static final Logger LOG = LoggerFactory.getLogger(BackendApplication.class);
