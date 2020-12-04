@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.zkmaster.backend.entity.WatcherBackEnd;
+import org.zkmaster.backend.entity.ZKWatcherDefault;
 
 @Component
 public class ThAndGo {
@@ -16,7 +16,7 @@ public class ThAndGo {
     @Value("#{@zooConfig != null ? @zooConfig : null}")
     private ZooKeeper zooKeeper;
 
-    public void addWatcherToDB(WatcherBackEnd watcher) {
+    public void addWatcherToDB(ZKWatcherDefault watcher) {
         context.publishEvent(new MyEvent(watcher));
     }
 

@@ -7,11 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import org.zkmaster.backend.entity.ZKController;
-import org.zkmaster.backend.entity.ZKFactory;
-import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.services.ZKFactoryDefault;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -28,24 +25,24 @@ public class BackendApplication {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(BackendApplication.class, args);
         ZooKeeper zoo = context.getBean("zoo", ZooKeeper.class);
-        ZKFactory factory = context.getBean("zkFactory", ZKFactory.class);
+        ZKFactoryDefault factory = context.getBean("zkFactory", ZKFactoryDefault.class);
         String defaultHostUrl = "localhost:2181";
-        try {
+//        try {
 
             System.out.println();
             LOG.info("APP START");
 //            mainCode(zoo);
-            ZKController serverController = factory.getOrCreateController(defaultHostUrl);
-            ZKNode getAll = serverController.getRepository().getAllNodes("/");
+//            ZKController serverController = factory.getOrCreateController(defaultHostUrl);
+//            ZKNode getAll = serverController.getRepository().getAllNodes("/");
 
-            print("getAll", "\r\n" + getAll);
+//            print("getAll", "\r\n" + getAll);
 
 
             LOG.info("APP FINISH");
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
     }
 

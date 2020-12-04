@@ -13,7 +13,7 @@ public class ZKNode {
 
     /**
      * data value from ZK.
-     * * converted from bytes.
+     * * converted from bytes. (default by UTF-8)
      */
     private String value;
 
@@ -96,10 +96,10 @@ public class ZKNode {
 
     @Override
     public String toString() {
-        return "ZKNode{" +
-                "path='" + path + '\'' +
-                ", value='" + value + '\'' +
-                ", father=" + father.getPath() +
-                '}';
+        return "ZKNode{"
+                + "path='" + path + '\''
+                + ", value='" + value + '\''
+                + ", father=" + father.getPath()
+                + '}';
     }
 }

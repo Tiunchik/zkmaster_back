@@ -1,8 +1,5 @@
 package org.zkmaster.backend.repositories;
 
-import org.apache.zookeeper.KeeperException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKServer;
 
@@ -10,30 +7,44 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ZKDataRepository implements ZKDataCrudRepository {
-    private static final Logger LOG = LoggerFactory.getLogger(ZKDataRepository.class);
-
+public class ZKNodeRepositoryDefault implements ZKNodeRepository {
     private final ZKServer zkServer;
 
-    public ZKDataRepository(ZKServer zkServer) {
+    public ZKNodeRepositoryDefault(ZKServer zkServer) {
         this.zkServer = zkServer;
     }
 
 
+    /**
+     * @param path  -
+     * @param value -
+     * @return {true} - unless any exception is thrown.
+     */
     @Override
-    public ZKNode createNode(String path, String value) {
+    public boolean create(String path, String value) {
         zkServer.create(path, value);
+        return true;
+    }
+
+    /**
+     * TODO - Maksja, tebe tut stradatj nemnogno. ;)
+     *
+     * @param path -
+     * @return -
+     */
+    @Override
+    public ZKNode getSimpleNode(String path) {
         return null;
     }
 
+    /**
+     * TODO - Maksja, tebe tut stradatj nemnogno. ;)
+     *
+     * @param path -
+     * @return -
+     */
     @Override
-    public ZKNode getNode(String path) {
-        return null;
-    }
-
-
-    @Override
-    public ZKNode getAllNodes(String path) {
+    public ZKNode getFullNode(String path) {
 
         LinkedList<ZKNode> searchList = new LinkedList<>();
         List<ZKNode> foundList = new ArrayList<>(500);
@@ -43,8 +54,12 @@ public class ZKDataRepository implements ZKDataCrudRepository {
             currentNode = searchList.getFirst();
 //            List<String> childrenPaths =
         }
+        return null;
+    }
+
+//    @Deprecated // recursion
+//    private ZKNode getFullTree(String path) {
 //        try {
-////        print("path(current)", path);
 //            String nodeValue = zkServer.read(path);
 //
 //            List<ZKNode> children = null;
@@ -56,30 +71,38 @@ public class ZKDataRepository implements ZKDataCrudRepository {
 //                    String childPath = ("/".equals(path))
 //                            ? path + childName
 //                            : path + "/" + childName;
-//                    children.add(getFullNudeOrNull(childPath)); // <<-- Recursion
+//                    children.add(getFullTree(childPath)); // <<-- Recursion
 //                }
 //            }
 //            return new ZKNode(path, nodeValue, children);
 //        } catch (InterruptedException | KeeperException e) {
-//            LOG.error("nude doesn't find!");
+//            System.err.println("nude doesn't find!");
 //            e.printStackTrace();
 //            return null;
 //        }
+//    }
+
+    @Override
+    public boolean set(String path, String value) {
+        return zkServer.setData(path, value);
     }
 
     @Override
-    public boolean setData(String path, String value) {
-        return false;
+    public boolean delete(String path) {
+        return zkServer.delete(path);
     }
 
+    /**
+     * {@link ZKNodeRepository} - gljanj tam vsju docu dlja tebja.
+     *
+     * @param node - ???????
+     * @return ???????
+     */
     @Override
-    public boolean deleteNode(String path) {
-        return false;
-    }
-
-    private String getFullPath(ZKNode node) {
+    public String getFullPath(ZKNode node) {
         String fullPath = "";
-        while
+//        while
+        return null;
     }
 }
 

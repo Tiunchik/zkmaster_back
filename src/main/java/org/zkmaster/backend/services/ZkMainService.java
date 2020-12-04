@@ -1,32 +1,98 @@
 package org.zkmaster.backend.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.zkmaster.backend.entity.ZKFactory;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.repositories.ZKDataRepository;
 
-import java.util.HashMap;
-import java.util.Map;
+/**
+ * TODO - 1) Save cache then server have been close.
+ * TODO - 2) Delete cache anyway if Front-end doesn't send approve that we still need this connection.
+ * TODO - 2) * Now it realise like: server close >> delete caches.
+ * <p>
+ * Main service that provide API for using in controllers.
+ *
+ * @author Daniils Loputevs.
+ * @see org.zkmaster.backend.controllers.RestController
+ * @see org.zkmaster.backend.controllers.ServerEventController
+ */
+public interface ZkMainService {
 
-@Service
-public class ZkMainService {
+    /**
+     * For: RestController
+     * Try create connection
+     *
+     * @param hostUrl -
+     * @return try is fail ==>> false
+     */
+    boolean createConnection(String hostUrl);
 
-    private Map<String, ZKDataRepository> repositoryMap = new HashMap<>();
+    /**
+     * For: RestController
+     * Default CRUD - CREATE
+     *
+     * @param hostUrl -
+     * @return Create success or not.
+     */
+    boolean createNode(String hostUrl, String path, String value);
 
-    @Autowired
-    private ZKFactory factory;
+    /**
+     * For: RestController
+     * Default CRUD - REED
+     * <p>
+     * !!! This method MUST wait while cache is refreshing.
+     *
+     * @param hostUrl -
+     * @return Host value in format: Node(tree).
+     */
+    ZKNode getHostValue(String hostUrl);
 
-    public ZKNode getAll(String host, String path) {
-        ZKNode node = null;
-        if (repositoryMap.containsKey(host)) {
-            node = repositoryMap.get(host).getNodes;
-        } else {
-            var newHost = factory.getOrCreateController(host);
-            node = newHost.getRepository().getAllNodes(path);
-            repositoryMap.put(host, ...);
-        }
-        return node;
-    }
+    /**
+     * For: RestController
+     * Default CRUD - UPDATE
+     *
+     * @param hostUrl -
+     * @return Create success or not.
+     */
+    boolean updateNode(String hostUrl, String path, String value);
+
+    /**
+     * For: RestController
+     * Default CRUD - DELETE
+     *
+     * @param hostUrl -
+     * @return Delete success or not.
+     */
+    boolean deleteNode(String hostUrl, String path);
+
+    /**
+     * For: ServerEventController
+     * Block cache and refresh it.
+     * <p>
+     * !!! This method MUST block cache and other threads MUST wait until refresh isn't finish.
+     *
+     * @param hostUrl -
+     */
+    void refreshCache(String hostUrl);
+
+//    /**
+//     * For: ServerEventController
+//     * Delete connection.
+//     * <p>
+//     * !!! This method MUST block cache and other threads MUST wait until refresh isn't finish.
+//     *
+//     * @param hostUrl -
+//     */
+//    default void deleteConnection(String hostUrl) {
+//    // For future - then we can get cache but server have been close BEFORE we receive Request.
+//    }
+
+    /**
+     * For: ServerEventController
+     * Delete connection and chase.
+     * <p>
+     * !!! This method MUST block cache and other threads MUST wait until refresh isn't finish.
+     *
+     * @param hostUrl -
+     */
+    void deleteConnectionAndCache(String hostUrl);
+
 
 }

@@ -1,4 +1,4 @@
-package org.zkmaster.backend.entity;
+package org.zkmaster.hz4toEtoTakoe;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -10,8 +10,13 @@ import org.springframework.stereotype.Component;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
+/**
+ * Ja zh kak v nine6nej sborke eto mozno primenitj,
+ * no delitetj aj eto toze ne ho4ju, tut estj interesnie ideji.
+ */
 @Component
 @Scope(SCOPE_PROTOTYPE)
+@Deprecated
 public class ZookeeperPrototype {
 
     @Autowired
@@ -27,13 +32,7 @@ public class ZookeeperPrototype {
 
         @Override
         public void process(WatchedEvent event) {
-            if (event.getState() == Event.KeeperState.Expired ||
-                    event.getState() == Event.KeeperState.Disconnected) {
 
-            }
-            if (event.getType() == Event.EventType.NodeCreated) {
-//                context.publishEvent(new MyEvent(event.getPath()));
-            }
         }
     }
 
