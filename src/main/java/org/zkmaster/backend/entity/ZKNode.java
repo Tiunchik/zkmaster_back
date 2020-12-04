@@ -35,6 +35,12 @@ public class ZKNode {
         this.value = value;
     }
 
+    public ZKNode(String path, String value, List<ZKNode> children) {
+        this.path = path;
+        this.value = value;
+        this.children = children;
+    }
+
     public ZKNode(String path, String value, ZKNode father, List<ZKNode> children) {
         this.path = path;
         this.value = value;

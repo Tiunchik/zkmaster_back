@@ -10,6 +10,9 @@ import java.io.IOException;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
+/**
+ * TODO: мб удалить
+ */
 @Configuration
 public class ZooConfig {
 

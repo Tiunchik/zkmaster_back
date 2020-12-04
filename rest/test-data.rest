@@ -1,0 +1,8 @@
+POST http://localhost:80/api/item
+Content-Type: application/json
+
+{}
+
+### Так можно писать целую цепочку ручных тестов, как для POSTMAN, ответы выводит в терминале
+GET http://localhost:8080/api/zkm/connection/localhost:2181
+
