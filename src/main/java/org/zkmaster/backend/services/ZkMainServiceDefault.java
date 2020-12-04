@@ -97,17 +97,17 @@ public class ZkMainServiceDefault implements ZkMainService {
         return rsl;
     }
 
+    /**
+     * TODO: скопипастить код ^_^
+     */
     @Override
     public boolean updateNode(String hostUrl, String path, String value) {
-        return crudOperationCore(hostUrl, "UPDATE", path, value);
-//        boolean rsl = true;
-//        ZKNodeRepository rep = repositories.get(hostUrl);
-//        if (rep != null) {
-//            rep.set(path, value);
-//        } else {
-//            rsl = false;
-//        }
-//        return rsl;
+//        return crudOperationCore(hostUrl, "UPDATE", path, value);
+        ZKNodeRepository rep = repositories.get(hostUrl);
+        if (rep != null) {
+            return rep.set(path, value);
+        }
+        throw new IllegalArgumentException();
     }
 
     @Override

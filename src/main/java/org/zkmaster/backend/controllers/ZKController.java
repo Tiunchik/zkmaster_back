@@ -1,39 +1,24 @@
 package org.zkmaster.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.services.ZkMainService;
 
 /**
  * Rest API: Default CRUD + connection
+ *
+ * TODO: сделать DTO для маппинга с фронта
  */
-@Controller
-public class RestController {
+@RestController
+@RequestMapping("/api")
+public class ZKController {
+
     ZkMainService zkMainService;
 
     @Autowired
-    public RestController(ZkMainService zkMainService) {
+    public ZKController(ZkMainService zkMainService) {
         this.zkMainService = zkMainService;
-    }
-
-    /**
-     * HTTP - PUT
-     * url: /zkm/connection/{hostUrl}
-     * Try create connection by {hostUrl}
-     */
-    public void connect(String hostUrl) {
-        boolean rsl = zkMainService.createConnection(hostUrl);
-    }
-
-    /**
-     * CRUD - CREATE
-     * HTTP - POST
-     * url: /zkm/data/{hostUrl}, {path}, {value}
-     * Create node in ZooKeeper. (Node == path && value).
-     */
-    public void createNode(String hostUrl, String path, String value) {
-        boolean rsl = zkMainService.createNode(hostUrl, path, value);
     }
 
     /**
@@ -42,8 +27,31 @@ public class RestController {
      * url: /zkm/data/{hostUrl}
      * Read server value.(YAML doc in path-tree format).
      */
-    public void read(String hostUrl) {
+    @GetMapping("/zkmaster/{hostUrl}")
+    public void getAllNodes(String hostUrl) {
         ZKNode rsl = zkMainService.getHostValue(hostUrl);
+    }
+
+    /**
+     * CRUD - READ
+     * HTTP - GET
+     * url: /zkm/data/{hostUrl}
+     * Read server value.(YAML doc in path-tree format).
+     */
+    @GetMapping("/zkmaster/{hostUrl}/{path}")
+    public void getNode(String hostUrl, String path) {
+        ZKNode rsl = zkMainService.getHostValue(hostUrl);
+    }
+
+    /**
+     * CRUD - CREATE
+     * HTTP - POST
+     * url: /zkm/data/{hostUrl}, {path}, {value}
+     * Create node in ZooKeeper. (Node == path && value).
+     */
+    @PostMapping("/zkmaster/{hostUrl}")
+    public void createNode(String hostUrl, String path, String value) {
+        boolean rsl = zkMainService.createNode(hostUrl, path, value);
     }
 
     /**
@@ -52,7 +60,8 @@ public class RestController {
      * url: /zkm/data/{hostUrl}, {path}, {value}
      * Update node in ZooKeeper. (Node == path && value).
      */
-    public void update(String hostUrl, String path, String value) {
+    @PutMapping("/zkmaster/{hostUrl}")
+    public void updateNode(String hostUrl, String path, String value) {
         boolean rsl = zkMainService.updateNode(hostUrl, path, value);
     }
 
@@ -62,8 +71,8 @@ public class RestController {
      * url: /zkm/data/{hostUrl}, {path}
      * Update node in ZooKeeper. (Node == path).
      */
-    public void delete(String hostUrl, String path) {
+    @DeleteMapping("/zkmaster/{hostUrl}")
+    public void deleteNode(String hostUrl, String path) {
         boolean rsl = zkMainService.deleteNode(hostUrl, path);
     }
-
 }

@@ -1,5 +1,6 @@
 package org.zkmaster.backend.services;
 
+import org.zkmaster.backend.controllers.ZKController;
 import org.zkmaster.backend.entity.ZKNode;
 
 /**
@@ -10,7 +11,7 @@ import org.zkmaster.backend.entity.ZKNode;
  * Main service that provide API for using in controllers.
  *
  * @author Daniils Loputevs.
- * @see org.zkmaster.backend.controllers.RestController
+ * @see ZKController
  * @see org.zkmaster.backend.controllers.ServerEventController
  */
 public interface ZkMainService {

@@ -12,8 +12,9 @@ import org.zkmaster.backend.services.ZKFactoryDefault;
 import java.util.List;
 
 /**
- * TODO 2. Сравнение данных в зк
+ * TODO 2. Сравнение данных в зк - ПОКА идея в том что бы это делал фронт, но можно и на бэке предусмотреть, к примеру что бы реализовать функцию Merge ZK
  * TODO 3. Копирование из одного в другой
+ * TODO 4. Сделать обход в ширину без рекурсии при собрании getAll в репозитории, у Макса никогда руки не дойдут, и так фронт нихрена не делает
  */
 @SpringBootApplication
 public class BackendApplication {

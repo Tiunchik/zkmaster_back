@@ -1,13 +1,14 @@
 package org.zkmaster.backend.events;
 
-public class EventServerClose {
-    private final String hostUrl;
+import org.springframework.context.ApplicationEvent;
 
-    public EventServerClose(String hostUrl) {
-        this.hostUrl = hostUrl;
+public class EventServerClose extends ApplicationEvent {
+
+    public EventServerClose(Object hostUrl) {
+        super(hostUrl);
     }
 
     public String getHostUrl() {
-        return hostUrl;
+        return (String) getSource();
     }
 }

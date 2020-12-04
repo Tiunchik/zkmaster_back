@@ -9,6 +9,8 @@ import java.util.List;
  * <p>
  * If you need more API from original ZooKeeper,
  * declare it here then {@link Override} it in Inheritor class.
+ *
+ * TODO: Мб схлопнуть с ZKServer ?
  */
 public abstract class ZKServerDecorator implements AutoCloseable {
     protected final String hostUrl;

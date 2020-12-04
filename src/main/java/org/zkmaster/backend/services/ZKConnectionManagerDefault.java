@@ -8,6 +8,9 @@ import org.zkmaster.backend.repositories.ZKNodeRepository;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * TODO: Что делать с мапой ?
+ */
 @Service
 public class ZKConnectionManagerDefault implements ZKConnectionManager {
 

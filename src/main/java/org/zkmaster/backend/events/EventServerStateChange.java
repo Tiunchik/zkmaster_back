@@ -1,13 +1,15 @@
 package org.zkmaster.backend.events;
 
-public class EventServerStateChange {
-    private final String hostUrl;
+import org.springframework.context.ApplicationEvent;
 
-    public EventServerStateChange(String hostUrl) {
-        this.hostUrl = hostUrl;
+public class EventServerStateChange extends ApplicationEvent {
+
+    public EventServerStateChange(Object hostUrl) {
+        super(hostUrl);
     }
 
     public String getHostUrl() {
-        return hostUrl;
+        return (String) getSource();
     }
+    
 }
