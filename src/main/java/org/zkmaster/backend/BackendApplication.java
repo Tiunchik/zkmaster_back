@@ -12,11 +12,8 @@ import org.zkmaster.backend.services.ZKFactoryDefault;
 import java.util.List;
 
 /**
- * TODO 1. Мару для подключений к зк И фабрика для подключений
  * TODO 2. Сравнение данных в зк
  * TODO 3. Копирование из одного в другой
- * TODO 4. Удаление
- * TODO 5. Добавление
  */
 @SpringBootApplication
 public class BackendApplication {
