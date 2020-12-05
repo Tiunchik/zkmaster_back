@@ -1,6 +1,6 @@
 package org.zkmaster.backend.entity;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,7 +25,7 @@ public class ZKNode {
     /**
      * List of children "node".
      */
-    private List<ZKNode> children = new ArrayList<>(100);
+    private List<ZKNode> children = new LinkedList<>();
 
     public ZKNode() {
     }

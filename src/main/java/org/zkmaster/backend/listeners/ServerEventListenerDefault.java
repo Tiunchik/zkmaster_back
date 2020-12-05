@@ -1,32 +1,30 @@
-package org.zkmaster.backend.controllers;
+package org.zkmaster.backend.listeners;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.zkmaster.backend.events.EventServerClose;
 import org.zkmaster.backend.events.EventServerStateChange;
 import org.zkmaster.backend.services.ZkMainService;
 
 /**
- * Event Listener - lister all events from "real servers" and process it.
- *
- *
+ * Event Listener - listens all events from "real servers" and process it.
+ * @see org.zkmaster.backend.entity.ZKWatcherDefault
  */
 @Component
-public class ServerEventController {
+public class ServerEventListenerDefault implements ServerEventListener {
     ZkMainService zkMainService;
 
     @Autowired
-    public ServerEventController(ZkMainService zkMainService) {
+    public ServerEventListenerDefault(ZkMainService zkMainService) {
         this.zkMainService = zkMainService;
     }
 
-    @EventListener
+    @Override
     public void eventProcess(EventServerStateChange serverStateChange) {
         zkMainService.refreshCache(serverStateChange.getHostUrl());
     }
 
-    @EventListener
+    @Override
     public void serverClose(EventServerClose serverClose) {
         zkMainService.deleteConnectionAndCache(serverClose.getHostUrl());
     }

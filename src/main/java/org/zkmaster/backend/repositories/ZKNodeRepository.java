@@ -18,6 +18,7 @@ public interface ZKNodeRepository {
      *
      * @return {@link ZKNode} without children, only info OR null.
      */
+    @Deprecated(since = "since front == null")
     ZKNode getSimpleNode(String path);
 
     /**
@@ -25,6 +26,7 @@ public interface ZKNodeRepository {
      *
      * @return {@link ZKNode} with all children(sub-nodes) OR null.
      */
+    @Deprecated(since = "since front == null")
     ZKNode getFullNode(String path);
 
     boolean set(String path, String value);
@@ -45,7 +47,7 @@ public interface ZKNodeRepository {
      * @deprecated Za4em on tebe, esli v samom {@link ZKNode} uze estj full path?
      * Ili ti ne bude6j sobiratj full path, a budet toljko imja???
      */
-    @Deprecated
+    @Deprecated(since = "since front == null")
     String getFullPath(ZKNode node);
 
 }

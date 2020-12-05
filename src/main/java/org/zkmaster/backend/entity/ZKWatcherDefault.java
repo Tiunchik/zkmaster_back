@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContext;
  * This class must to process all events from server.
  * Process - do correct logic things, do correct code.
  *
- * TODO: доделать - через Map, как завещал Пётр
+ * TODO: доделать - через Map, как завещал Пётр - I didn't start it.
  */
 public class ZKWatcherDefault implements Watcher {
 

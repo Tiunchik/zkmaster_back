@@ -1,29 +1,44 @@
 package org.zkmaster.backend.services;
 
-import org.zkmaster.backend.controllers.ZKController;
+import org.zkmaster.backend.controllers.ZKConnectionController;
+import org.zkmaster.backend.controllers.ZKMController;
 import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.listeners.ServerEventListenerDefault;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * TODO - 1) Save cache then server have been close.
- * TODO - 2) Delete cache anyway if Front-end doesn't send approve that we still need this connection.
- * TODO - 2) * Now it realise like: server close >> delete caches.
+ * TODO Feature: - Save cache then server have been close.
+ * TODO Feature: -  Delete cache anyway if Front-end doesn't send approve that we still need this connection.
  * <p>
- * Main service that provide API for using in controllers.
+ * Main service that provide API for using in *-end classes(see below).
  *
  * @author Daniils Loputevs.
- * @see ZKController
- * @see org.zkmaster.backend.controllers.ServerEventController
+ * @see ZKMController
+ * @see ZKConnectionController
+ * @see ServerEventListenerDefault
  */
 public interface ZkMainService {
 
     /**
-     * For: RestController
+     * For: {@link ZKConnectionController}
      * Try create connection
      *
      * @param hostUrl -
      * @return try is fail ==>> false
      */
     boolean createConnection(String hostUrl);
+
+    /**
+     * For: {@link ZKConnectionController}
+     * Check state of {@param hosts}.
+     *
+     * @param hosts -
+     * @return key - host.
+     * val - alive OR close.
+     */
+    Map<String, Boolean> checkHostsHealth(List<String> hosts);
 
     /**
      * For: RestController
