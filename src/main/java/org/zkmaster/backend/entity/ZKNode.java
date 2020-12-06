@@ -3,6 +3,7 @@ package org.zkmaster.backend.entity;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public class ZKNode {
 
@@ -16,6 +17,11 @@ public class ZKNode {
      * * converted from bytes. (default by UTF-8)
      */
     private String value;
+
+    /**
+     * name of node.
+     */
+    private String name;
 
     /**
      * father node, if null that is root
@@ -35,9 +41,10 @@ public class ZKNode {
         this.value = value;
     }
 
-    public ZKNode(String path, String value, List<ZKNode> children) {
+    public ZKNode(String path, String value, String name, List<ZKNode> children) {
         this.path = path;
         this.value = value;
+        this.name = name;
         this.children = children;
     }
 
@@ -80,32 +87,44 @@ public class ZKNode {
         this.children = children;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        ZKNode zkNode = (ZKNode) o;
+        ZKNode zkNode = (ZKNode) object;
         return Objects.equals(path, zkNode.path)
                 && Objects.equals(value, zkNode.value)
+                && Objects.equals(name, zkNode.name)
                 && Objects.equals(father, zkNode.father)
                 && Objects.equals(children, zkNode.children);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(path, value, father, children);
+        return Objects.hash(path, value, name, father, children);
     }
 
     @Override
     public String toString() {
-        return "ZKNode{"
-                + "path='" + path + '\''
-                + ", value='" + value + '\''
-                + ", father=" + father.getPath()
-                + '}';
+        return new StringJoiner(", ", ZKNode.class.getSimpleName() + "[", "]")
+                .add("path='" + path + "'")
+                .add("value='" + value + "'")
+                .add("name='" + name + "'")
+                .add("father=" + father)
+                .add("children=" + children)
+                .toString();
     }
+
 }

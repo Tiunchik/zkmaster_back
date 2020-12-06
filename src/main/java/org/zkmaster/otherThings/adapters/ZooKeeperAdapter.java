@@ -1,4 +1,4 @@
-package org.zkmaster.adapters;
+package org.zkmaster.otherThings.adapters;
 
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;

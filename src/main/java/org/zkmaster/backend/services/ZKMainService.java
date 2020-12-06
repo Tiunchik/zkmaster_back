@@ -3,6 +3,7 @@ package org.zkmaster.backend.services;
 import org.zkmaster.backend.controllers.ZKConnectionController;
 import org.zkmaster.backend.controllers.ZKMController;
 import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.listeners.ServerEventListener;
 import org.zkmaster.backend.listeners.ServerEventListenerDefault;
 
 import java.util.List;
@@ -21,27 +22,10 @@ import java.util.Map;
  */
 public interface ZKMainService {
 
-    /**
-     * For: {@link ZKConnectionController}
-     * Try create connection
-     *
-     * @param hostUrl -
-     * @return try is fail ==>> false
-     */
-    boolean createConnection(String hostUrl);
+    /* ####### CRUD ####### */
 
     /**
-     * For: {@link ZKConnectionController}
-     * Check state of {@param hosts}.
-     *
-     * @param hosts -
-     * @return key - host.
-     * val - alive OR close.
-     */
-    Map<String, Boolean> checkHostsHealth(List<String> hosts);
-
-    /**
-     * For: RestController
+     * For: {@link ZKMController}
      * Default CRUD - CREATE
      *
      * @param hostUrl -
@@ -50,7 +34,7 @@ public interface ZKMainService {
     boolean createNode(String hostUrl, String path, String value);
 
     /**
-     * For: RestController
+     * For: {@link ZKMController}
      * Default CRUD - REED
      * <p>
      * !!! This method MUST wait while cache is refreshing.
@@ -61,7 +45,7 @@ public interface ZKMainService {
     ZKNode getHostValue(String hostUrl);
 
     /**
-     * For: RestController
+     * For: {@link ZKMController}
      * Default CRUD - UPDATE
      *
      * @param hostUrl -
@@ -70,7 +54,7 @@ public interface ZKMainService {
     boolean updateNode(String hostUrl, String path, String value);
 
     /**
-     * For: RestController
+     * For: {@link ZKMController}
      * Default CRUD - DELETE
      *
      * @param hostUrl -
@@ -78,8 +62,10 @@ public interface ZKMainService {
      */
     boolean deleteNode(String hostUrl, String path);
 
+    /* ####### CRUD ####### */
+
     /**
-     * For: ServerEventController
+     * For: {@link ServerEventListener}
      * Block cache and refresh it.
      * <p>
      * !!! This method MUST block cache and other threads MUST wait until refresh isn't finish.
@@ -87,6 +73,15 @@ public interface ZKMainService {
      * @param hostUrl -
      */
     void refreshCache(String hostUrl);
+
+    /**
+     * For: {@link ZKConnectionController}
+     * Try create connection.
+     *
+     * @param hostUrl -
+     * @return try is fail ==>> false
+     */
+    boolean createConnection(String hostUrl);
 
 //    /**
 //     * For: ServerEventController
@@ -101,7 +96,7 @@ public interface ZKMainService {
 //    }
 
     /**
-     * For: ServerEventController
+     * For: {@link ServerEventListener}
      * Delete connection and chase.
      * <p>
      * !!! This method MUST block cache and other threads MUST wait until refresh isn't finish.
@@ -109,5 +104,19 @@ public interface ZKMainService {
      * @param hostUrl -
      */
     void deleteConnectionAndCache(String hostUrl);
+
+//    @Deprecated(since = "Unsure that it will need")
+//    void reconnect(String host);
+
+    /**
+     * For: {@link ZKConnectionController}
+     * Check: is this hosts still alive?
+     *
+     * @param hosts -
+     * @return map :
+     * key - host.
+     * val - alive OR close.
+     */
+    Map<String, Boolean> checkHostsHealth(List<String> hosts);
     
 }
