@@ -4,5 +4,18 @@ Content-Type: application/json
 {}
 
 ### Так можно писать целую цепочку ручных тестов, как для POSTMAN, ответы выводит в терминале
-GET http://localhost:8080/api/zkm/connection/localhost:2181
+#GET http://localhost:8080/api/zkm/connection/localhost:2181
+
+
+
+
+POST http://localhost:8081/api/zkm/conn/create
+Content-Type: application/json
+
+{
+"host" : "localhost:2181",
+"path" : "",
+"value" : ""
+}
+
 

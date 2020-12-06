@@ -3,59 +3,60 @@ package org.zkmaster.backend.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.entity.ZKServer;
 import org.zkmaster.backend.repositories.ZKNodeRepository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 /**
- * TODO - Add here blocking while: cachesRefresh() && deleteConnectionAndCache()
- * <p>
- * ja Zakomentil kod, na slu4aj "esli slomaetsja" to mozno bilo legko otkatitj.
+ * TODO Feature: - Add here blocking while: cachesRefresh() && deleteConnectionAndCache()
  */
 @Service
-public class ZkMainServiceDefault implements ZkMainService {
+public class ZKMainServiceDefault implements ZKMainService {
     /**
-     * Map structure, contains connection(facade) with real server.
-     * key - String   - hostUrl.
-     * val - ZKServer - connection(facade) to server.
+     * Manager for work with a facade of real server.
+     * * Map structure, contains connection(facade) with real server.
+     * key - String           - hostUrl.
+     * val - {@link ZKServer} - facade of server.
      */
     private final ZKConnectionManager connectionManager;
+
+    /**
+     * Actual repository of real server facade.
+     * key - String                     - hostUrl.
+     * val - {@link ZKNodeRepository}   - CRUD rep.
+     */
     private final Map<String, ZKNodeRepository> repositories = new HashMap<>();
+
+    /**
+     * Actual cache of real server value.
+     * key - String           - hostUrl.
+     * val - {@link ZKNode}   - hostValue.
+     */
     private final Map<String, ZKNode> cache = new HashMap<>();
 
     @Autowired
-    public ZkMainServiceDefault(ZKConnectionManager connectionManager) {
+    public ZKMainServiceDefault(ZKConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
 
 
-    @Override
-    public boolean createConnection(String hostUrl) {
-        ZKNodeRepository rep = connectionManager.createConnection(hostUrl);
-        if (rep != null) {
-            repositories.put(hostUrl, rep);
-            return true;
-        } else {
-            return false;
-        }
-    }
+
 
     @Override
     public boolean createNode(String hostUrl, String path, String value) {
-        return crudOperationCore(hostUrl, "CREATE", path, value);
-//        boolean rsl = true;
-//        ZKNodeRepository rep = repositories.get(hostUrl);
-//        if (rep != null) {
-//            rep.create(path, value);
-//        } else {
-//            rsl = false;
-//        }
-//        return rsl;
+        ZKNodeRepository rep = repositories.get(hostUrl);
+        if (rep != null) {
+            return rep.create(path, value);
+        }
+        throw new IllegalArgumentException();
     }
 
     /**
+     * TODO - Try to use {@link java.util.Optional}.
      * Default CRUD - REED
      * <p>
      * ! If other thread(controller) will ask cache, it MUST wait while cache is refreshing.
@@ -97,12 +98,8 @@ public class ZkMainServiceDefault implements ZkMainService {
         return rsl;
     }
 
-    /**
-     * TODO: скопипастить код ^_^
-     */
     @Override
     public boolean updateNode(String hostUrl, String path, String value) {
-//        return crudOperationCore(hostUrl, "UPDATE", path, value);
         ZKNodeRepository rep = repositories.get(hostUrl);
         if (rep != null) {
             return rep.set(path, value);
@@ -112,17 +109,12 @@ public class ZkMainServiceDefault implements ZkMainService {
 
     @Override
     public boolean deleteNode(String hostUrl, String path) {
-        return crudOperationCore(hostUrl, "DELETE", path, null);
-//        boolean rsl = true;
-//        ZKNodeRepository rep = repositories.get(hostUrl);
-//        if (rep != null) {
-//            rep.delete(path);
-//        } else {
-//            rsl = false;
-//        }
-//        return rsl;
+        ZKNodeRepository rep = repositories.get(hostUrl);
+        if (rep != null) {
+            return rep.delete(path);
+        }
+        throw new IllegalArgumentException();
     }
-
 
     @Override
     public void refreshCache(String hostUrl) {
@@ -134,25 +126,29 @@ public class ZkMainServiceDefault implements ZkMainService {
         cache.put(hostUrl, rsl);
     }
 
-    private boolean crudOperationCore(String hostUrl, String crudMethod,
-                                      String path, String value) {
-        boolean rsl = false;
-        ZKNodeRepository rep = repositories.get(hostUrl);
-        if (rep != null) {
-            if ("CREATE".equals(crudMethod)) {
-                rsl = rep.create(path, value);  // <<-- should set {true}
-            } else if ("UPDATE".equals(crudMethod)) {
-                rsl = rep.set(path, value);  // <<-- should set {true}
-            } else if ("DELETE".equals(crudMethod)) {
-                rsl = rep.delete(path);  // <<-- should set {true}
-            }
-        }
-        return rsl;
-    }
-
     @Override
     public void deleteConnectionAndCache(String hostUrl) {
         repositories.remove(hostUrl);
         cache.remove(hostUrl);
+        connectionManager.deleteConnection(hostUrl);
+    }
+
+    @Override
+    public boolean createConnection(String hostUrl) {
+        ZKNodeRepository rep = connectionManager.createConnection(hostUrl);
+        if (rep != null) {
+            repositories.put(hostUrl, rep);
+            return true;
+        }
+        throw new IllegalArgumentException();
+    }
+
+    @Override
+    public Map<String, Boolean> checkHostsHealth(List<String> hosts) {
+        Map<String, Boolean> rsl = new HashMap<>(hosts.size());
+        for (var host : hosts) {
+            rsl.put(host, repositories.containsKey(host));
+        }
+        return rsl;
     }
 }

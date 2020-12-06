@@ -1,26 +1,32 @@
 package org.zkmaster.backend.entity;
 
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * Warp default ZooKeeper API into comfortable API.
+ * Warp default ZooKeeper API into comfortable API. We call it "facade" of real server.
  * <p>
- * Default warping.
+ * If you need more API from original ZooKeeper,
+ * decorate it in this class.
  */
-public class ZKServer extends ZKServerDecorator {
+public class ZKServer implements AutoCloseable {
+    private final String hostUrl;
+    private final ZooKeeper zoo;
 
-    public ZKServer(String hostUrl, ZooKeeper zoo) {
-        super(hostUrl, zoo);
-    }
-
-    public static ZKServer of(String hostUrl, ZooKeeper zoo) {
-        return new ZKServer(hostUrl, zoo);
+    /**
+     * Regular constructor for facade of real server.
+     *
+     * @param hostUrl        - URL of real ZooKeeper server.
+     * @param sessionTimeout - timeout for query to real server.
+     * @param watcher        - catch all event(changes) from real server.
+     * @throws IOException - Fail to create connection with real ZooKeeper server!
+     */
+    public ZKServer(String hostUrl, int sessionTimeout, Watcher watcher) throws IOException {
+        this.hostUrl = hostUrl;
+        this.zoo = new ZooKeeper(hostUrl, sessionTimeout, watcher);
     }
 
     /**
@@ -29,7 +35,6 @@ public class ZKServer extends ZKServerDecorator {
      * @param path  -
      * @param value -
      */
-    @Override
     public void create(String path, String value) {
         try {
             zoo.create(path,
@@ -48,7 +53,6 @@ public class ZKServer extends ZKServerDecorator {
      * @param path -
      * @return String value by nude.
      */
-    @Override
     public String read(String path) {
         String rsl = null;
         try {
@@ -67,7 +71,6 @@ public class ZKServer extends ZKServerDecorator {
      * @param value -
      * @return - update complete success or not.
      */
-    @Override
     public boolean setData(String path, String value) {
         boolean rsl = true;
         try {
@@ -86,7 +89,6 @@ public class ZKServer extends ZKServerDecorator {
      * @param path -
      * @return - delete complete success or not.
      */
-    @Override
     public boolean delete(String path) {
         boolean rsl = true;
         try {
@@ -105,7 +107,6 @@ public class ZKServer extends ZKServerDecorator {
      * @param path -
      * @return children names OR null.
      */
-    @Override
     public List<String> getChildren(String path) {
         List<String> rsl = null;
         try {
@@ -115,6 +116,15 @@ public class ZKServer extends ZKServerDecorator {
             e.printStackTrace();
         }
         return rsl;
+    }
+
+    public String getHostUrl() {
+        return hostUrl;
+    }
+
+    @Override
+    public void close() throws Exception {
+        zoo.close();
     }
 
 }

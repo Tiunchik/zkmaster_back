@@ -1,16 +1,13 @@
 package org.zkmaster.backend.repositories;
 
-import org.apache.zookeeper.KeeperException;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKServer;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- * TODO 4. Сделать обход в ширину без рекурсии при собрании getAll в репозитории,
- * у Макса никогда руки не дойдут, и так фронт нихрена не делает
+ * TODO Сделать обход в ширину без рекурсии при собрании getAll в репозитории, у Макса никогда руки не дойдут, и так фронт нихрена не делает
  */
 public class ZKNodeRepositoryDefault implements ZKNodeRepository {
     private final ZKServer zkServer;
@@ -32,10 +29,7 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
     }
 
     /**
-     * TODO - Maksja, tebe tut stradatj nemnogno. ;)
-     *
-     * @param path -
-     * @return -
+     * TODO -Method: ^_^ Ja zdju svoego Ljubimogo Maksju!!!
      */
     @Override
     public ZKNode getSimpleNode(String path) {
@@ -43,10 +37,7 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
     }
 
     /**
-     * TODO - Maksja, tebe tut stradatj nemnogno. ;)
-     *
-     * @param path -
-     * @return -
+     * TODO -Method: ^_^ Ja zdju svoego Ljubimogo Maksju!!!
      */
     @Override
     public ZKNode getFullNode(String path) {

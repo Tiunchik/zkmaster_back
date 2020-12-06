@@ -1,6 +1,5 @@
 package org.zkmaster.backend.services;
 
-import org.apache.zookeeper.ZooKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -29,10 +28,11 @@ public class ZKFactoryDefault implements ZKFactory {
             var watcher = context.getBean("watcherDefault", ZKWatcherDefault.class);
             watcher.setHostUrl(hostUrl);
 
-            facade = ZKServer.of(hostUrl,
-                    new ZooKeeper(hostUrl, 4000, watcher)
-            );
+            facade = new ZKServer(hostUrl, 1000 * 20, watcher);
         } catch (IOException e) {
+            System.err.println("Fail to create connection with real ZooKeeper server!");
+            System.err.println("Connection details: ");
+            System.err.println("host: " + hostUrl);
             e.printStackTrace();
         }
         return facade;

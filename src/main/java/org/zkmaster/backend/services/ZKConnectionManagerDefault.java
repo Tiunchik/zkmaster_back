@@ -9,7 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * TODO: Что делать с мапой ?
+ * TODO: Why it is need? - while(HealthChecker == null) it will still alive.
+ * TODO: Probably it will need for Reconnection from real server. (?)
+ * TODO UPD(Daniils) - REWRITE THIS! This is SPARTA!!!
  */
 @Service
 public class ZKConnectionManagerDefault implements ZKConnectionManager {
