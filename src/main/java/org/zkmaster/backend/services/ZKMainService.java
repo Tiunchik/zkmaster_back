@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * TODO Feature: - Save cache then server have been close.
  * TODO Feature: - Delete cache anyway if Front-end doesn't send approve that we still need this connection.
- * <p>
+ *
  * Main service that provide API for using in *-end classes(see below).
  *
  * @author Daniils Loputevs.
