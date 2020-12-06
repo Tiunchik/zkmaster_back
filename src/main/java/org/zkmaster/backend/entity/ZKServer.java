@@ -1,15 +1,13 @@
 package org.zkmaster.backend.entity;
 
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * Warp default ZooKeeper API into comfortable API.
+ * Warp default ZooKeeper API into comfortable API. We call it "facade" of real server.
  * <p>
  * If you need more API from original ZooKeeper,
  * decorate it in this class.
@@ -18,13 +16,17 @@ public class ZKServer implements AutoCloseable {
     private final String hostUrl;
     private final ZooKeeper zoo;
 
-    public ZKServer(String hostUrl, ZooKeeper zoo) {
+    /**
+     * Regular constructor for facade of real server.
+     *
+     * @param hostUrl        - URL of real ZooKeeper server.
+     * @param sessionTimeout - timeout for query to real server.
+     * @param watcher        - catch all event(changes) from real server.
+     * @throws IOException - Fail to create connection with real ZooKeeper server!
+     */
+    public ZKServer(String hostUrl, int sessionTimeout, Watcher watcher) throws IOException {
         this.hostUrl = hostUrl;
-        this.zoo = zoo;
-    }
-
-    public static ZKServer of(String hostUrl, ZooKeeper zoo) {
-        return new ZKServer(hostUrl, zoo);
+        this.zoo = new ZooKeeper(hostUrl, sessionTimeout, watcher);
     }
 
     /**
