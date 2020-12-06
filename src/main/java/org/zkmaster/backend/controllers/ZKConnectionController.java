@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * TODO: сделать сервис
- * TODO - Maybe just delegate some API from ZkMainService to OtherService that is inner service?
+ * TODO - Maybe just delegate some API from ZKMainService to OtherService that is inner service?
  */
 @Controller
 @RequestMapping("/api/zkm/conn")

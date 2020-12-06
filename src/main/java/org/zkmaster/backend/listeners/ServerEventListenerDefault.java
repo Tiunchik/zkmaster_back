@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.zkmaster.backend.events.EventServerClose;
 import org.zkmaster.backend.events.EventServerStateChange;
-import org.zkmaster.backend.services.ZkMainService;
+import org.zkmaster.backend.services.ZKMainService;
 
 /**
  * Event Listener - listens all events from "real servers" and process it.
@@ -12,10 +12,10 @@ import org.zkmaster.backend.services.ZkMainService;
  */
 @Component
 public class ServerEventListenerDefault implements ServerEventListener {
-    ZkMainService zkMainService;
+    ZKMainService zkMainService;
 
     @Autowired
-    public ServerEventListenerDefault(ZkMainService zkMainService) {
+    public ServerEventListenerDefault(ZKMainService zkMainService) {
         this.zkMainService = zkMainService;
     }
 
