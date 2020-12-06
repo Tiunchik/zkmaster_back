@@ -23,12 +23,20 @@ public class ZKMController {
     /**
      * CRUD - READ
      * HTTP - GET ALL
-     * url: /zkm/data/{hostUrl}
-     * Read server value.(YAML doc in path-tree format).
+     * url: /zkm/data/host-value
+     * expect request body: {@link RequestDTO}
+     * {
+     *      "host": String,
+     *      "path": null,
+     *      "value": null
+     * }
+     * Meaning: get host-value.(YAML doc in path-tree format).
      */
-    @GetMapping("/{hostUrl}")
-    public void getAllNodes(@RequestAttribute RequestDTO dto) {
-        ZKNode rsl = zkMainService.getHostValue(dto.getHost());
+    @GetMapping("/host-value")
+    public @ResponseBody
+    ZKNode getHostValue(@RequestBody RequestDTO dto) {
+        System.err.println(dto);
+        return zkMainService.getHostValue(dto.getHost());
     }
 
     /**
@@ -47,33 +55,54 @@ public class ZKMController {
     /**
      * CRUD - CREATE
      * HTTP - POST
-     * url: /zkm/data/{hostUrl}, {path}, {value}
-     * Create node in ZooKeeper. (Node == path && value).
+     * url: /zkm/data/create
+     * expect request body: {@link RequestDTO}
+     * {
+     *      "host": String,
+     *      "path": String,
+     *      "value": String
+     * }
+     * Meaning: Create node in ZooKeeper. (Node == path && value).
      */
-    @PostMapping("/{hostUrl}/{path}/{value}")
-    public void createNode(@RequestAttribute RequestDTO dto) {
-        boolean rsl = zkMainService.createNode(dto.getHost(), dto.getPath(), dto.getValue());
+    @PostMapping("/create")
+    public @ResponseBody
+    boolean createNode(@RequestBody RequestDTO dto) {
+        return zkMainService.createNode(dto.getHost(), dto.getPath(), dto.getValue());
     }
 
     /**
      * CRUD - UPDATE
      * HTTP - PUT
-     * url: /zkm/data/{hostUrl}, {path}, {value}
-     * Update node in ZooKeeper. (Node == path && value).
+     * url: /zkm/data/update
+     * expect request body: {@link RequestDTO}
+     * {
+     *      "host": String,
+     *      "path": String,
+     *      "value": String
+     * }
+     * Meaning: Update node in ZooKeeper. (Node == path && value).
      */
-    @PutMapping("/{hostUrl}/{path}/{value}")
-    public void updateNode(@RequestAttribute RequestDTO dto) {
-        boolean rsl = zkMainService.updateNode(dto.getHost(), dto.getPath(), dto.getValue());
+    @PutMapping("/update")
+    public @ResponseBody
+    boolean updateNode(@RequestBody RequestDTO dto) {
+        return zkMainService.updateNode(dto.getHost(), dto.getPath(), dto.getValue());
     }
 
     /**
      * CRUD - DELETE
      * HTTP - DELETE
-     * url: /zkm/data/{hostUrl}, {path}
+     * url: /zkm/data/delete
+     * expect request body: {@link RequestDTO}
+     * {
+     *      "host": String,
+     *      "path": String,
+     *      "value": null
+     * }
      * Update node in ZooKeeper. (Node == path).
      */
-    @DeleteMapping("/{hostUrl}/{path}")
-    public void deleteNode(@RequestAttribute RequestDTO dto) {
-        boolean rsl = zkMainService.deleteNode(dto.getHost(), dto.getPath());
+    @DeleteMapping("/delete")
+    public @ResponseBody
+    boolean deleteNode(@RequestBody RequestDTO dto) {
+        return zkMainService.deleteNode(dto.getHost(), dto.getPath());
     }
 }

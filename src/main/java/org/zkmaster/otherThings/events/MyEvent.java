@@ -1,4 +1,4 @@
-package org.zkmaster.events;
+package org.zkmaster.otherThings.events;
 
 import org.springframework.context.ApplicationEvent;
 import org.zkmaster.backend.entity.ZKWatcherDefault;

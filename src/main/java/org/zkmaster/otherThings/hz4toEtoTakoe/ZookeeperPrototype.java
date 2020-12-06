@@ -1,4 +1,4 @@
-package org.zkmaster.hz4toEtoTakoe;
+package org.zkmaster.otherThings.hz4toEtoTakoe;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
