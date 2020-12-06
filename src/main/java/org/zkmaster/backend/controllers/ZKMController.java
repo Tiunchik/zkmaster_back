@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.zkmaster.backend.entity.RequestDTO;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.services.ZkMainService;
+import org.zkmaster.backend.services.ZKMainService;
 
 /**
  * Provide main ZooKeeperMaster REST API: Default CRUD.
@@ -13,10 +13,10 @@ import org.zkmaster.backend.services.ZkMainService;
 @RequestMapping("/api/zkm/data")
 public class ZKMController {
 
-    ZkMainService zkMainService;
+    ZKMainService zkMainService;
 
     @Autowired
-    public ZKMController(ZkMainService zkMainService) {
+    public ZKMController(ZKMainService zkMainService) {
         this.zkMainService = zkMainService;
     }
 

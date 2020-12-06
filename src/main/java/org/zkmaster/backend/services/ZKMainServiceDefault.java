@@ -15,7 +15,7 @@ import java.util.function.Function;
  * TODO Feature: - Add here blocking while: cachesRefresh() && deleteConnectionAndCache()
  */
 @Service
-public class ZkMainServiceDefault implements ZkMainService {
+public class ZKMainServiceDefault implements ZKMainService {
     /**
      * Manager for work with a facade of real server.
      * * Map structure, contains connection(facade) with real server.
@@ -39,7 +39,7 @@ public class ZkMainServiceDefault implements ZkMainService {
     private final Map<String, ZKNode> cache = new HashMap<>();
 
     @Autowired
-    public ZkMainServiceDefault(ZKConnectionManager connectionManager) {
+    public ZKMainServiceDefault(ZKConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
 
