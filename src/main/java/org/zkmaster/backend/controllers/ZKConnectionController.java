@@ -3,6 +3,7 @@ package org.zkmaster.backend.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.RequestDTO;
 import org.zkmaster.backend.services.ZKMainService;
 
@@ -34,10 +35,9 @@ public class ZKConnectionController {
      * @return connection create: success OR fail.
      */
     @PostMapping("/create")
+    @Log
     public @ResponseBody
     boolean createConnection(@RequestBody RequestDTO dto) {
-        System.err.println("ConnectionController POST: dto = " + dto);
-
         return zkMainService.createConnection(dto.getHost());
     }
 
@@ -55,11 +55,10 @@ public class ZKConnectionController {
      * val - status(still it alive or not)
      */
     @GetMapping("/check")
+    @Log
     public @ResponseBody
     Map<String, Boolean> checkHostsHealth(
             @RequestBody List<String> hosts) {
-        System.err.println("ConnectionController POST: hosts = " + hosts);
-
         return zkMainService.checkHostsHealth(hosts);
     }
 

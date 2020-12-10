@@ -31,6 +31,6 @@ GET http://localhost:8081/api/zkm/conn/check
 Content-Type: application/json
 
 [
-  "localhost:2181"
+  "localhost:2181", "someTestData"
 ]
 ###

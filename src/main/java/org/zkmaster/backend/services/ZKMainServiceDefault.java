@@ -2,6 +2,7 @@ package org.zkmaster.backend.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.repositories.CacheRepository;
 import org.zkmaster.backend.repositories.ConnectionRepository;
@@ -9,6 +10,8 @@ import org.zkmaster.backend.repositories.ZKNodeRepository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Service
 public class ZKMainServiceDefault implements ZKMainService {
@@ -29,6 +32,8 @@ public class ZKMainServiceDefault implements ZKMainService {
 
     private final ZKConnectionFactory zkFactory;
 
+    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+
     @Autowired
     public ZKMainServiceDefault(ConnectionRepository connections,
                                 CacheRepository cache,
@@ -40,8 +45,12 @@ public class ZKMainServiceDefault implements ZKMainService {
 
 
     @Override
+    @Log
     public boolean createNode(String hostUrl, String path, String value) {
-        return connections.get(hostUrl).create(path, value);
+        readWriteLock.writeLock().lock();
+        boolean rsl = connections.get(hostUrl).create(path, value);
+        readWriteLock.writeLock().unlock();
+        return rsl;
     }
 
     /**
@@ -59,37 +68,54 @@ public class ZKMainServiceDefault implements ZKMainService {
      * @return Host value in format: Node(tree). OR null.
      */
     @Override
+    @Log
     public ZKNode getHostValue(String hostUrl) {
+        readWriteLock.readLock().lock();
         ZKNode hostValue = cache.get(hostUrl); // value or null
         if (hostValue == null) { // if cache is null
             hostValue = connections.get(hostUrl).getHostValue();
             cache.put(hostUrl, hostValue);
         }
+        readWriteLock.readLock().unlock();
         return hostValue;
     }
 
     @Override
+    @Log
     public boolean updateNode(String hostUrl, String path, String value) {
-        return connections.get(hostUrl).set(path, value);
+        readWriteLock.writeLock().lock();
+        boolean rsl = connections.get(hostUrl).set(path, value);
+        readWriteLock.writeLock().unlock();
+        return rsl;
     }
 
     @Override
+    @Log
     public boolean deleteNode(String hostUrl, String path) {
-        return connections.get(hostUrl).delete(path);
+        readWriteLock.writeLock().lock();
+        boolean rsl = connections.get(hostUrl).delete(path);
+        readWriteLock.writeLock().unlock();
+        return rsl;
     }
 
     @Override
+    @Log
     public void refreshCache(String hostUrl) {
+        readWriteLock.writeLock().lock();
         ZKNode hostValue = connections.get(hostUrl).getHostValue();
         cache.put(hostUrl, hostValue);
+        readWriteLock.writeLock().unlock();
     }
 
     @Override
+    @Log
     public boolean createConnection(String hostUrl) {
+        readWriteLock.writeLock().lock();
         if (!connections.contains(hostUrl)) {
-            var connection = zkFactory.makeConnectionByHost(hostUrl);
+            ZKNodeRepository connection = zkFactory.makeConnectionByHost(hostUrl);
             connections.put(hostUrl, connection);
         }
+        readWriteLock.writeLock().unlock();
         return true;
     }
 
@@ -100,14 +126,21 @@ public class ZKMainServiceDefault implements ZKMainService {
 //    }
 
     @Override
+    @Log
     public void deleteConnectionAndCache(String hostUrl) {
+        readWriteLock.writeLock().lock();
         connections.remove(hostUrl);
         cache.remove(hostUrl);
+        readWriteLock.writeLock().unlock();
     }
 
     @Override
+    @Log
     public Map<String, Boolean> checkHostsHealth(List<String> hosts) {
-        return connections.containsByHosts(hosts);
+        readWriteLock.readLock().lock();
+        Map<String, Boolean> rsl = connections.containsByHosts(hosts);
+        readWriteLock.readLock().unlock();
+        return rsl;
     }
 
 }

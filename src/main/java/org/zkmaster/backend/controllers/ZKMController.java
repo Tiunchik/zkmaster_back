@@ -2,6 +2,7 @@ package org.zkmaster.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.RequestDTO;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.services.ZKMainService;
@@ -33,9 +34,9 @@ public class ZKMController {
      * Meaning: get host-value.(YAML doc in path-tree format).
      */
     @GetMapping("/host-value")
+    @Log
     public @ResponseBody
     ZKNode getHostValue(@RequestBody RequestDTO dto) {
-        System.err.println("ZKMController GET: dto = " + dto);
         return zkMainService.getHostValue(dto.getHost());
     }
 
@@ -65,6 +66,7 @@ public class ZKMController {
      * Meaning: Create node in ZooKeeper. (Node == path && value).
      */
     @PostMapping("/create")
+    @Log
     public @ResponseBody
     boolean createNode(@RequestBody RequestDTO dto) {
         System.err.println("ZKMController POST: dto = " + dto);
@@ -84,6 +86,7 @@ public class ZKMController {
      * Meaning: Update node in ZooKeeper. (Node == path && value).
      */
     @PutMapping("/update")
+    @Log
     public @ResponseBody
     boolean updateNode(@RequestBody RequestDTO dto) {
         System.err.println("ZKMController PUT: dto = " + dto);
@@ -103,6 +106,7 @@ public class ZKMController {
      * Update node in ZooKeeper. (Node == path).
      */
     @DeleteMapping("/delete")
+    @Log
     public @ResponseBody
     boolean deleteNode(@RequestBody RequestDTO dto) {
         System.err.println("ZKMController DELETE: dto = " + dto);
