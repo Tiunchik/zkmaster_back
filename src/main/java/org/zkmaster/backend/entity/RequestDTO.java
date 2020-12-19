@@ -4,9 +4,9 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 public class RequestDTO {
-    private  String host;
-    private  String path;
-    private  String value;
+    private String host;
+    private String path;
+    private String value;
 
     public RequestDTO() {
     }

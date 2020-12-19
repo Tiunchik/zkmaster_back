@@ -63,6 +63,7 @@ public class ZKMController {
     /**
      * CRUD - CREATE
      * HTTP - POST
+     * url: /zkm/data
      * expect request body: {@link RequestDTO}
      * {
      * "host": String == null,
