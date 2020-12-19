@@ -24,7 +24,7 @@ public class ZKMController {
     /**
      * CRUD - READ
      * HTTP - GET ALL
-     * url: /zkm/data/host-value
+     * url: /zkm/data
      * expect request body: {@link RequestDTO}
      * {
      *      "host": String,
@@ -33,7 +33,7 @@ public class ZKMController {
      * }
      * Meaning: get host-value.(YAML doc in path-tree format).
      */
-    @GetMapping("/host-value")
+    @GetMapping("")
     @Log
     public @ResponseBody
     ZKNode getHostValue(@RequestBody RequestDTO dto) {
@@ -56,7 +56,7 @@ public class ZKMController {
     /**
      * CRUD - CREATE
      * HTTP - POST
-     * url: /zkm/data/create
+     * url: /zkm/data
      * expect request body: {@link RequestDTO}
      * {
      *      "host": String,
@@ -65,7 +65,7 @@ public class ZKMController {
      * }
      * Meaning: Create node in ZooKeeper. (Node == path && value).
      */
-    @PostMapping("/create")
+    @PostMapping("")
     @Log
     public @ResponseBody
     boolean createNode(@RequestBody RequestDTO dto) {
@@ -76,7 +76,7 @@ public class ZKMController {
     /**
      * CRUD - UPDATE
      * HTTP - PUT
-     * url: /zkm/data/update
+     * url: /zkm/data
      * expect request body: {@link RequestDTO}
      * {
      *      "host": String,
@@ -85,7 +85,7 @@ public class ZKMController {
      * }
      * Meaning: Update node in ZooKeeper. (Node == path && value).
      */
-    @PutMapping("/update")
+    @PutMapping("")
     @Log
     public @ResponseBody
     boolean updateNode(@RequestBody RequestDTO dto) {
@@ -96,7 +96,7 @@ public class ZKMController {
     /**
      * CRUD - DELETE
      * HTTP - DELETE
-     * url: /zkm/data/delete
+     * url: /zkm/data
      * expect request body: {@link RequestDTO}
      * {
      *      "host": String,
@@ -105,11 +105,12 @@ public class ZKMController {
      * }
      * Update node in ZooKeeper. (Node == path).
      */
-    @DeleteMapping("/delete")
+    @DeleteMapping("")
     @Log
     public @ResponseBody
     boolean deleteNode(@RequestBody RequestDTO dto) {
         System.err.println("ZKMController DELETE: dto = " + dto);
         return zkMainService.deleteNode(dto.getHost(), dto.getPath());
     }
+
 }

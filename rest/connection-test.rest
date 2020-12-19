@@ -1,0 +1,28 @@
+// HTTP test for version 1.0.
+POST http://localhost:8081/api/zkm/conn/create
+Content-Type: application/json
+
+{
+  "host": "localhost:2181",
+  "path": "",
+  "value": ""
+}
+###
+
+#GET http://localhost:8081/api/zkm/data/host-value
+#Content-Type: application/json
+#
+#{
+#  "host": "localhost:2181",
+#  "path": "",
+#  "value": ""
+#}
+####
+
+GET http://localhost:8081/api/zkm/conn/check
+Content-Type: application/json
+
+[
+  "localhost:2181", "someTestData"
+]
+###

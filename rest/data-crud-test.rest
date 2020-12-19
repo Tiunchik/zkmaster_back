@@ -1,0 +1,49 @@
+// HTTP test for version 1.0.
+# get host-value
+GET http://localhost:8081/api/zkm/data
+Content-Type: application/json
+
+{
+  "host": "localhost:2181",
+  "path": "",
+  "value": ""
+}
+###
+
+// create node
+POST http://localhost:8081/api/zkm/data
+Content-Type: application/json
+
+{
+  "host": "localhost:2181",
+  "path": "/l1",
+  "value": "v1"
+}
+###
+
+// update node
+PUT http://localhost:8081/api/zkm/data
+Content-Type: application/json
+
+{
+  "host": "localhost:2181",
+  "path": "/l1",
+  "value": "v1 v1"
+}
+###
+
+// delete node
+DELETE http://localhost:8081/api/zkm/data
+Content-Type: application/json
+
+{
+  "host": "localhost:2181",
+  "path": "/l1",
+  "value": ""
+}
+###
+
+
+
+
+
