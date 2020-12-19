@@ -4,11 +4,16 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 public class RequestDTO {
-    private  String host;
-    private  String path;
-    private  String value;
+    private String host;
+    private String path;
+    private String value;
 
     public RequestDTO() {
+    }
+
+    public RequestDTO(String host, String path) {
+        this.host = host;
+        this.path = path;
     }
 
     public RequestDTO(String host, String path, String value) {
@@ -29,6 +34,17 @@ public class RequestDTO {
         return value;
     }
 
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 
     @Override
     public boolean equals(Object object) {
