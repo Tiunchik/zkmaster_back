@@ -3,11 +3,12 @@ package org.zkmaster.backend.repositories;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKServer;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * TODO Сделать обход в ширину без рекурсии при собрании getAll в репозитории, у Макса никогда руки не дойдут, и так фронт нихрена не делает
+ * TODO Сделать обход в ширину без рекурсии при собрании getAll в репозитории,
+ * TODO у Макса никогда руки не дойдут, и так фронт нихрена не делает
  */
 public class ZKNodeRepositoryDefault implements ZKNodeRepository {
     private final ZKServer zkServer;
@@ -20,7 +21,7 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
     /**
      * @param path  -
      * @param value -
-     * @return {true} - unless any exception is thrown.
+     * @return -
      */
     @Override
     public boolean create(String path, String value) {
@@ -32,16 +33,24 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
      * TODO -Method: ^_^ Ja zdju svoego Ljubimogo Maksju!!!
      */
     @Override
+    @Deprecated
     public ZKNode getSimpleNode(String path) {
         return null;
     }
 
-    /**
-     * TODO -Method: ^_^ Ja zdju svoego Ljubimogo Maksju!!!
-     */
     @Override
-    public ZKNode getFullNode(String path) {
-//
+    public ZKNode getHostValue() {
+        return getHostValue("/", "/");
+    }
+
+
+//    /**
+//     * TODO weak - write tree-walk by list walk, not recursion.
+//     * @param path -
+//     * @param nodeName -
+//     * @return -
+//     */
+//    private ZKNode getHostValueList(String path, String nodeName) {
 //        LinkedList<ZKNode> searchList = new LinkedList<>();
 //        List<ZKNode> foundList = new ArrayList<>(500);
 //        searchList.add(new ZKNode(path, zkServer.read(path)));
@@ -52,21 +61,28 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
 //        }
 //        return null;
 //    }
-//    @Deprecated // recursion
-        String nodeValue = zkServer.read(path);
-        List<ZKNode> children = null;
-        var getChildren = zkServer.getChildren(path);
-        if (getChildren != null && !getChildren.isEmpty()) {
-            children = new ArrayList<>();
-            for (var childName : getChildren) {
 
-                String childPath = ("/".equals(path))
-                        ? path + childName
-                        : path + "/" + childName;
-                children.add(getFullNode(childPath)); // <<-- Recursion
+    /**
+     * RECURSION!!!
+     *
+     * @param path     -
+     * @param nodeName -
+     * @return -
+     */
+    @Deprecated(since = "recursion")
+    private ZKNode getHostValue(String path, String nodeName) {
+        String nodeValue = zkServer.read(path);
+        List<ZKNode> children = new LinkedList<>();
+        List<String> childrenNames = zkServer.getChildren(path);
+        if (childrenNames != null && !childrenNames.isEmpty()) {
+            for (var childName : childrenNames) {
+                String childPath = ("/".equals(path)) // is it root
+                        ? path + childName            // true
+                        : path + "/" + childName;     // false
+                children.add(getHostValue(childPath, childName)); // <<-- Recursion
             }
         }
-        return new ZKNode(path, nodeValue, children);
+        return new ZKNode(path, nodeValue, nodeName, children);
     }
 
     @Override
@@ -79,17 +95,4 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
         return zkServer.delete(path);
     }
 
-    /**
-     * {@link ZKNodeRepository} - gljanj tam vsju docu dlja tebja.
-     *
-     * @param node - ???????
-     * @return ???????
-     */
-    @Override
-    public String getFullPath(ZKNode node) {
-        String fullPath = "";
-//        while
-        return null;
-    }
 }
-

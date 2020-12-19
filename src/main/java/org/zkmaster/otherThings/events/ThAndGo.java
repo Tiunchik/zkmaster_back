@@ -1,4 +1,4 @@
-package org.zkmaster.events;
+package org.zkmaster.otherThings.events;
 
 import org.apache.zookeeper.ZooKeeper;
 import org.springframework.beans.factory.annotation.Autowired;

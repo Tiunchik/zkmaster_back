@@ -4,6 +4,7 @@ import org.zkmaster.backend.entity.ZKNode;
 
 /**
  * CRUD interface for {@link ZKNode}.
+ * ZKNodeRepository == connection with real server.
  */
 public interface ZKNodeRepository {
 
@@ -26,8 +27,7 @@ public interface ZKNodeRepository {
      *
      * @return {@link ZKNode} with all children(sub-nodes) OR null.
      */
-    @Deprecated(since = "since front == null")
-    ZKNode getFullNode(String path);
+    ZKNode getHostValue();
 
     boolean set(String path, String value);
 
@@ -38,16 +38,5 @@ public interface ZKNodeRepository {
      * @return Delete success OR not.
      */
     boolean delete(String path);
-
-    /**
-     * ????????????????????????
-     *
-     * @param node - ???????
-     * @return ?????????
-     * @deprecated Za4em on tebe, esli v samom {@link ZKNode} uze estj full path?
-     * Ili ti ne bude6j sobiratj full path, a budet toljko imja???
-     */
-    @Deprecated(since = "since front == null")
-    String getFullPath(ZKNode node);
 
 }

@@ -2,61 +2,58 @@ package org.zkmaster.backend.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.entity.ZKServer;
+import org.zkmaster.backend.repositories.CacheRepository;
+import org.zkmaster.backend.repositories.ConnectionRepository;
 import org.zkmaster.backend.repositories.ZKNodeRepository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/**
- * TODO Feature: - Add here blocking while: cachesRefresh() && deleteConnectionAndCache()
- */
 @Service
 public class ZKMainServiceDefault implements ZKMainService {
-    /**
-     * Manager for work with a facade of real server.
-     * * Map structure, contains connection(facade) with real server.
-     * key - String           - hostUrl.
-     * val - {@link ZKServer} - facade of server.
-     */
-    private final ZKConnectionManager connectionManager;
 
     /**
      * Actual repository of real server facade.
      * key - String                     - hostUrl.
      * val - {@link ZKNodeRepository}   - CRUD rep.
      */
-    private final Map<String, ZKNodeRepository> repositories = new HashMap<>();
+    private final ConnectionRepository connections;
 
     /**
      * Actual cache of real server value.
      * key - String           - hostUrl.
      * val - {@link ZKNode}   - hostValue.
      */
-    private final Map<String, ZKNode> cache = new HashMap<>();
+    private final CacheRepository cache;
+
+    private final ZKConnectionFactory zkFactory;
+
+    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     @Autowired
-    public ZKMainServiceDefault(ZKConnectionManager connectionManager) {
-        this.connectionManager = connectionManager;
+    public ZKMainServiceDefault(ConnectionRepository connections,
+                                CacheRepository cache,
+                                ZKConnectionFactory zkFactory) {
+        this.connections = connections;
+        this.cache = cache;
+        this.zkFactory = zkFactory;
     }
-
-
 
 
     @Override
+    @Log
     public boolean createNode(String hostUrl, String path, String value) {
-        ZKNodeRepository rep = repositories.get(hostUrl);
-        if (rep != null) {
-            return rep.create(path, value);
-        }
-        throw new IllegalArgumentException();
+        readWriteLock.writeLock().lock();
+        boolean rsl = connections.get(hostUrl).create(path, value);
+        readWriteLock.writeLock().unlock();
+        return rsl;
     }
 
     /**
-     * TODO - Try to use {@link java.util.Optional}.
      * Default CRUD - REED
      * <p>
      * ! If other thread(controller) will ask cache, it MUST wait while cache is refreshing.
@@ -64,91 +61,86 @@ public class ZKMainServiceDefault implements ZKMainService {
      * STEP 1: ask cache - (have cache for host)
      * true >> out method.
      * false >> continue.
-     * STEP 2: ask repositories - (have rep for host)
+     * STEP 2: ask connections - (have rep for host)
      * true >> get "host value" and out method.
-     * false >> continue.
-     * STEP 3: aks connectionManager - (have connect for host)
-     * true >> create rep, then get "host value" and out method.
-     * false >> return disconnect.(Is it possible?)
      *
      * @param hostUrl -
      * @return Host value in format: Node(tree). OR null.
      */
     @Override
+    @Log
     public ZKNode getHostValue(String hostUrl) {
-        ZKNode rsl = cache.get(hostUrl); // value or null
-
-        if (rsl == null) { // if cache is null
-            rsl = getHostValueIfNotCache(hostUrl, repositories::get);
-
-            if (rsl == null) { // if repository is null
-                rsl = getHostValueIfNotCache(hostUrl, connectionManager::createConnection);
-            }
+        readWriteLock.readLock().lock();
+        ZKNode hostValue = cache.get(hostUrl); // value or null
+        if (hostValue == null) { // if cache is null
+            hostValue = connections.get(hostUrl).getHostValue();
+            cache.put(hostUrl, hostValue);
         }
-        return rsl;
-    }
-
-    private ZKNode getHostValueIfNotCache(String hostUrl, Function<String, ZKNodeRepository> function) {
-        ZKNode rsl = null;
-        ZKNodeRepository hostRep = function.apply(hostUrl);
-        if (hostRep != null) {
-            rsl = hostRep.getFullNode("/");
-            cache.put(hostUrl, rsl);
-        }
-        return rsl;
+        readWriteLock.readLock().unlock();
+        return hostValue;
     }
 
     @Override
+    @Log
     public boolean updateNode(String hostUrl, String path, String value) {
-        ZKNodeRepository rep = repositories.get(hostUrl);
-        if (rep != null) {
-            return rep.set(path, value);
-        }
-        throw new IllegalArgumentException();
-    }
-
-    @Override
-    public boolean deleteNode(String hostUrl, String path) {
-        ZKNodeRepository rep = repositories.get(hostUrl);
-        if (rep != null) {
-            return rep.delete(path);
-        }
-        throw new IllegalArgumentException();
-    }
-
-    @Override
-    public void refreshCache(String hostUrl) {
-        ZKNode rsl = null;
-        ZKNodeRepository rep = repositories.get(hostUrl);
-        if (rep != null) {
-            rsl = rep.getFullNode("/");
-        }
-        cache.put(hostUrl, rsl);
-    }
-
-    @Override
-    public void deleteConnectionAndCache(String hostUrl) {
-        repositories.remove(hostUrl);
-        cache.remove(hostUrl);
-        connectionManager.deleteConnection(hostUrl);
-    }
-
-    @Override
-    public boolean createConnection(String hostUrl) {
-        ZKNodeRepository rep = connectionManager.createConnection(hostUrl);
-        if (rep != null) {
-            repositories.put(hostUrl, rep);
-            return true;
-        }
-        throw new IllegalArgumentException();
-    }
-
-    @Override
-    public Map<String, Boolean> checkHostsHealth(List<String> hosts) {
-        Map<String, Boolean> rsl = new HashMap<>(hosts.size());
-        for (var host : hosts) {
-            rsl.put(host, repositories.containsKey(host));
-        }
+        readWriteLock.writeLock().lock();
+        boolean rsl = connections.get(hostUrl).set(path, value);
+        readWriteLock.writeLock().unlock();
         return rsl;
     }
+
+    @Override
+    @Log
+    public boolean deleteNode(String hostUrl, String path) {
+        readWriteLock.writeLock().lock();
+        boolean rsl = connections.get(hostUrl).delete(path);
+        readWriteLock.writeLock().unlock();
+        return rsl;
+    }
+
+    @Override
+    @Log
+    public void refreshCache(String hostUrl) {
+        readWriteLock.writeLock().lock();
+        ZKNode hostValue = connections.get(hostUrl).getHostValue();
+        cache.put(hostUrl, hostValue);
+        readWriteLock.writeLock().unlock();
+    }
+
+    @Override
+    @Log
+    public boolean createConnection(String hostUrl) {
+        readWriteLock.writeLock().lock();
+        if (!connections.contains(hostUrl)) {
+            ZKNodeRepository connection = zkFactory.makeConnectionByHost(hostUrl);
+            connections.put(hostUrl, connection);
+        }
+        readWriteLock.writeLock().unlock();
+        return true;
+    }
+
+//    @Override
+//    @Deprecated(since = "see in interface: ZKMainService")
+//    public void reconnect(String host) {
+//        // don't need it yet
+//    }
+
+    @Override
+    @Log
+    public void deleteConnectionAndCache(String hostUrl) {
+        readWriteLock.writeLock().lock();
+        connections.remove(hostUrl);
+        cache.remove(hostUrl);
+        readWriteLock.writeLock().unlock();
+    }
+
+    @Override
+    @Log
+    public Map<String, Boolean> checkHostsHealth(List<String> hosts) {
+        readWriteLock.readLock().lock();
+        Map<String, Boolean> rsl = connections.containsByHosts(hosts);
+        readWriteLock.readLock().unlock();
+        return rsl;
+    }
+
 }
