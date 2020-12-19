@@ -56,7 +56,10 @@ public class ZKServer implements AutoCloseable {
     public String read(String path) {
         String rsl = null;
         try {
-            rsl = new String(zoo.getData(path, false, null), StandardCharsets.UTF_8);
+            byte[] temp = zoo.getData(path, true, null);
+            if (temp != null) {
+                rsl = new String(temp, StandardCharsets.UTF_8);
+            }
         } catch (KeeperException | InterruptedException e) {
             System.err.println("Something Wrong! Check it.");
             e.printStackTrace();
@@ -110,7 +113,7 @@ public class ZKServer implements AutoCloseable {
     public List<String> getChildren(String path) {
         List<String> rsl = null;
         try {
-            rsl = zoo.getChildren(path, false, null);
+            rsl = zoo.getChildren(path, true, null);
         } catch (KeeperException | InterruptedException e) {
             System.err.println("Something Wrong! Check it.");
             e.printStackTrace();
