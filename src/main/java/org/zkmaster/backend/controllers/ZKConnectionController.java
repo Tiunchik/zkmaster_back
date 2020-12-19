@@ -2,7 +2,10 @@ package org.zkmaster.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.RequestDTO;
 import org.zkmaster.backend.services.ZKMainService;
@@ -22,34 +25,14 @@ public class ZKConnectionController {
     }
 
     /**
-     * HTTP - POST
-     * url: /api/zkm/conn/create
-     * expect request body: {@link RequestDTO}
-     * {
-     *      "host": String,
-     *      "path": null,
-     *      "value": null
-     * }
-     * Meaning: Try create connection by hosts and send connection status
-     *
-     * @return connection create: success OR fail.
-     */
-    @PostMapping("/create")
-    @Log
-    public @ResponseBody
-    boolean createConnection(@RequestBody RequestDTO dto) {
-        return zkMainService.createConnection(dto.getHost());
-    }
-
-    /**
      * HTTP - GET
      * url: /api/zkm/conn/check
      * expect request: {@link RequestDTO}
      * [
      *     String, String, String ...
      * ]
-     *
      * Meaning: Check is this servers still alive?
+     *
      * @return map with server status:
      * key - host
      * val - status(still it alive or not)

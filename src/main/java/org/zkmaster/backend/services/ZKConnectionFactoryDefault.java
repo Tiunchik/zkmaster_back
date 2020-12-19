@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKServer;
 import org.zkmaster.backend.entity.ZKWatcherDefault;
+import org.zkmaster.backend.exceptions.WrongHostException;
 import org.zkmaster.backend.repositories.ZKNodeRepository;
 import org.zkmaster.backend.repositories.ZKNodeRepositoryDefault;
 
@@ -27,7 +28,7 @@ public class ZKConnectionFactoryDefault implements ZKConnectionFactory {
      * @return facade.
      */
     @Override
-    public ZKNodeRepository makeConnectionByHost(String host) {
+    public ZKNodeRepository makeConnectionByHost(String host) throws WrongHostException {
         ZKServer facade = null;
         try {
             if (host != null) {
@@ -37,10 +38,12 @@ public class ZKConnectionFactoryDefault implements ZKConnectionFactory {
                 facade = new ZKServer(host, 1000 * 20, watcher);
             } else {
                 System.err.println(EXCEPTION_FAIL_CREATE_CONN + null);
+                throw new WrongHostException(null);
             }
         } catch (IOException e) {
             System.err.println(EXCEPTION_FAIL_CREATE_CONN + host);
             e.printStackTrace();
+            throw new WrongHostException(host);
         }
         return new ZKNodeRepositoryDefault(facade);
     }

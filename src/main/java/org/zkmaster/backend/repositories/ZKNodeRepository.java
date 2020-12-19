@@ -1,6 +1,7 @@
 package org.zkmaster.backend.repositories;
 
 import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.exceptions.NodeExistsException;
 
 /**
  * CRUD interface for {@link ZKNode}.
@@ -12,7 +13,7 @@ public interface ZKNodeRepository {
      * !!! Maybe it would better if that it will accept {@link ZKNode}???
      *
      */
-    boolean create(String path, String value);
+    boolean create(String path, String value) throws NodeExistsException;
 
     /**
      * Simple "Node-value" from real server, packed in {@link ZKNode}.

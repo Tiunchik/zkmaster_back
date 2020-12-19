@@ -2,6 +2,7 @@ package org.zkmaster.backend.repositories;
 
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKServer;
+import org.zkmaster.backend.exceptions.NodeExistsException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
      * @return -
      */
     @Override
-    public boolean create(String path, String value) {
+    public boolean create(String path, String value) throws NodeExistsException {
         zkServer.create(path, value);
         return true;
     }

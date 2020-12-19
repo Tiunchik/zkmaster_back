@@ -1,9 +1,7 @@
 package org.zkmaster.backend.repositories;
 
-
 import java.util.List;
 import java.util.Map;
-
 
 public interface ConnectionRepository {
 
@@ -17,6 +15,7 @@ public interface ConnectionRepository {
 
     /**
      * check connection with real serve by host.
+     *
      * @param hosts -
      * @return map:
      * key - host.
@@ -25,6 +24,5 @@ public interface ConnectionRepository {
     Map<String, Boolean> containsByHosts(List<String> hosts);
 
     int size();
-
 
 }

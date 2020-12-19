@@ -1,6 +1,7 @@
 package org.zkmaster.backend.entity;
 
 import org.apache.zookeeper.*;
+import org.zkmaster.backend.exceptions.NodeExistsException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -30,21 +31,32 @@ public class ZKServer implements AutoCloseable {
     }
 
     /**
+     * TODO : сделать catch на KeeperException.NodeExistsException StackTrace:
+     * TODO : org.apache.zookeeper.KeeperException$NodeExistsException: KeeperErrorCode = NodeExists for /l1
+     * TODO : 	at org.apache.zookeeper.KeeperException.create(KeeperException.java:126)
+     * TODO : 	at org.apache.zookeeper.KeeperException.create(KeeperException.java:54)
+     * TODO : 	at org.apache.zookeeper.ZooKeeper.create(ZooKeeper.java:1733)
+     * TODO : 	at org.zkmaster.backend.entity.ZKServer.create(ZKServer.java:40)
+     *
+     *
      * Default wrap. Don't use Watcher and State.
      *
      * @param path  -
      * @param value -
      */
-    public void create(String path, String value) {
+    public void create(String path, String value) throws NodeExistsException {
         try {
             zoo.create(path,
                     value.getBytes(),
                     ZooDefs.Ids.OPEN_ACL_UNSAFE,
                     CreateMode.PERSISTENT);
+        } catch (KeeperException.NodeExistsException e) {
+            throw new NodeExistsException(path);
         } catch (KeeperException | InterruptedException e) {
             System.err.println("Something Wrong! Check it.");
             e.printStackTrace();
         }
+
     }
 
     /**
@@ -68,6 +80,12 @@ public class ZKServer implements AutoCloseable {
     }
 
     /**
+     * TODO : сделать catch на KeeperException.KeeperErrorCode  StackTrace:
+     * TODO : org.apache.zookeeper.KeeperException$NoNodeException: KeeperErrorCode = NoNode for /l1valuedfgdff
+     * TODO : 	at org.apache.zookeeper.KeeperException.create(KeeperException.java:126)
+     * TODO : 	at org.apache.zookeeper.KeeperException.create(KeeperException.java:54)
+     * TODO : 	at org.apache.zookeeper.ZooKeeper.create(ZooKeeper.java:1733)
+     * TODO : 	at org.zkmaster.backend.entity.ZKServer.create(ZKServer.java:40)
      * !!! If the given version is -1, it matches any node's versions.
      *
      * @param path  -

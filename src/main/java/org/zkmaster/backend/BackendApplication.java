@@ -11,9 +11,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class BackendApplication {
 
     public static void main(String[] args) {
-        System.out.println("APP MAIN - START");
         SpringApplication.run(BackendApplication.class, args);
-        System.out.println("APP MAIN - STOP");
+        System.err.println("ZKM Back-end INIT :: FINISH");
+        System.err.println("ZKM Back-end RUNTIME :: START");
     }
 
 
