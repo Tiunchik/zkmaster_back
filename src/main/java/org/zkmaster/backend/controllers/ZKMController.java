@@ -16,6 +16,7 @@ import org.zkmaster.backend.services.ZKMainService;
  */
 @RestController
 @RequestMapping("/api/zkm/data/{host}")
+@CrossOrigin(value = {"*"})
 public class ZKMController {
 
     ZKMainService zkMainService;
@@ -63,7 +64,6 @@ public class ZKMController {
     /**
      * CRUD - CREATE
      * HTTP - POST
-     * url: /zkm/data
      * expect request body: {@link RequestDTO}
      * {
      * "host": String == null,
@@ -83,7 +83,6 @@ public class ZKMController {
     /**
      * CRUD - UPDATE
      * HTTP - PUT
-     * url: /zkm/data
      * expect request body: {@link RequestDTO}
      * {
      * "host": String == null,
@@ -104,12 +103,21 @@ public class ZKMController {
      * CRUD && HTTP - DELETE
      * Update node in ZooKeeper. (Node == path).
      */
+//    @DeleteMapping("")
     @DeleteMapping("/{path}")
     @Log
     public @ResponseBody
     boolean deleteNode(@PathVariable String host,
-                       @PathVariable String path) throws NodeDeleteException {
+                       @PathVariable String path
+//                       @RequestBody RequestDTO dto
+
+    ) throws NodeDeleteException {
         return zkMainService.deleteNode(host, path);
+//        return zkMainService.deleteNode(dto.getHost(), dto.getPath());
+    }
+    boolean deleteNode(@RequestBody RequestDTO dto) throws NodeDeleteException {
+        return zkMainService.deleteNode(dto.getHost(), dto.getPath());
+//        return zkMainService.deleteNode(host, path);
     }
 
 }

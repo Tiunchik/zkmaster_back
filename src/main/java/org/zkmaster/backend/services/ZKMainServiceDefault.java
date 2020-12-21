@@ -86,7 +86,7 @@ public class ZKMainServiceDefault implements ZKMainService {
                 }
             }
         } finally {
-            readWriteLock.writeLock().unlock();
+            readWriteLock.readLock().unlock();
         }
         return hostValue;
     }

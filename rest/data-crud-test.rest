@@ -33,13 +33,13 @@
 ####
 
 #// delete node
-#DELETE http://localhost:8081/api/zkm/data
+#DELETE http://localhost:8081/api/zkm/data/localhost:2181
 #Content-Type: application/json
 #
 #{
 #  "host": "localhost:2181",
-#  "path": "/l1",
-#  "value": ""
+#  "path": "/l1value",
+#  "value": null
 #}
 ####
 
@@ -59,8 +59,8 @@ Content-Type: application/json
 
 {
   "host": null,
-  "path": "/l1/exp1",
-  "value": "v0"
+  "path": "/d1/d2/d3/d4/d5",
+  "value": "value"
 }
 ###
 
@@ -70,8 +70,8 @@ Content-Type: application/json
 
 {
   "host": null,
-  "path": "/l1",
-  "value": "l1value_exp1"
+  "path": "/l1/exp1",
+  "value": "value"
 }
 ###
 
