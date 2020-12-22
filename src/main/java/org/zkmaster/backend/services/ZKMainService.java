@@ -3,10 +3,7 @@ package org.zkmaster.backend.services;
 import org.zkmaster.backend.controllers.ZKConnectionController;
 import org.zkmaster.backend.controllers.ZKMController;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.exceptions.NodeDeleteException;
-import org.zkmaster.backend.exceptions.NodeExistsException;
-import org.zkmaster.backend.exceptions.NodeUpdateException;
-import org.zkmaster.backend.exceptions.WrongHostException;
+import org.zkmaster.backend.exceptions.*;
 import org.zkmaster.backend.listeners.ServerEventListener;
 import org.zkmaster.backend.listeners.ServerEventListenerDefault;
 
@@ -68,6 +65,16 @@ public interface ZKMainService {
      * @return Delete success or not.
      */
     boolean deleteNode(String hostUrl, String path) throws NodeDeleteException;
+
+    /**
+     * For: {@link ZKConnectionController}
+     *
+     * @param host -
+     * @param path -
+     * @param value new Node name in real server.
+     * @return Rename success OR not.
+     */
+    boolean renameNode(String host, String path, String value) throws NodeRenameException;
 
     /* ####### CRUD ####### */
 

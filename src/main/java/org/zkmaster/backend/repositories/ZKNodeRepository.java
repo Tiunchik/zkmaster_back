@@ -40,4 +40,12 @@ public interface ZKNodeRepository {
      */
     boolean delete(String path);
 
+    /**
+     * Rename Node in real server.
+     *
+     * @param path Node path.
+     * @param value New Node name.
+     * @return Rename success OR not.
+     */
+    boolean rename(String path, String value, ZKNode currentHostValue);
 }

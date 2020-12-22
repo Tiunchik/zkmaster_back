@@ -8,9 +8,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * Warp default ZooKeeper API into comfortable API. We call it "facade" of real server.
+ * Warp default {@link ZooKeeper} API into comfortable API. We call it "facade" of real server.
  * <p>
- * If you need more API from original ZooKeeper,
+ * If you need more API from original {@link ZooKeeper},
  * decorate it in this class.
  */
 public class ZKServer implements AutoCloseable {
@@ -137,6 +137,10 @@ public class ZKServer implements AutoCloseable {
             e.printStackTrace();
         }
         return rsl;
+    }
+
+    public ZKTransaction transaction() {
+        return new ZKTransaction(zoo.transaction());
     }
 
     public String getHostUrl() {

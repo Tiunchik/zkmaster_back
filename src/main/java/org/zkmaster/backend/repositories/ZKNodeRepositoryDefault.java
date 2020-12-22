@@ -1,7 +1,9 @@
 package org.zkmaster.backend.repositories;
 
 import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.entity.ZKNodes;
 import org.zkmaster.backend.entity.ZKServer;
+import org.zkmaster.backend.entity.ZKTransaction;
 import org.zkmaster.backend.exceptions.NodeExistsException;
 
 import java.util.LinkedList;
@@ -70,7 +72,7 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
      * @param nodeName -
      * @return -
      */
-    @Deprecated(since = "recursion")
+//    @Deprecated(since = "recursion")
     private ZKNode getHostValue(String path, String nodeName) {
         String nodeValue = zkServer.read(path);
         List<ZKNode> children = new LinkedList<>();
@@ -96,4 +98,34 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
         return zkServer.delete(path);
     }
 
+    @Override
+    public boolean rename(String path, String value, ZKNode currentHostValue) {
+        var targetNode = ZKNodes.getSubZKNodeByFullPath(currentHostValue, path);
+
+        boolean firstIteration = true;
+        ZKTransaction transaction = zkServer.transaction();
+
+        var iterateList = new LinkedList<ZKNode>();
+        iterateList.add(targetNode);
+        var deletePaths = new LinkedList<String>();
+
+        while (iterateList.size() > 0) {
+
+            ZKNode currentZKNode = iterateList.poll();
+
+            if (ZKNodes.hasChildren(currentZKNode)) {
+                iterateList.addAll(currentZKNode.getChildren());
+            }
+            if (firstIteration) {
+//                transaction.create()
+            }
+            deletePaths.add(currentHostValue.getPath());
+//            transaction.create()
+
+
+        }
+
+
+        return false;
+    }
 }

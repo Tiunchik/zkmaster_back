@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.exceptions.NodeDeleteException;
-import org.zkmaster.backend.exceptions.NodeExistsException;
-import org.zkmaster.backend.exceptions.NodeUpdateException;
-import org.zkmaster.backend.exceptions.WrongHostException;
+import org.zkmaster.backend.exceptions.*;
 import org.zkmaster.backend.repositories.CacheRepository;
 import org.zkmaster.backend.repositories.ConnectionRepository;
 import org.zkmaster.backend.repositories.ZKNodeRepository;
@@ -17,6 +14,8 @@ import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+// TODO : rename ZooKeeper Node.(change name)
+// TODO : if API doesn't exist, copy all children and create New Node, then delete old
 @Service
 public class ZKMainServiceDefault implements ZKMainService {
     /**
@@ -123,6 +122,24 @@ public class ZKMainServiceDefault implements ZKMainService {
             rsl = temp.delete(path);
         } catch (Exception e) {
             throw new NodeDeleteException(host, path);
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
+        return rsl;
+    }
+
+    @Override
+    public boolean renameNode(String host, String path, String value) throws NodeRenameException {
+        readWriteLock.writeLock().lock();
+        boolean rsl;
+        try {
+            var temp = connections.get(host);
+            if (temp == null) {
+                throw new NodeDeleteException(host, path);
+            }
+            rsl = temp.rename(path, value, cache.get(host));
+        } catch (Exception e) {
+            throw new NodeRenameException(host, path, value);
         } finally {
             readWriteLock.writeLock().unlock();
         }
