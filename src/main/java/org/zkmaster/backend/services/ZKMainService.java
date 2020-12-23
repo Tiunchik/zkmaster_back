@@ -1,7 +1,7 @@
 package org.zkmaster.backend.services;
 
-import org.zkmaster.backend.controllers.ZKConnectionController;
-import org.zkmaster.backend.controllers.ZKMController;
+import org.zkmaster.backend.controllers.APIController;
+import org.zkmaster.backend.controllers.CRUDController;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.exceptions.*;
 import org.zkmaster.backend.listeners.ServerEventListener;
@@ -17,8 +17,8 @@ import java.util.Map;
  * Main service that provide API for using in *-end classes(see below).
  *
  * @author Daniils Loputevs.
- * @see ZKMController
- * @see ZKConnectionController
+ * @see CRUDController
+ * @see APIController
  * @see ServerEventListenerDefault
  */
 public interface ZKMainService {
@@ -26,27 +26,27 @@ public interface ZKMainService {
     /* ####### CRUD ####### */
 
     /**
-     * For: {@link ZKMController}
+     * For: {@link CRUDController}
      * Default CRUD - CREATE
      *
-     * @param hostUrl -
+     * @param host -
      * @return Create success or not.
      */
-    boolean createNode(String hostUrl, String path, String value) throws NodeExistsException;
+    boolean createNode(String host, String path, String value) throws NodeExistsException;
 
     /**
-     * For: {@link ZKMController}
+     * For: {@link CRUDController}
      * Default CRUD - REED
      * <p>
      * !!! This method MUST wait while cache is refreshing.
      *
-     * @param hostUrl -
+     * @param host -
      * @return Host value in format: Node(tree).
      */
-    ZKNode getHostValue(String hostUrl);
+    ZKNode getHostValue(String host);
 
     /**
-     * For: {@link ZKMController}
+     * For: {@link CRUDController}
      * Default CRUD - UPDATE
      *
      * @param host -
@@ -57,21 +57,21 @@ public interface ZKMainService {
     boolean updateNode(String host, String path, String value) throws NodeUpdateException;
 
     /**
-     * For: {@link ZKMController}
+     * For: {@link CRUDController}
      * Default CRUD - DELETE
-     *
-     * @param hostUrl -
-     * @param path -
-     * @return Delete success or not.
-     */
-    boolean deleteNode(String hostUrl, String path) throws NodeDeleteException;
-
-    /**
-     * For: {@link ZKConnectionController}
      *
      * @param host -
      * @param path -
-     * @param value new Node name in real server.
+     * @return Delete success or not.
+     */
+    boolean deleteNode(String host, String path) throws NodeDeleteException;
+
+    /**
+     * For: {@link APIController}
+     *
+     * @param host -
+     * @param path Node path.
+     * @param value New Node name.
      * @return Rename success OR not.
      */
     boolean renameNode(String host, String path, String value) throws NodeRenameException;
@@ -84,20 +84,20 @@ public interface ZKMainService {
      * <p>
      * !!! This method MUST block cache and other threads MUST wait until refresh isn't finish.
      *
-     * @param hostUrl -
+     * @param host -
      */
-    void refreshCache(String hostUrl);
+    void refreshCache(String host);
 
     boolean containsConnection(String host);
 
     /**
-     * For: {@link ZKConnectionController}
+     * For: {@link APIController}
      * Try create connection.
      *
-     * @param hostUrl -
+     * @param host -
      * @return try is fail ==>> false
      */
-    boolean createConnection(String hostUrl) throws WrongHostException;
+    boolean createConnection(String host) throws WrongHostException;
 
 //    /**
 //     * For: ServerEventController
@@ -117,15 +117,15 @@ public interface ZKMainService {
      * <p>
      * !!! This method MUST block cache and other threads MUST wait until refresh isn't finish.
      *
-     * @param hostUrl -
+     * @param host -
      */
-    void deleteConnectionAndCache(String hostUrl);
+    void deleteConnectionAndCache(String host);
 
 //    @Deprecated(since = "Unsure that it will need")
 //    void reconnect(String host);
 
     /**
-     * For: {@link ZKConnectionController}
+     * For: {@link APIController}
      * Check: is this hosts still alive?
      *
      * @param hosts -

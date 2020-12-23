@@ -1,7 +1,7 @@
 package org.zkmaster.backend.controllers;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
 import org.zkmaster.backend.aop.Log;
@@ -21,19 +21,17 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/api/zkm/data/{host}")
 @CrossOrigin(value = {"*"})
-public class ZKMController {
-
+public class CRUDController {
     ZKMainService zkMainService;
 
     @Autowired
-    public ZKMController(ZKMainService zkMainService) {
+    public CRUDController(@Qualifier("ZKMainServiceRWL") ZKMainService zkMainService) {
         this.zkMainService = zkMainService;
     }
 
     /**
      * CRUD - READ
      * HTTP - GET ALL
-     * url: /zkm/data/{host}
      * Meaning: get host-value.(YAML doc in path-tree format).
      */
     @GetMapping("")
@@ -49,21 +47,21 @@ public class ZKMController {
         return rsl;
     }
 
-    /**
-     * CRUD - READ
-     * HTTP - GET
-     * url: /zkm/data/{hostUrl}
-     * Read server value.(YAML doc in path-tree format).
-     */
-    @GetMapping("/{hostUrl}/{path}")
-    @Deprecated(since = "мне вот видится, что нам Нафиг не нужен get(oneNode- node children)"
-            + "у нас может быть только getHostValue - фактически это всё что нужно.")
-    public RequestDTO getNode(@PathVariable String hostUrl, @PathVariable String path) {
-        var dto = new RequestDTO(hostUrl, path);
-        ZKNode rsl = zkMainService.getHostValue(dto.getHost());
-        dto.setValue(rsl.getValue());
-        return dto;
-    }
+//    /**
+//     * CRUD - READ
+//     * HTTP - GET
+//     * url: /zkm/data/{hostUrl}
+//     * Read server value.(YAML doc in path-tree format).
+//     */
+//    @GetMapping("/{hostUrl}/{path}")
+//    @Deprecated(since = "мне вот видится, что нам Нафиг не нужен get(oneNode- node children)"
+//            + "у нас может быть только getHostValue - фактически это всё что нужно.")
+//    public RequestDTO getNode(@PathVariable String hostUrl, @PathVariable String path) {
+//        var dto = new RequestDTO(hostUrl, path);
+//        ZKNode rsl = zkMainService.getHostValue(dto.getHost());
+//        dto.setValue(rsl.getValue());
+//        return dto;
+//    }
 
     /**
      * CRUD - CREATE
@@ -107,7 +105,6 @@ public class ZKMController {
      * CRUD && HTTP - DELETE
      * Update node in ZooKeeper. (Node == path).
      */
-//    @DeleteMapping("")
     @DeleteMapping("/**")
     @Log
     public @ResponseBody
@@ -117,9 +114,30 @@ public class ZKMController {
         return zkMainService.deleteNode(host, path);
     }
 
-    boolean deleteNode(@RequestBody RequestDTO dto) throws NodeDeleteException {
-        return zkMainService.deleteNode(dto.getHost(), dto.getPath());
+
+    /* Old Version */
+
+
+//    boolean deleteNode(@RequestBody RequestDTO dto) throws NodeDeleteException {
+//        return zkMainService.deleteNode(dto.getHost(), dto.getPath());
+////        return zkMainService.deleteNode(host, path);
+//    }
+
+//    //    @DeleteMapping("")
+//    @DeleteMapping("/{path}")
+//    @Log
+//    public @ResponseBody
+//    boolean deleteNode(@PathVariable String host,
+//                       @PathVariable String path
+////                       @RequestBody RequestDTO dto
+//
+//    ) throws NodeDeleteException {
 //        return zkMainService.deleteNode(host, path);
-    }
+////        return zkMainService.deleteNode(dto.getHost(), dto.getPath());
+//    }
+//    boolean deleteNode(@RequestBody RequestDTO dto) throws NodeDeleteException {
+//        return zkMainService.deleteNode(dto.getHost(), dto.getPath());
+////        return zkMainService.deleteNode(host, path);
+//    }
 
 }

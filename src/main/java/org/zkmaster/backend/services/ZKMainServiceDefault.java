@@ -1,5 +1,6 @@
 package org.zkmaster.backend.services;
 
+import org.apache.zookeeper.KeeperException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.aop.Log;
@@ -11,11 +12,7 @@ import org.zkmaster.backend.repositories.ZKNodeRepository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-// TODO : rename ZooKeeper Node.(change name)
-// TODO : if API doesn't exist, copy all children and create New Node, then delete old
 @Service
 public class ZKMainServiceDefault implements ZKMainService {
     /**
@@ -31,11 +28,9 @@ public class ZKMainServiceDefault implements ZKMainService {
      */
     private final CacheRepository cache;
     private final ZKConnectionFactory zkFactory;
-    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     @Autowired
-    public ZKMainServiceDefault(ConnectionRepository connections,
-                                CacheRepository cache,
+    public ZKMainServiceDefault(ConnectionRepository connections, CacheRepository cache,
                                 ZKConnectionFactory zkFactory) {
         this.connections = connections;
         this.cache = cache;
@@ -45,15 +40,8 @@ public class ZKMainServiceDefault implements ZKMainService {
 
     @Override
     @Log
-    public boolean createNode(String hostUrl, String path, String value) throws NodeExistsException {
-        readWriteLock.writeLock().lock();
-        boolean rsl;
-        try {
-            rsl = connections.get(hostUrl).create(path, value);
-        } finally {
-            readWriteLock.writeLock().unlock();
-        }
-        return rsl;
+    public boolean createNode(String host, String path, String value) throws NodeExistsException {
+        return connections.get(host).create(path, value);
     }
 
     /**
@@ -67,25 +55,19 @@ public class ZKMainServiceDefault implements ZKMainService {
      * STEP 2: ask connections - (have rep for host)
      * true >> get "host value" and out method.
      *
-     * @param hostUrl -
+     * @param host -
      * @return Host value in format: Node(tree) OR null, if host isn't saved. (something logic problem O_O???)
      */
     @Override
     @Log
-    public ZKNode getHostValue(String hostUrl) {
-        readWriteLock.readLock().lock();
-        ZKNode hostValue;
-        try {
-            hostValue = cache.get(hostUrl); // value or null
-            if (hostValue == null) { // if cache is null
-                ZKNodeRepository temp = connections.get(hostUrl);
-                if (temp != null) {
-                    hostValue = temp.getHostValue();
-                    cache.put(hostUrl, hostValue);
-                }
+    public ZKNode getHostValue(String host) {
+        ZKNode hostValue = cache.get(host); // value or null
+        if (hostValue == null) { // if cache is null
+            ZKNodeRepository temp = connections.get(host);
+            if (temp != null) {
+                hostValue = temp.getHostValue();
+                cache.put(host, hostValue);
             }
-        } finally {
-            readWriteLock.readLock().unlock();
         }
         return hostValue;
     }
@@ -93,66 +75,45 @@ public class ZKMainServiceDefault implements ZKMainService {
     @Override
     @Log
     public boolean updateNode(String host, String path, String value) throws NodeUpdateException {
-        readWriteLock.writeLock().lock();
-        boolean rsl;
-        try {
-            var temp = connections.get(host);
-            if (temp == null) {
-                throw new NodeUpdateException(host, path, value);
-            }
-            rsl = temp.set(path, value);
-        } catch (Exception e) {
+        var temp = connections.get(host);
+        if (temp == null) {
             throw new NodeUpdateException(host, path, value);
-        } finally {
-            readWriteLock.writeLock().unlock();
         }
-        return rsl;
+        return temp.set(path, value);
     }
 
     @Override
     @Log
     public boolean deleteNode(String host, String path) throws NodeDeleteException {
-        readWriteLock.writeLock().lock();
-        boolean rsl;
-        try {
-            var temp = connections.get(host);
-            if (temp == null) {
-                throw new NodeDeleteException(host, path);
-            }
-            rsl = temp.delete(path);
-        } catch (Exception e) {
+        var temp = connections.get(host);
+        if (temp == null) {
             throw new NodeDeleteException(host, path);
-        } finally {
-            readWriteLock.writeLock().unlock();
         }
-        return rsl;
+        return temp.delete(path);
     }
 
     @Override
+    @Log
     public boolean renameNode(String host, String path, String value) throws NodeRenameException {
-        readWriteLock.writeLock().lock();
+        var temp = connections.get(host);
         boolean rsl;
-        try {
-            var temp = connections.get(host);
-            if (temp == null) {
-                throw new NodeDeleteException(host, path);
-            }
-            rsl = temp.rename(path, value, cache.get(host));
-        } catch (Exception e) {
+        if (temp == null) {
             throw new NodeRenameException(host, path, value);
-        } finally {
-            readWriteLock.writeLock().unlock();
+        }
+        try {
+            rsl = temp.rename(path, value, cache.get(host));
+        } catch (KeeperException | InterruptedException e) {
+            e.printStackTrace();
+            throw new NodeRenameException(host, path, value);
         }
         return rsl;
     }
 
     @Override
     @Log
-    public void refreshCache(String hostUrl) {
-        readWriteLock.writeLock().lock();
-        ZKNode hostValue = connections.get(hostUrl).getHostValue();
-        cache.put(hostUrl, hostValue);
-        readWriteLock.writeLock().unlock();
+    public void refreshCache(String host) {
+        ZKNode hostValue = connections.get(host).getHostValue();
+        cache.put(host, hostValue);
     }
 
     @Override
@@ -162,38 +123,25 @@ public class ZKMainServiceDefault implements ZKMainService {
 
     @Override
     @Log
-    public boolean createConnection(String hostUrl) throws WrongHostException {
-        readWriteLock.writeLock().lock();
-        if (!connections.contains(hostUrl)) {
-            ZKNodeRepository connection = zkFactory.makeConnectionByHost(hostUrl);
-            connections.put(hostUrl, connection);
+    public boolean createConnection(String host) throws WrongHostException {
+        if (!connections.contains(host)) {
+            ZKNodeRepository connection = zkFactory.makeConnectionByHost(host);
+            connections.put(host, connection);
         }
-        readWriteLock.writeLock().unlock();
         return true;
     }
 
-//    @Override
-//    @Deprecated(since = "see in interface: ZKMainService")
-//    public void reconnect(String host) {
-//        // don't need it yet
-//    }
-
     @Override
     @Log
-    public void deleteConnectionAndCache(String hostUrl) {
-        readWriteLock.writeLock().lock();
-        connections.remove(hostUrl);
-        cache.remove(hostUrl);
-        readWriteLock.writeLock().unlock();
+    public void deleteConnectionAndCache(String host) {
+        connections.remove(host);
+        cache.remove(host);
     }
 
     @Override
     @Log
     public Map<String, Boolean> checkHostsHealth(List<String> hosts) {
-        readWriteLock.readLock().lock();
-        Map<String, Boolean> rsl = connections.containsByHosts(hosts);
-        readWriteLock.readLock().unlock();
-        return rsl;
+        return connections.containsByHosts(hosts);
     }
 
 }

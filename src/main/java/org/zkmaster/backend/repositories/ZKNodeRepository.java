@@ -1,5 +1,6 @@
 package org.zkmaster.backend.repositories;
 
+import org.apache.zookeeper.KeeperException;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.exceptions.NodeExistsException;
 
@@ -47,5 +48,5 @@ public interface ZKNodeRepository {
      * @param value New Node name.
      * @return Rename success OR not.
      */
-    boolean rename(String path, String value, ZKNode currentHostValue);
+    boolean rename(String path, String value, ZKNode currentHostValue) throws KeeperException, InterruptedException;
 }

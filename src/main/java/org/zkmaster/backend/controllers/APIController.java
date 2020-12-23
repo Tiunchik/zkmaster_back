@@ -1,10 +1,12 @@
 package org.zkmaster.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.RequestDTO;
+import org.zkmaster.backend.exceptions.NodeRenameException;
 import org.zkmaster.backend.services.ZKMainService;
 
 import java.util.List;
@@ -12,23 +14,21 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/api/zkm")
-public class ZKConnectionController {
-
+public class APIController {
     ZKMainService zkMainService;
 
     @Autowired
-    public ZKConnectionController(ZKMainService zkMainService) {
+    public APIController(@Qualifier("ZKMainServiceRWL") ZKMainService zkMainService) {
         this.zkMainService = zkMainService;
     }
 
     /**
      * HTTP - GET
-     * url: /api/zkm/conn/check
+     * Meaning: Check is this servers still alive?
      * expect request: {@link RequestDTO}
      * [
      * String, String, String ...
      * ]
-     * Meaning: Check is this servers still alive?
      *
      * @return map with server status:
      * key - host
@@ -42,26 +42,23 @@ public class ZKConnectionController {
         return zkMainService.checkHostsHealth(hosts);
     }
 
-
     /**
      * Meaning: Rename node in ZooKeeper.
      * HTTP - POST
      * expect request body: {@link RequestDTO}
      * {
-     * "host": String == null.
      * "path": String -- absolute path of renaming node.
-     * "value": String -- new (name || absolute path) of renaming node.
+     * "value": String -- new name of renaming node.
      * }
-     * *** (absolute path) - is prefer!!!!
-     * *** At this moment it work with (name) it's not so comfortable...
      */
     @PostMapping("/rename/{host}")
     @Log
     public @ResponseBody
     boolean rename(@RequestBody RequestDTO dto,
-                   @PathVariable String host) {
-        System.err.println("NOT SUPPORTED API IS USED!!!");
-        return true;
+                   @PathVariable String host) throws NodeRenameException {
+        System.err.println("API IN BETA-TEST!!!");
+        zkMainService.renameNode(host, dto.getPath(), dto.getValue());
+        return false;
     }
 
 }

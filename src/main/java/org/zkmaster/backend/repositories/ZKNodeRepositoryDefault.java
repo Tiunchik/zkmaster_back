@@ -1,5 +1,6 @@
 package org.zkmaster.backend.repositories;
 
+import org.apache.zookeeper.KeeperException;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKNodes;
 import org.zkmaster.backend.entity.ZKServer;
@@ -11,7 +12,7 @@ import java.util.List;
 
 /**
  * TODO Сделать обход в ширину без рекурсии при собрании getAll в репозитории,
- * TODO у Макса никогда руки не дойдут, и так фронт нихрена не делает
+ * TODO у Макса никогда руки не дойдут, и так фронт нихрена не делает.
  */
 public class ZKNodeRepositoryDefault implements ZKNodeRepository {
     private final ZKServer zkServer;
@@ -21,11 +22,6 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
     }
 
 
-    /**
-     * @param path  -
-     * @param value -
-     * @return -
-     */
     @Override
     public boolean create(String path, String value) throws NodeExistsException {
         zkServer.create(path, value);
@@ -99,33 +95,35 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
     }
 
     @Override
-    public boolean rename(String path, String value, ZKNode currentHostValue) {
-        var targetNode = ZKNodes.getSubZKNodeByFullPath(currentHostValue, path);
-
-        boolean firstIteration = true;
+    public boolean rename(String path, String value, ZKNode hostValue)
+            throws KeeperException, InterruptedException {
         ZKTransaction transaction = zkServer.transaction();
 
+        ZKNode targetNode = ZKNodes.getSubZKNodeByFullPath(hostValue, path);
+        var deleteNodePaths = new LinkedList<String>();
         var iterateList = new LinkedList<ZKNode>();
         iterateList.add(targetNode);
-        var deletePaths = new LinkedList<String>();
 
-        while (iterateList.size() > 0) {
+        var corePathWithoutName = path.substring(0, path.lastIndexOf('/') + 1);
+        var oldName = path.substring(path.lastIndexOf('/') + 1);
 
-            ZKNode currentZKNode = iterateList.poll();
+        while (!iterateList.isEmpty()) {
+            ZKNode currentZKNode = iterateList.removeFirst();
 
             if (ZKNodes.hasChildren(currentZKNode)) {
                 iterateList.addAll(currentZKNode.getChildren());
             }
-            if (firstIteration) {
-//                transaction.create()
-            }
-            deletePaths.add(currentHostValue.getPath());
-//            transaction.create()
-
-
+            deleteNodePaths.add(currentZKNode.getPath());
+            transaction.create(ZKNodes.replacePath(
+                    currentZKNode.getPath(),
+                    corePathWithoutName, value, oldName),
+                    currentZKNode.getValue());
         }
 
-
-        return false;
+        while (!deleteNodePaths.isEmpty()) {
+            transaction.delete(deleteNodePaths.removeLast());
+        }
+        transaction.commit();
+        return true;
     }
 }

@@ -1,0 +1,23 @@
+# get host-value - WORK
+GET http://localhost:8081/api/zkm/data/localhost:2181
+###
+
+GET http://localhost:8081/api/zkm/conn/check
+Content-Type: application/json
+
+[
+  "localhost:2181", "someTestData"
+]
+###
+
+# rename node - WORK
+POST http://localhost:8081/api/zkm/rename/localhost:2181
+Content-Type: application/json
+
+{
+  "path": "/d1/d2/d3",
+  "value": "d3-rename"
+}
+###
+
+
