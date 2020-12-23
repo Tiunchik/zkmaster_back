@@ -1,7 +1,9 @@
 package org.zkmaster.backend.controllers;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.HandlerMapping;
 import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.RequestDTO;
 import org.zkmaster.backend.entity.ZKNode;
@@ -10,6 +12,8 @@ import org.zkmaster.backend.exceptions.NodeExistsException;
 import org.zkmaster.backend.exceptions.NodeUpdateException;
 import org.zkmaster.backend.exceptions.WrongHostException;
 import org.zkmaster.backend.services.ZKMainService;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Provide main ZooKeeperMaster REST API: Default CRUD.
@@ -104,17 +108,15 @@ public class ZKMController {
      * Update node in ZooKeeper. (Node == path).
      */
 //    @DeleteMapping("")
-    @DeleteMapping("/{path}")
+    @DeleteMapping("/**")
     @Log
     public @ResponseBody
-    boolean deleteNode(@PathVariable String host,
-                       @PathVariable String path
-//                       @RequestBody RequestDTO dto
-
-    ) throws NodeDeleteException {
+    boolean deleteNode(@PathVariable String host, HttpServletRequest request) throws NodeDeleteException {
+        String fullPath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+        String path = fullPath.substring(fullPath.indexOf(host) + host.length());
         return zkMainService.deleteNode(host, path);
-//        return zkMainService.deleteNode(dto.getHost(), dto.getPath());
     }
+
     boolean deleteNode(@RequestBody RequestDTO dto) throws NodeDeleteException {
         return zkMainService.deleteNode(dto.getHost(), dto.getPath());
 //        return zkMainService.deleteNode(host, path);
