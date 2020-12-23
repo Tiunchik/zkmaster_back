@@ -24,11 +24,6 @@ public class ZKNode {
     private String name;
 
     /**
-     * father node, if null that is root
-     */
-    private ZKNode father;
-
-    /**
      * List of children "node".
      */
     private List<ZKNode> children = new LinkedList<>();
@@ -48,10 +43,9 @@ public class ZKNode {
         this.children = children;
     }
 
-    public ZKNode(String path, String value, ZKNode father, List<ZKNode> children) {
+    public ZKNode(String path, String value, List<ZKNode> children) {
         this.path = path;
         this.value = value;
-        this.father = father;
         this.children = children;
     }
 
@@ -69,14 +63,6 @@ public class ZKNode {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public ZKNode getFather() {
-        return father;
-    }
-
-    public void setFather(ZKNode father) {
-        this.father = father;
     }
 
     public List<ZKNode> getChildren() {
@@ -107,13 +93,12 @@ public class ZKNode {
         return Objects.equals(path, zkNode.path)
                 && Objects.equals(value, zkNode.value)
                 && Objects.equals(name, zkNode.name)
-                && Objects.equals(father, zkNode.father)
                 && Objects.equals(children, zkNode.children);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(path, value, name, father, children);
+        return Objects.hash(path, value, name, children);
     }
 
     @Override
@@ -122,7 +107,6 @@ public class ZKNode {
                 .add("path='" + path + "'")
                 .add("value='" + value + "'")
                 .add("name='" + name + "'")
-                .add("father=" + father)
                 .add("children=" + children)
                 .toString();
     }

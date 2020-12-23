@@ -68,7 +68,6 @@ public class CRUDController {
      * HTTP - POST
      * expect request body: {@link RequestDTO}
      * {
-     * "host": String == null,
      * "path": String,
      * "value": String
      * }
@@ -87,7 +86,6 @@ public class CRUDController {
      * HTTP - PUT
      * expect request body: {@link RequestDTO}
      * {
-     * "host": String == null,
      * "path": String,
      * "value": String
      * }

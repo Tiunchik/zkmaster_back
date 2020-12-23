@@ -8,30 +8,6 @@ import java.util.LinkedList;
 public class ZKNodes {
 
     /**
-     * Selector of inner {@link ZKNode}. Tree-width walk by List.
-     *
-     * @param root - start node.
-     * @param path - absolute path of searching {@link ZKNode}.
-     * @return result || null, if searching {@link ZKNode} doesn't found.
-     */
-    public static ZKNode getSubZKNodeByFullPath(ZKNode root, String path) {
-        var nodeList = new LinkedList<ZKNode>();
-        nodeList.add(root);
-        ZKNode rsl = null;
-
-        while (!nodeList.isEmpty()) {
-            var current = nodeList.removeFirst();
-            if (current.getPath().equals(path)) {
-                rsl = current;
-                break;
-            } else if (hasChildren(current)) {
-                nodeList.addAll(current.getChildren());
-            }
-        }
-        return rsl;
-    }
-
-    /**
      * Info for any change in code:
      * /1/1/1 :: oldPath
      * /1/    :: corePathWithoutName

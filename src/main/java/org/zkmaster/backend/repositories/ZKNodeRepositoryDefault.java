@@ -28,20 +28,36 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
         return true;
     }
 
-    /**
-     * TODO -Method: ^_^ Ja zdju svoego Ljubimogo Maksju!!!
-     */
-    @Override
-    @Deprecated
-    public ZKNode getSimpleNode(String path) {
-        return null;
-    }
+//    /**
+//     * TODO -Method: ^_^ Ja zdju svoego Ljubimogo Maksju!!!
+//     */
+//    @Override
+//    @Deprecated
+//    public ZKNode getSimpleNode(String path) {
+//        return null;
+//    }
 
     @Override
     public ZKNode getHostValue() {
         return getHostValue("/", "/");
     }
 
+    public ZKNode getSubZKNodeByFullPath(ZKNode root, String path) {
+        var nodeList = new LinkedList<ZKNode>();
+        nodeList.add(root);
+        ZKNode rsl = null;
+
+        while (!nodeList.isEmpty()) {
+            var current = nodeList.removeFirst();
+            if (current.getPath().equals(path)) {
+                rsl = current;
+                break;
+            } else if (ZKNodes.hasChildren(current)) {
+                nodeList.addAll(current.getChildren());
+            }
+        }
+        return rsl;
+    }
 
 //    /**
 //     * TODO weak - write tree-walk by list walk, not recursion.
@@ -99,7 +115,7 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
             throws KeeperException, InterruptedException {
         ZKTransaction transaction = zkServer.transaction();
 
-        ZKNode targetNode = ZKNodes.getSubZKNodeByFullPath(hostValue, path);
+        ZKNode targetNode = getSubZKNodeByFullPath(hostValue, path);
         var deleteNodePaths = new LinkedList<String>();
         var iterateList = new LinkedList<ZKNode>();
         iterateList.add(targetNode);

@@ -16,13 +16,13 @@ public interface ZKNodeRepository {
      */
     boolean create(String path, String value) throws NodeExistsException;
 
-    /**
-     * Simple "Node-value" from real server, packed in {@link ZKNode}.
-     *
-     * @return {@link ZKNode} without children, only info OR null.
-     */
-    @Deprecated(since = "since front == null")
-    ZKNode getSimpleNode(String path);
+//    /**
+//     * Simple "Node-value" from real server, packed in {@link ZKNode}.
+//     *
+//     * @return {@link ZKNode} without children, only info OR null.
+//     */
+//    @Deprecated(since = "since front == null")
+//    ZKNode getSimpleNode(String path);
 
     /**
      * Full "host-value" from real server, packed in {@link ZKNode}.
@@ -31,6 +31,21 @@ public interface ZKNodeRepository {
      */
     ZKNode getHostValue();
 
+    /**
+     * Selector of inner {@link ZKNode}. Tree-width walk by List.
+     *
+     * @param root - start node.
+     * @param path - absolute path of searching {@link ZKNode}.
+     * @return result || null, if searching {@link ZKNode} doesn't found.
+     */
+    ZKNode getSubZKNodeByFullPath(ZKNode root, String path);
+
+    /**
+     * Update node value by {@param path}.
+     * @param path path
+     * @param value -
+     * @return -
+     */
     boolean set(String path, String value);
 
     /**

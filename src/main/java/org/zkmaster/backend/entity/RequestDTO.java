@@ -4,26 +4,17 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 public class RequestDTO {
-    private String host;
     private String path;
     private String value;
+    private String name;
 
     public RequestDTO() {
     }
 
-    public RequestDTO(String host, String path) {
-        this.host = host;
-        this.path = path;
-    }
-
-    public RequestDTO(String host, String path, String value) {
-        this.host = host;
+    public RequestDTO(String path, String value, String name) {
         this.path = path;
         this.value = value;
-    }
-
-    public String getHost() {
-        return host;
+        this.name = name;
     }
 
     public String getPath() {
@@ -34,16 +25,20 @@ public class RequestDTO {
         return value;
     }
 
-    public void setHost(String host) {
-        this.host = host;
-    }
-
     public void setPath(String path) {
         this.path = path;
     }
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -55,22 +50,23 @@ public class RequestDTO {
             return false;
         }
         RequestDTO that = (RequestDTO) object;
-        return Objects.equals(host, that.host)
-                && Objects.equals(path, that.path)
-                && Objects.equals(value, that.value);
+        return Objects.equals(path, that.path) &&
+                Objects.equals(value, that.value) &&
+                Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(host, path, value);
+        return Objects.hash(path, value, name);
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", RequestDTO.class.getSimpleName() + "[", "]")
-                .add("host='" + host + "'")
                 .add("path='" + path + "'")
                 .add("value='" + value + "'")
+                .add("name='" + name + "'")
                 .toString();
     }
+
 }
