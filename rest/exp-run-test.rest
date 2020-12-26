@@ -1,0 +1,36 @@
+# get host-value - WORK
+GET http://localhost:8081/api/zkm/data/localhost:2181
+###
+
+
+PUT http://localhost:8081/api/zkm/data/localhost:2181
+Content-Type: application/json
+
+{
+  "path": "/saveTest3(n)",
+  "value": "saveTest4(n)&saveTest4(v)"
+}
+###
+
+PUT http://localhost:8081/api/zkm/data/localhost:2181
+Content-Type: application/json
+
+{
+  "path": "/d1/d2/d3-rename",
+  "value": "d3-new&value-upd"
+}
+###
+
+#// create node - WORK
+#POST http://localhost:8081/api/zkm/data/localhost:2181
+#Content-Type: application/json
+#
+#{
+#"host": null,
+#"path": "/saveTest",
+#"value": "saveTest"
+#}
+####
+
+
+

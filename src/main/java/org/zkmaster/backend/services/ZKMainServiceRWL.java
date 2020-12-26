@@ -4,7 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.exceptions.*;
+import org.zkmaster.backend.exceptions.NodeDeleteException;
+import org.zkmaster.backend.exceptions.NodeExistsException;
+import org.zkmaster.backend.exceptions.NodeSaveException;
+import org.zkmaster.backend.exceptions.WrongHostException;
 
 import java.util.List;
 import java.util.Map;
@@ -49,15 +52,15 @@ public class ZKMainServiceRWL implements ZKMainService {
     }
 
     @Override
-    public boolean updateNode(String host, String path, String value) throws NodeUpdateException {
+    public boolean saveNode(String host, String path, String name, String value) throws NodeSaveException {
         readWriteLock.writeLock().lock();
         boolean rsl;
         try {
-            rsl = zkMainService.updateNode(host, path, value);
+            rsl = zkMainService.saveNode(host, path, name, value);
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("ZKM EXCEPTION: NodeUpdateException: ");
-            throw new NodeUpdateException(host, path, value);
+            System.err.println("ZKM EXCEPTION: NodeSaveException: ");
+            throw new NodeSaveException(host, path, value);
         } finally {
             readWriteLock.writeLock().unlock();
         }
@@ -73,21 +76,6 @@ public class ZKMainServiceRWL implements ZKMainService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new NodeDeleteException(host, path);
-        } finally {
-            readWriteLock.writeLock().unlock();
-        }
-        return rsl;
-    }
-
-    @Override
-    public boolean renameNode(String host, String path, String value) throws NodeRenameException {
-        readWriteLock.writeLock().lock();
-        boolean rsl;
-        try {
-            rsl = zkMainService.renameNode(host, path, value);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new NodeRenameException(host, path, value);
         } finally {
             readWriteLock.writeLock().unlock();
         }
@@ -131,4 +119,5 @@ public class ZKMainServiceRWL implements ZKMainService {
         readWriteLock.readLock().unlock();
         return rsl;
     }
+
 }

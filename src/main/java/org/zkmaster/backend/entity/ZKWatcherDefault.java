@@ -52,20 +52,24 @@ public class ZKWatcherDefault implements Watcher {
      * {@link Watcher.Event.EventType#NodeDeleted}
      * {@link Watcher.Event.EventType#NodeDataChanged}
      * {@link Watcher.Event.EventType#NodeChildrenChanged}
-     * <p>TODO - Maksja, skazi. - eti 6tuki nuzno obrabativatj? Vrode kak eto signal 4to watcher ubrali gde-to.
-     * {@link Watcher.Event.EventType#DataWatchRemoved} - ?????????????????????
-     * {@link Watcher.Event.EventType#ChildWatchRemoved} - ?????????????????????
-     * {@link Watcher.Event.EventType#PersistentWatchRemoved} - ?????????????????????
      *
+     * <p> Don't need to process, cause it isn't "server state change"
+     * {@link Watcher.Event.EventType#DataWatchRemoved} - Don't need to process
+     * {@link Watcher.Event.EventType#ChildWatchRemoved} - Don't need to process
+     * {@link Watcher.Event.EventType#PersistentWatchRemoved} - Don't need to process
+     * <p>
      * ! path won't be null if event touch any node.
      *
      * @param event - server event.
      */
     @Override
     public void process(WatchedEvent event) {
-        System.out.println("BackEnd Watcher - work!");
-        System.out.println("watcher.hostUrl = " + host);
-        System.out.println("watcher.event = " + event);
+        System.out.println("Watcher notification :: host = " + host);
+        if (event.getState() == Event.KeeperState.SyncConnected) {
+            System.out.println("LOG: Connection created.");
+        } else {
+            System.out.println("event = " + event);
+        }
 
         if (event.getState() == Event.KeeperState.Disconnected) {
             context.publishEvent(new EventServerClose(host));

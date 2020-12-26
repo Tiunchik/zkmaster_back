@@ -50,11 +50,15 @@ public interface ZKMainService {
      * Default CRUD - UPDATE
      *
      * @param host -
-     * @param path -
-     * @param value -
-     * @return Create success or not.
+     * @param path  Node path.
+     * @param name  new Node name.
+     * @param value new Node value.
+     * @return Rename success OR not.
+     * @throws NodeSaveException   ZooKeeper API - exception
+     * @throws NodeRenameException ZooKeeper API - exception
+     * @implNote Update && rename should be implements and use in this method.
      */
-    boolean updateNode(String host, String path, String value) throws NodeUpdateException;
+    boolean saveNode(String host, String path, String name, String value) throws NodeSaveException, NodeRenameException;
 
     /**
      * For: {@link CRUDController}
@@ -65,16 +69,6 @@ public interface ZKMainService {
      * @return Delete success or not.
      */
     boolean deleteNode(String host, String path) throws NodeDeleteException;
-
-    /**
-     * For: {@link APIController}
-     *
-     * @param host -
-     * @param path Node path.
-     * @param value New Node name.
-     * @return Rename success OR not.
-     */
-    boolean renameNode(String host, String path, String value) throws NodeRenameException;
 
     /* ####### CRUD ####### */
 

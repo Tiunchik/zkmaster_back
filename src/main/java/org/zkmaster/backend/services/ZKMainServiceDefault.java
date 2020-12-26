@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.entity.ZKNodes;
 import org.zkmaster.backend.exceptions.*;
 import org.zkmaster.backend.repositories.CacheRepository;
 import org.zkmaster.backend.repositories.ConnectionRepository;
@@ -74,12 +75,16 @@ public class ZKMainServiceDefault implements ZKMainService {
 
     @Override
     @Log
-    public boolean updateNode(String host, String path, String value) throws NodeUpdateException {
-        var temp = connections.get(host);
-        if (temp == null) {
-            throw new NodeUpdateException(host, path, value);
+    public boolean saveNode(String host, String path, String name, String value)
+            throws NodeSaveException, NodeRenameException {
+        boolean rsl;
+        String oldName = ZKNodes.extractNodeName(path);
+        if (name.equals(oldName)) {
+            rsl = updateNode(host, path, value);
+        } else {
+            rsl = renameNode(host, path, name, value);
         }
-        return temp.set(path, value);
+        return rsl;
     }
 
     @Override
@@ -92,21 +97,29 @@ public class ZKMainServiceDefault implements ZKMainService {
         return temp.delete(path);
     }
 
-    @Override
     @Log
-    public boolean renameNode(String host, String path, String value) throws NodeRenameException {
+    private boolean renameNode(String host, String path, String name, String value) throws NodeRenameException {
         var temp = connections.get(host);
         boolean rsl;
         if (temp == null) {
             throw new NodeRenameException(host, path, value);
         }
         try {
-            rsl = temp.rename(path, value, cache.get(host));
-        } catch (KeeperException | InterruptedException e) {
+            rsl = temp.rename(path, name, value, cache.get(host));
+        } catch (KeeperException | InterruptedException | NodeExistsException e) {
             e.printStackTrace();
             throw new NodeRenameException(host, path, value);
         }
         return rsl;
+    }
+
+    @Log
+    private boolean updateNode(String host, String path, String value) throws NodeSaveException {
+        var temp = connections.get(host);
+        if (temp == null) {
+            throw new NodeSaveException(host, path, value);
+        }
+        return temp.set(path, value);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package org.zkmaster.backend.repositories;
 
 import org.apache.zookeeper.KeeperException;
+import org.zkmaster.backend.aop.Log;
+import org.zkmaster.backend.devutil.DevLog;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKNodes;
 import org.zkmaster.backend.entity.ZKServer;
@@ -28,35 +30,9 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
         return true;
     }
 
-//    /**
-//     * TODO -Method: ^_^ Ja zdju svoego Ljubimogo Maksju!!!
-//     */
-//    @Override
-//    @Deprecated
-//    public ZKNode getSimpleNode(String path) {
-//        return null;
-//    }
-
     @Override
     public ZKNode getHostValue() {
         return getHostValue("/", "/");
-    }
-
-    public ZKNode getSubZKNodeByFullPath(ZKNode root, String path) {
-        var nodeList = new LinkedList<ZKNode>();
-        nodeList.add(root);
-        ZKNode rsl = null;
-
-        while (!nodeList.isEmpty()) {
-            var current = nodeList.removeFirst();
-            if (current.getPath().equals(path)) {
-                rsl = current;
-                break;
-            } else if (ZKNodes.hasChildren(current)) {
-                nodeList.addAll(current.getChildren());
-            }
-        }
-        return rsl;
     }
 
 //    /**
@@ -100,6 +76,32 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
         return new ZKNode(path, nodeValue, nodeName, children);
     }
 
+    /**
+     * @param root - start node. Default=hostValue(root).
+     * @param path - absolute path of searching {@link ZKNode}.
+     * @return result || null ==>> if searching {@link ZKNode} doesn't found.
+     * @implNote Tree-travel: width by List.
+     */
+    @Override
+    public ZKNode getSubNode(ZKNode root, String path) {
+        var nodeList = new LinkedList<ZKNode>();
+        nodeList.add(root);
+        ZKNode rsl = null;
+
+        while (!nodeList.isEmpty()) {
+            var current = nodeList.removeFirst();
+
+            if (current.getPath().equals(path)) {
+                rsl = current;
+                DevLog.print("Sub Node", "break, current", rsl);
+                break;
+            } else if (ZKNodes.hasChildren(current)) {
+                nodeList.addAll(current.getChildren());
+            }
+        }
+        return rsl;
+    }
+
     @Override
     public boolean set(String path, String value) {
         return zkServer.setData(path, value);
@@ -111,29 +113,35 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
     }
 
     @Override
-    public boolean rename(String path, String value, ZKNode hostValue)
+    @Log
+    public boolean rename(String path, String name, String value, ZKNode hostValue)
             throws KeeperException, InterruptedException {
         ZKTransaction transaction = zkServer.transaction();
 
-        ZKNode targetNode = getSubZKNodeByFullPath(hostValue, path);
+        ZKNode targetNode = getSubNode(hostValue, path);
         var deleteNodePaths = new LinkedList<String>();
-        var iterateList = new LinkedList<ZKNode>();
-        iterateList.add(targetNode);
+        var treeWalkList = new LinkedList<ZKNode>();
+        treeWalkList.add(targetNode);
 
         var corePathWithoutName = path.substring(0, path.lastIndexOf('/') + 1);
         var oldName = path.substring(path.lastIndexOf('/') + 1);
+        boolean firstIteration = true;
 
-        while (!iterateList.isEmpty()) {
-            ZKNode currentZKNode = iterateList.removeFirst();
+        while (!treeWalkList.isEmpty()) {
+            ZKNode currentZKNode = treeWalkList.removeFirst();
+            String rslValue = (firstIteration) ? value : currentZKNode.getValue();
+            firstIteration = false;
 
             if (ZKNodes.hasChildren(currentZKNode)) {
-                iterateList.addAll(currentZKNode.getChildren());
+                treeWalkList.addAll(currentZKNode.getChildren());
             }
             deleteNodePaths.add(currentZKNode.getPath());
-            transaction.create(ZKNodes.replacePath(
-                    currentZKNode.getPath(),
-                    corePathWithoutName, value, oldName),
-                    currentZKNode.getValue());
+            transaction.create(
+                    ZKNodes.replacePath(
+                            currentZKNode.getPath(),
+                            corePathWithoutName, name, oldName),
+                    rslValue
+            );
         }
 
         while (!deleteNodePaths.isEmpty()) {
@@ -142,4 +150,5 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
         transaction.commit();
         return true;
     }
+
 }

@@ -6,15 +6,14 @@ import java.util.StringJoiner;
 public class RequestDTO {
     private String path;
     private String value;
-    private String name;
 
     public RequestDTO() {
     }
 
-    public RequestDTO(String path, String value, String name) {
+    public RequestDTO(String path, String value) {
         this.path = path;
         this.value = value;
-        this.name = name;
+
     }
 
     public String getPath() {
@@ -33,13 +32,7 @@ public class RequestDTO {
         this.value = value;
     }
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     @Override
     public boolean equals(Object object) {
@@ -50,14 +43,13 @@ public class RequestDTO {
             return false;
         }
         RequestDTO that = (RequestDTO) object;
-        return Objects.equals(path, that.path) &&
-                Objects.equals(value, that.value) &&
-                Objects.equals(name, that.name);
+        return Objects.equals(path, that.path)
+                && Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(path, value, name);
+        return Objects.hash(path, value);
     }
 
     @Override
@@ -65,7 +57,6 @@ public class RequestDTO {
         return new StringJoiner(", ", RequestDTO.class.getSimpleName() + "[", "]")
                 .add("path='" + path + "'")
                 .add("value='" + value + "'")
-                .add("name='" + name + "'")
                 .toString();
     }
 

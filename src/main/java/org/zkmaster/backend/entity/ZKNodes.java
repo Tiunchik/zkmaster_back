@@ -11,25 +11,32 @@ public class ZKNodes {
      * Info for any change in code:
      * /1/1/1 :: oldPath
      * /1/    :: corePathWithoutName
-     * set    :: newPathValue
+     * set    :: newName
      * 1      :: oldName
      * <p>
      * /1/set/1 :: return
      */
     public static String replacePath(String oldPath, String corePathWithoutName,
-                                     String newPathValue, String oldName) {
+                                     String newName, String oldName) {
 //        System.out.println("DEV :: method: Replace START");
 //        System.out.println("DEV :: corePath==" + corePath);
 //        System.out.println("DEV :: oldPath==" + oldPath);
 //        System.out.println("DEV :: corePathWithoutName==" + corePathWithoutName);
-//        System.out.println("DEV :: newPathValue==" + newPathValue);
+//        System.out.println("DEV :: newName==" + newName);
 //        System.out.println("DEV :: oldName==" + oldName);
 //        System.out.println("DEV :: method: Replace RUN");
 
         var corePathWithoutNameLength = corePathWithoutName.length();
-        var secondPart = oldPath.substring(corePathWithoutNameLength - 1 + oldName.length() + 1);
+        var endPart = oldPath.substring(corePathWithoutNameLength + oldName.length());
+        return corePathWithoutName + newName + endPart;
+    }
 
-        return corePathWithoutName + newPathValue + secondPart;
+    public static boolean hasChildren(ZKNode node) {
+        return node.getChildren().size() != 0;
+    }
+
+    public static String extractNodeName(String path) {
+        return path.substring(path.lastIndexOf('/') + 1);
     }
 
     /**
@@ -68,27 +75,5 @@ public class ZKNodes {
         }
         System.out.println(sb.toString());
     }
-
-    public static boolean hasChildren(ZKNode node) {
-        return node.getChildren().size() != 0;
-    }
-
-
-    /* getSubZKNodeByFullPath - testing*/
-
-//    public static void main(String[] args) {
-//        var root = new ZKNode("/", "v", "/", List.of(
-//                new ZKNode("/a1", "v", "a1", List.of(
-//                        new ZKNode("/a1/a2", "v", "a2", List.of(
-//                                new ZKNode("/a1/a2/a3-1", "v", "a3-1", List.of()),
-//                                new ZKNode("/a1/a2/a3-2", "v", "a3-2", List.of())
-//                        ))
-//                )),
-//                new ZKNode("/2", "v", "2", List.of())
-//        ));
-//
-//        var rsl = getSubZKNodeByFullPath(root, "/a1/a2");
-//        printNode(rsl, false, true, true);
-//    }
 
 }

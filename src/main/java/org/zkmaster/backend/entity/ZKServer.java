@@ -31,14 +31,6 @@ public class ZKServer implements AutoCloseable {
     }
 
     /**
-     * TODO : сделать catch на KeeperException.NodeExistsException StackTrace:
-     * TODO : org.apache.zookeeper.KeeperException$NodeExistsException: KeeperErrorCode = NodeExists for /l1
-     * TODO : 	at org.apache.zookeeper.KeeperException.create(KeeperException.java:126)
-     * TODO : 	at org.apache.zookeeper.KeeperException.create(KeeperException.java:54)
-     * TODO : 	at org.apache.zookeeper.ZooKeeper.create(ZooKeeper.java:1733)
-     * TODO : 	at org.zkmaster.backend.entity.ZKServer.create(ZKServer.java:40)
-     *
-     *
      * Default wrap. Don't use Watcher and State.
      *
      * @param path  -
@@ -80,12 +72,6 @@ public class ZKServer implements AutoCloseable {
     }
 
     /**
-     * TODO : сделать catch на KeeperException.KeeperErrorCode  StackTrace:
-     * TODO : org.apache.zookeeper.KeeperException$NoNodeException: KeeperErrorCode = NoNode for /l1valuedfgdff
-     * TODO : 	at org.apache.zookeeper.KeeperException.create(KeeperException.java:126)
-     * TODO : 	at org.apache.zookeeper.KeeperException.create(KeeperException.java:54)
-     * TODO : 	at org.apache.zookeeper.ZooKeeper.create(ZooKeeper.java:1733)
-     * TODO : 	at org.zkmaster.backend.entity.ZKServer.create(ZKServer.java:40)
      * !!! If the given version is -1, it matches any node's versions.
      *
      * @param path  -

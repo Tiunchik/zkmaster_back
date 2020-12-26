@@ -7,10 +7,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.RequestDTO;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.exceptions.NodeDeleteException;
-import org.zkmaster.backend.exceptions.NodeExistsException;
-import org.zkmaster.backend.exceptions.NodeUpdateException;
-import org.zkmaster.backend.exceptions.WrongHostException;
+import org.zkmaster.backend.exceptions.*;
 import org.zkmaster.backend.services.ZKMainService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,22 +44,6 @@ public class CRUDController {
         return rsl;
     }
 
-//    /**
-//     * CRUD - READ
-//     * HTTP - GET
-//     * url: /zkm/data/{hostUrl}
-//     * Read server value.(YAML doc in path-tree format).
-//     */
-//    @GetMapping("/{hostUrl}/{path}")
-//    @Deprecated(since = "мне вот видится, что нам Нафиг не нужен get(oneNode- node children)"
-//            + "у нас может быть только getHostValue - фактически это всё что нужно.")
-//    public RequestDTO getNode(@PathVariable String hostUrl, @PathVariable String path) {
-//        var dto = new RequestDTO(hostUrl, path);
-//        ZKNode rsl = zkMainService.getHostValue(dto.getHost());
-//        dto.setValue(rsl.getValue());
-//        return dto;
-//    }
-
     /**
      * CRUD - CREATE
      * HTTP - POST
@@ -87,7 +68,7 @@ public class CRUDController {
      * expect request body: {@link RequestDTO}
      * {
      * "path": String,
-     * "value": String
+     * "value": String (example: "${newNodeName}&${newNodeValue}")
      * }
      * Meaning: Update node in ZooKeeper. (Node == path && value).
      */
@@ -95,13 +76,14 @@ public class CRUDController {
     @Log
     public @ResponseBody
     boolean updateNode(@RequestBody RequestDTO dto,
-                       @PathVariable String host) throws NodeUpdateException {
-        return zkMainService.updateNode(host, dto.getPath(), dto.getValue());
+                       @PathVariable String host) throws NodeSaveException, NodeRenameException {
+        String[] nameAndValue = dto.getValue().split("&");
+        return zkMainService.saveNode(host, dto.getPath(), nameAndValue[0], nameAndValue[1]);
     }
 
     /**
      * CRUD && HTTP - DELETE
-     * Update node in ZooKeeper. (Node == path).
+     * Delete node in ZooKeeper. (Node == path).
      */
     @DeleteMapping("/**")
     @Log
@@ -111,31 +93,5 @@ public class CRUDController {
         String path = fullPath.substring(fullPath.indexOf(host) + host.length());
         return zkMainService.deleteNode(host, path);
     }
-
-
-    /* Old Version */
-
-
-//    boolean deleteNode(@RequestBody RequestDTO dto) throws NodeDeleteException {
-//        return zkMainService.deleteNode(dto.getHost(), dto.getPath());
-////        return zkMainService.deleteNode(host, path);
-//    }
-
-//    //    @DeleteMapping("")
-//    @DeleteMapping("/{path}")
-//    @Log
-//    public @ResponseBody
-//    boolean deleteNode(@PathVariable String host,
-//                       @PathVariable String path
-////                       @RequestBody RequestDTO dto
-//
-//    ) throws NodeDeleteException {
-//        return zkMainService.deleteNode(host, path);
-////        return zkMainService.deleteNode(dto.getHost(), dto.getPath());
-//    }
-//    boolean deleteNode(@RequestBody RequestDTO dto) throws NodeDeleteException {
-//        return zkMainService.deleteNode(dto.getHost(), dto.getPath());
-////        return zkMainService.deleteNode(host, path);
-//    }
 
 }
