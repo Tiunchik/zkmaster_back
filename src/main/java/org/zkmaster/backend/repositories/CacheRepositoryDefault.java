@@ -6,11 +6,6 @@ import org.zkmaster.backend.entity.ZKNode;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * TODO !!! MUST TO HAVE READ-WRITE LOCK!!!
- * <p>
- * TODO Feature: - Add here blocking while: cachesRefresh() && deleteConnectionAndCache()
- */
 @Repository
 public class CacheRepositoryDefault implements CacheRepository {
     /**

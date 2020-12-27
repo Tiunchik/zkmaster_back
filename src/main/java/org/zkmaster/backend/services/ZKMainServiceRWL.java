@@ -120,4 +120,16 @@ public class ZKMainServiceRWL implements ZKMainService {
         return rsl;
     }
 
+    @Override
+    public List<String> export(String host, String type) {
+        readWriteLock.readLock().lock();
+        List<String> rsl;
+        try {
+            rsl = zkMainService.export(host, type);
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
+        return rsl;
+    }
+
 }

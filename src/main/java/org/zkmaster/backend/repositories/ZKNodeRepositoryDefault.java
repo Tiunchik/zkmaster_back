@@ -2,7 +2,6 @@ package org.zkmaster.backend.repositories;
 
 import org.apache.zookeeper.KeeperException;
 import org.zkmaster.backend.aop.Log;
-import org.zkmaster.backend.devutil.DevLog;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKNodes;
 import org.zkmaster.backend.entity.ZKServer;
@@ -37,20 +36,23 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
 
 //    /**
 //     * TODO weak - write tree-walk by list walk, not recursion.
-//     * @param path -
-//     * @param nodeName -
+//     * @param rootPath -
+//     * @param rootName -
 //     * @return -
 //     */
-//    private ZKNode getHostValueList(String path, String nodeName) {
+//    private ZKNode getHostValueList(String rootPath, String rootName) {
+//        String rootValue = zkServer.read(rootPath);
+//
+//
 //        LinkedList<ZKNode> searchList = new LinkedList<>();
-//        List<ZKNode> foundList = new ArrayList<>(500);
-//        searchList.add(new ZKNode(path, zkServer.read(path)));
+//        List<ZKNode> treeWalkList = new LinkedList<>();
+//        searchList.add(new ZKNode(rootPath, zkServer.read(rootPath)));
 //        ZKNode currentNode;
 //        while (!searchList.isEmpty()) {
 //            currentNode = searchList.getFirst();
 ////            List<String> childrenPaths =
 //        }
-//        return null;
+//        return new ZKNode(rootPath, rootValue, rootName, chi);
 //    }
 
     /**
@@ -84,19 +86,17 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
      */
     @Override
     public ZKNode getSubNode(ZKNode root, String path) {
-        var nodeList = new LinkedList<ZKNode>();
-        nodeList.add(root);
+        var treeWalkList = new LinkedList<ZKNode>();
+        treeWalkList.add(root);
         ZKNode rsl = null;
 
-        while (!nodeList.isEmpty()) {
-            var current = nodeList.removeFirst();
-
+        while (!treeWalkList.isEmpty()) {
+            var current = treeWalkList.removeFirst();
             if (current.getPath().equals(path)) {
                 rsl = current;
-                DevLog.print("Sub Node", "break, current", rsl);
                 break;
             } else if (ZKNodes.hasChildren(current)) {
-                nodeList.addAll(current.getChildren());
+                treeWalkList.addAll(current.getChildren());
             }
         }
         return rsl;

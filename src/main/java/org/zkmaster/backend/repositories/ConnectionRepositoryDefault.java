@@ -6,9 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * TODO Feature: - Add here blocking while: cachesRefresh() && deleteConnectionAndCache()
- */
 @Repository
 public class ConnectionRepositoryDefault implements ConnectionRepository {
     private final Map<String, ZKNodeRepository> repositories = new HashMap<>();

@@ -10,6 +10,7 @@ import org.zkmaster.backend.exceptions.*;
 import org.zkmaster.backend.repositories.CacheRepository;
 import org.zkmaster.backend.repositories.ConnectionRepository;
 import org.zkmaster.backend.repositories.ZKNodeRepository;
+import org.zkmaster.backend.services.export.ExportStrategy;
 
 import java.util.List;
 import java.util.Map;
@@ -29,13 +30,15 @@ public class ZKMainServiceDefault implements ZKMainService {
      */
     private final CacheRepository cache;
     private final ZKConnectionFactory zkFactory;
+    private final ExportStrategy exportStrategy;
 
     @Autowired
     public ZKMainServiceDefault(ConnectionRepository connections, CacheRepository cache,
-                                ZKConnectionFactory zkFactory) {
+                                ZKConnectionFactory zkFactory, ExportStrategy exportStrategy) {
         this.connections = connections;
         this.cache = cache;
         this.zkFactory = zkFactory;
+        this.exportStrategy = exportStrategy;
     }
 
 
@@ -77,14 +80,10 @@ public class ZKMainServiceDefault implements ZKMainService {
     @Log
     public boolean saveNode(String host, String path, String name, String value)
             throws NodeSaveException, NodeRenameException {
-        boolean rsl;
         String oldName = ZKNodes.extractNodeName(path);
-        if (name.equals(oldName)) {
-            rsl = updateNode(host, path, value);
-        } else {
-            rsl = renameNode(host, path, name, value);
-        }
-        return rsl;
+        return (oldName.equals(name))
+                ? updateNode(host, path, value)
+                : renameNode(host, path, name, value);
     }
 
     @Override
@@ -138,8 +137,7 @@ public class ZKMainServiceDefault implements ZKMainService {
     @Log
     public boolean createConnection(String host) throws WrongHostException {
         if (!connections.contains(host)) {
-            ZKNodeRepository connection = zkFactory.makeConnectionByHost(host);
-            connections.put(host, connection);
+            connections.put(host, zkFactory.makeConnectionByHost(host));
         }
         return true;
     }
@@ -155,6 +153,12 @@ public class ZKMainServiceDefault implements ZKMainService {
     @Log
     public Map<String, Boolean> checkHostsHealth(List<String> hosts) {
         return connections.containsByHosts(hosts);
+    }
+
+    @Override
+    @Log
+    public List<String> export(String host, String type) {
+        return exportStrategy.get(type).export(this.getHostValue(host));
     }
 
 }

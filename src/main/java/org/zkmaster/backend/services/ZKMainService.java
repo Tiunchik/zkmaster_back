@@ -129,4 +129,6 @@ public interface ZKMainService {
      */
     Map<String, Boolean> checkHostsHealth(List<String> hosts);
 
+    List<String> export(String host, String type);
+
 }
