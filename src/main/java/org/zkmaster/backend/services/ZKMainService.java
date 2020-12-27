@@ -36,12 +36,10 @@ public interface ZKMainService {
 
     /**
      * For: {@link CRUDController}
-     * Default CRUD - REED
-     * <p>
-     * !!! This method MUST wait while cache is refreshing.
      *
      * @param host -
-     * @return Host value in format: Node(tree).
+     * @return Host-value as default {@link ZKNode}.
+     * @implNote If other thread(controller) will ask cache, it MUST wait while cache is refreshing.
      */
     ZKNode getHostValue(String host);
 
@@ -49,7 +47,7 @@ public interface ZKMainService {
      * For: {@link CRUDController}
      * Default CRUD - UPDATE
      *
-     * @param host -
+     * @param host  -
      * @param path  Node path.
      * @param name  new Node name.
      * @param value new Node value.
@@ -70,7 +68,7 @@ public interface ZKMainService {
      */
     boolean deleteNode(String host, String path) throws NodeDeleteException;
 
-    /* ####### CRUD ####### */
+    /* ####### Advanced API ####### */
 
     /**
      * For: {@link ServerEventListener}
@@ -92,18 +90,6 @@ public interface ZKMainService {
      * @return try is fail ==>> false
      */
     boolean createConnection(String host) throws WrongHostException;
-
-//    /**
-//     * For: ServerEventController
-//     * Delete connection.
-//     * <p>
-//     * !!! This method MUST block cache and other threads MUST wait until refresh isn't finish.
-//     *
-//     * @param hostUrl -
-//     */
-//    default void deleteConnection(String hostUrl) {
-//    // For future - then we can get cache but server have been close BEFORE we receive Request.
-//    }
 
     /**
      * For: {@link ServerEventListener}
@@ -129,6 +115,8 @@ public interface ZKMainService {
      */
     Map<String, Boolean> checkHostsHealth(List<String> hosts);
 
-    List<String> export(String host, String type);
+    List<String> exportHost(String host, String type);
+
+    boolean importData(String host, String type, List<String> data) throws ImportFailException;
 
 }

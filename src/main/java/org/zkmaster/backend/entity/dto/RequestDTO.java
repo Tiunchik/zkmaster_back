@@ -1,4 +1,4 @@
-package org.zkmaster.backend.entity;
+package org.zkmaster.backend.entity.dto;
 
 import java.util.Objects;
 import java.util.StringJoiner;

@@ -1,4 +1,6 @@
-package org.zkmaster.backend.entity;
+package org.zkmaster.backend.entity.dto;
+
+import org.zkmaster.backend.entity.ZKNode;
 
 import java.util.List;
 

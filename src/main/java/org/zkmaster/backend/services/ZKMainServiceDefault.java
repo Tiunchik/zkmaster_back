@@ -6,11 +6,12 @@ import org.springframework.stereotype.Service;
 import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKNodes;
+import org.zkmaster.backend.entity.ZKTransaction;
 import org.zkmaster.backend.exceptions.*;
 import org.zkmaster.backend.repositories.CacheRepository;
 import org.zkmaster.backend.repositories.ConnectionRepository;
 import org.zkmaster.backend.repositories.ZKNodeRepository;
-import org.zkmaster.backend.services.export.ExportStrategy;
+import org.zkmaster.backend.services.export.TransformStrategy;
 
 import java.util.List;
 import java.util.Map;
@@ -30,15 +31,15 @@ public class ZKMainServiceDefault implements ZKMainService {
      */
     private final CacheRepository cache;
     private final ZKConnectionFactory zkFactory;
-    private final ExportStrategy exportStrategy;
+    private final TransformStrategy transformStrategy;
 
     @Autowired
     public ZKMainServiceDefault(ConnectionRepository connections, CacheRepository cache,
-                                ZKConnectionFactory zkFactory, ExportStrategy exportStrategy) {
+                                ZKConnectionFactory zkFactory, TransformStrategy transformStrategy) {
         this.connections = connections;
         this.cache = cache;
         this.zkFactory = zkFactory;
-        this.exportStrategy = exportStrategy;
+        this.transformStrategy = transformStrategy;
     }
 
 
@@ -49,18 +50,15 @@ public class ZKMainServiceDefault implements ZKMainService {
     }
 
     /**
-     * Default CRUD - REED
-     * <p>
-     * ! If other thread(controller) will ask cache, it MUST wait while cache is refreshing.
-     * </p>
-     * STEP 1: ask cache - (have cache for host)
-     * true >> out method.
-     * false >> continue.
-     * STEP 2: ask connections - (have rep for host)
-     * true >> get "host value" and out method.
-     *
-     * @param host -
-     * @return Host value in format: Node(tree) OR null, if host isn't saved. (something logic problem O_O???)
+     * @implSpec explain how it work:
+     * STEP 1: ask cache in store - (get host-value OR null)
+     * (cache != null):
+     * -- true >> out method.
+     * -- false >> continue.
+     * STEP 2: ask connections in store - (get repository OR null)
+     * (repository != null):
+     * -- true >> get "host value" and out method.
+     * -- false >> Something Wrong! Check this case!
      */
     @Override
     @Log
@@ -157,8 +155,23 @@ public class ZKMainServiceDefault implements ZKMainService {
 
     @Override
     @Log
-    public List<String> export(String host, String type) {
-        return exportStrategy.get(type).export(this.getHostValue(host));
+    public List<String> exportHost(String host, String type) {
+        return transformStrategy.get(type).exportHost(this.getHostValue(host));
+    }
+
+    @Override
+    @Log
+    public boolean importData(String host, String type, List<String> data) throws ImportFailException {
+        ZKTransaction transaction = connections.get(host).transaction();
+        transformStrategy.get(type).importData(data, transaction);
+        try {
+            transaction.commit();
+        } catch (InterruptedException | KeeperException e) {
+            System.err.println("IMPORT FAIL: ");
+            e.printStackTrace();
+            throw new ImportFailException(host, type, data.size());
+        }
+        return false;
     }
 
 }

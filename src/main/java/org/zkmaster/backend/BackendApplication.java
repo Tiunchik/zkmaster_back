@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * TODO Feature - Копирование из одного в другой
- * TODO Feature - export into YAML, JSON, ZKCommandsFile(?TXT || ?JSON)
+ * TODO Feature - merge subNode in other real-server.
+ * TODO Feature - export into YAML.
  * TODO Feature - cascade delete.
  * TODO Feature - getHostValue - re-write by List, not Recursion.
  */
@@ -16,6 +16,5 @@ public class BackendApplication {
         SpringApplication.run(BackendApplication.class, args);
         System.err.println("ZKM Back-end :: RUN");
     }
-
 
 }

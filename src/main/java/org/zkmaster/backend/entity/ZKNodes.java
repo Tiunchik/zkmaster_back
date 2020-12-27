@@ -39,6 +39,10 @@ public class ZKNodes {
         return path.substring(path.lastIndexOf('/') + 1);
     }
 
+    public static void printNode(ZKNode node) {
+        printNode(node, false, true, true);
+    }
+
     /**
      * Print {@link ZKNode} with all children as pretty table.
      *

@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.exceptions.NodeDeleteException;
-import org.zkmaster.backend.exceptions.NodeExistsException;
-import org.zkmaster.backend.exceptions.NodeSaveException;
-import org.zkmaster.backend.exceptions.WrongHostException;
+import org.zkmaster.backend.exceptions.*;
 
 import java.util.List;
 import java.util.Map;
@@ -121,13 +118,25 @@ public class ZKMainServiceRWL implements ZKMainService {
     }
 
     @Override
-    public List<String> export(String host, String type) {
+    public List<String> exportHost(String host, String type) {
         readWriteLock.readLock().lock();
         List<String> rsl;
         try {
-            rsl = zkMainService.export(host, type);
+            rsl = zkMainService.exportHost(host, type);
         } finally {
             readWriteLock.readLock().unlock();
+        }
+        return rsl;
+    }
+
+    @Override
+    public boolean importData(String host, String type, List<String> data) throws ImportFailException {
+        readWriteLock.writeLock().lock();
+        boolean rsl;
+        try {
+            rsl = zkMainService.importData(host, type, data);
+        } finally {
+            readWriteLock.writeLock().unlock();
         }
         return rsl;
     }

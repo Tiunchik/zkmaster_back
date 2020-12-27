@@ -1,7 +1,6 @@
 package org.zkmaster.backend.repositories;
 
 import org.apache.zookeeper.KeeperException;
-import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKNodes;
 import org.zkmaster.backend.entity.ZKServer;
@@ -56,13 +55,8 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
 //    }
 
     /**
-     * RECURSION!!!
-     *
-     * @param path     -
-     * @param nodeName -
-     * @return -
+     * @implSpec Tree walk: width && recursion.
      */
-//    @Deprecated(since = "recursion")
     private ZKNode getHostValue(String path, String nodeName) {
         String nodeValue = zkServer.read(path);
         List<ZKNode> children = new LinkedList<>();
@@ -82,7 +76,7 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
      * @param root - start node. Default=hostValue(root).
      * @param path - absolute path of searching {@link ZKNode}.
      * @return result || null ==>> if searching {@link ZKNode} doesn't found.
-     * @implNote Tree-travel: width by List.
+     * @implSpec Tree walk: width && iterate.
      */
     @Override
     public ZKNode getSubNode(ZKNode root, String path) {
@@ -112,10 +106,12 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
         return zkServer.delete(path);
     }
 
+    /**
+     * @implSpec @implSpec Tree walk: width && iterate.
+     */
     @Override
-    @Log
     public boolean rename(String path, String name, String value, ZKNode hostValue)
-            throws KeeperException, InterruptedException {
+            throws KeeperException, InterruptedException, NodeExistsException {
         ZKTransaction transaction = zkServer.transaction();
 
         ZKNode targetNode = getSubNode(hostValue, path);
@@ -149,6 +145,11 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
         }
         transaction.commit();
         return true;
+    }
+
+    @Override
+    public ZKTransaction transaction() {
+        return zkServer.transaction();
     }
 
 }

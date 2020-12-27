@@ -3,9 +3,12 @@ package org.zkmaster.backend.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.zkmaster.backend.aop.Log;
-import org.zkmaster.backend.entity.RequestDTO;
+import org.zkmaster.backend.entity.dto.RequestDTO;
 import org.zkmaster.backend.services.ZKMainService;
 
 import java.util.List;
@@ -38,19 +41,6 @@ public class APIController {
     public @ResponseBody
     Map<String, Boolean> checkHostsHealth(@RequestBody List<String> hosts) {
         return zkMainService.checkHostsHealth(hosts);
-    }
-
-    @PostMapping("/export/{host}")
-    @Log
-    public @ResponseBody
-    List<String> export(@RequestBody String type,
-                        @PathVariable String host) {
-
-//        DevLog.print("Controller", "typeOrig", type);
-        type = type.substring(1, type.length() -1);
-//        DevLog.print("Controller", "typeNew ", type);
-
-        return zkMainService.export(host, type);
     }
 
 //    /**

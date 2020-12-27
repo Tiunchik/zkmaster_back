@@ -1,10 +1,76 @@
 # get host-value - WORK
 GET http://localhost:8081/api/zkm/data/localhost:2181
+
 ###
 
 # export to TXT - WORK
-POST http://localhost:8081/api/zkm/export/localhost:2181
+#GET http://localhost:8081/api/zkm/transform/localhost:2181
+#Content-Type: application/json
+#
+#{
+#  "type" : "TXT"
+#}
+###
+
+## import TXT - WORK
+POST http://localhost:8081/api/zkm/transform/localhost:2181
 Content-Type: application/json
 
-"TXT"
+{
+  "type": "TXT",
+  "content": [
+    "/i1 : value",
+    "/i1/i2 : value",
+    "/i1/i2/i2 : value",
+    "/i1/i2/i2/i3 : value"
+  ]
+}
+
+###
+
+## import TXT - WORK
+#POST http://localhost:8081/api/zkm/transform/localhost:2181
+#Content-Type: application/json
+#
+#{
+#  "type": "TXT",
+#  "content": [
+#    "/ : ",
+#    "/b1 : value",
+#    "/b1/b2 : value",
+#    "/b1/b2/b3 : value",
+#    "/b1/b2/b3/b4 : value",
+#    "/b1/b2/b3/b4/b5 : value",
+#    "/saveTest2(n) : saveTest2(v)",
+#    "/c1 : value",
+#    "/c1/c2 : value",
+#    "/c1/c2/c3 : value",
+#    "/c1/c2/c3/c4 : value",
+#    "/c1/c2/c3/c4/c5 : value",
+#    "/d1 : value",
+#    "/d1/d2 : value",
+#    "/d1/d2/d3 : value",
+#    "/d1/d2/d3/d4 : value",
+#    "/d1/d2/d3/d4/d5 : value",
+#    "/d1/d2/d3-new : value-upd",
+#    "/firstNode : firstValue",
+#    "/firstNode/firstNodeChild : firstNodeChildValue",
+#    "/l1 : value",
+#    "/l1/l2 : value",
+#    "/l1/l2/l3 : null",
+#    "/l1/l2/l3/l4 : null",
+#    "/l1/exp1 : value",
+#    "/saveTest1(v) : saveTest",
+#    "/zookeeper : ",
+#    "/zookeeper/quota : ",
+#    "/zookeeper/config : ",
+#    "/saveTest4(n) : saveTest4(v)",
+#    "/a1 : value",
+#    "/a1/a2 : value",
+#    "/a1/a2/a3 : value",
+#    "/a1/a2/a3/a4 : value",
+#    "/a1/a2/a3/a4/a5 : value"
+#  ]
+#}
+
 ###
