@@ -1,9 +1,9 @@
 package org.zkmaster.backend.exceptions;
 
-public class WrongHostException extends Exception {
+public class WrongHostAddressException extends Exception {
 
-    public WrongHostException(String wrongHostValue) {
-        super("ZKM EXCEPTION: WrongHostException: "
+    public WrongHostAddressException(String wrongHostValue) {
+        super("ZKM EXCEPTION: WrongHostAddressException: "
                 + "host: " + wrongHostValue
                 + " isn't exists! Can't create connection with not exists server.");
     }

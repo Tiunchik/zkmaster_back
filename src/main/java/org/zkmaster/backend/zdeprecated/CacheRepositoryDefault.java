@@ -1,4 +1,4 @@
-package org.zkmaster.backend.repositories;
+package org.zkmaster.backend.zdeprecated;
 
 import org.springframework.stereotype.Repository;
 import org.zkmaster.backend.entity.ZKNode;
@@ -6,6 +6,7 @@ import org.zkmaster.backend.entity.ZKNode;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 @Repository
 public class CacheRepositoryDefault implements CacheRepository {
     /**

@@ -1,11 +1,15 @@
 package org.zkmaster.backend.services;
 
+import org.zkmaster.backend.annotations.Delegate;
 import org.zkmaster.backend.controllers.APIController;
 import org.zkmaster.backend.controllers.CRUDController;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.exceptions.*;
 import org.zkmaster.backend.listeners.ServerEventListener;
 import org.zkmaster.backend.listeners.ServerEventListenerDefault;
+import org.zkmaster.backend.repositories.HostContext;
+import org.zkmaster.backend.repositories.HostProvider;
+import org.zkmaster.backend.services.transform.TransformStrategy;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +36,8 @@ public interface ZKMainService {
      * @param host -
      * @return Create success or not.
      */
-    boolean createNode(String host, String path, String value) throws NodeExistsException;
+    @Delegate(to = HostProvider.class)
+    boolean createNode(String host, String path, String value) throws NodeExistsException, HostNotFoundException;
 
     /**
      * For: {@link CRUDController}
@@ -41,6 +46,7 @@ public interface ZKMainService {
      * @return Host-value as default {@link ZKNode}.
      * @implNote If other thread(controller) will ask cache, it MUST wait while cache is refreshing.
      */
+    @Delegate(to = HostProvider.class)
     ZKNode getHostValue(String host);
 
     /**
@@ -56,7 +62,8 @@ public interface ZKMainService {
      * @throws NodeRenameException ZooKeeper API - exception
      * @implNote Update && rename should be implements and use in this method.
      */
-    boolean saveNode(String host, String path, String name, String value) throws NodeSaveException, NodeRenameException;
+    @Delegate(to = HostProvider.class)
+    boolean saveNode(String host, String path, String name, String value) throws NodeSaveException, NodeRenameException, HostNotFoundException;
 
     /**
      * For: {@link CRUDController}
@@ -66,7 +73,8 @@ public interface ZKMainService {
      * @param path -
      * @return Delete success or not.
      */
-    boolean deleteNode(String host, String path) throws NodeDeleteException;
+    @Delegate(to = HostProvider.class)
+    boolean deleteNode(String host, String path) throws NodeDeleteException, HostNotFoundException;
 
     /* ####### Advanced API ####### */
 
@@ -78,8 +86,10 @@ public interface ZKMainService {
      *
      * @param host -
      */
+    @Delegate(to = HostContext.class)
     void refreshCache(String host);
 
+    @Delegate(to = HostContext.class)
     boolean containsConnection(String host);
 
     /**
@@ -89,7 +99,8 @@ public interface ZKMainService {
      * @param host -
      * @return try is fail ==>> false
      */
-    boolean createConnection(String host) throws WrongHostException;
+    @Delegate(to = HostContext.class)
+    boolean createConnection(String host) throws WrongHostAddressException;
 
     /**
      * For: {@link ServerEventListener}
@@ -99,10 +110,8 @@ public interface ZKMainService {
      *
      * @param host -
      */
+    @Delegate(to = HostContext.class)
     void deleteConnectionAndCache(String host);
-
-//    @Deprecated(since = "Unsure that it will need")
-//    void reconnect(String host);
 
     /**
      * For: {@link APIController}
@@ -115,8 +124,10 @@ public interface ZKMainService {
      */
     Map<String, Boolean> checkHostsHealth(List<String> hosts);
 
+    @Delegate(to = TransformStrategy.class)
     List<String> exportHost(String host, String type);
 
-    boolean importData(String host, String type, List<String> data) throws ImportFailException;
+    @Delegate(to = TransformStrategy.class)
+    boolean importData(String host, String type, List<String> data) throws ImportFailException, HostNotFoundException;
 
 }

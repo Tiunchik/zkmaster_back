@@ -1,10 +1,11 @@
-package org.zkmaster.backend.services;
+package org.zkmaster.backend.zdeprecated;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.exceptions.*;
+import org.zkmaster.backend.services.ZKMainService;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Proxy for Read-Write-Lock(RWL) of {@link ZKMainServiceDefault}.
  */
+@Deprecated
 @Service
 public class ZKMainServiceRWL implements ZKMainService {
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
@@ -25,7 +27,7 @@ public class ZKMainServiceRWL implements ZKMainService {
     }
 
     @Override
-    public boolean createNode(String host, String path, String value) throws NodeExistsException {
+    public boolean createNode(String host, String path, String value) throws NodeExistsException, HostNotFoundException {
         readWriteLock.writeLock().lock();
         boolean rsl;
         try {
@@ -95,7 +97,7 @@ public class ZKMainServiceRWL implements ZKMainService {
     }
 
     @Override
-    public boolean createConnection(String host) throws WrongHostException {
+    public boolean createConnection(String host) throws WrongHostAddressException {
         readWriteLock.writeLock().lock();
         boolean rsl = zkMainService.createConnection(host);
         readWriteLock.writeLock().unlock();
@@ -130,7 +132,7 @@ public class ZKMainServiceRWL implements ZKMainService {
     }
 
     @Override
-    public boolean importData(String host, String type, List<String> data) throws ImportFailException {
+    public boolean importData(String host, String type, List<String> data) throws ImportFailException, HostNotFoundException {
         readWriteLock.writeLock().lock();
         boolean rsl;
         try {

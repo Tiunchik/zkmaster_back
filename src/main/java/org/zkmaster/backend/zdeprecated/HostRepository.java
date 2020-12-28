@@ -1,13 +1,18 @@
-package org.zkmaster.backend.repositories;
+package org.zkmaster.backend.zdeprecated;
+
+import org.zkmaster.backend.repositories.HostProvider;
 
 import java.util.List;
 import java.util.Map;
 
-public interface ConnectionRepository {
+/**
+ * wrap of Map<String, HostProvider>
+ */
+@Deprecated
+public interface HostRepository {
+    void put(String host, HostProvider repository);
 
-    void put(String host, ZKNodeRepository repository);
-
-    ZKNodeRepository get(String host);
+    HostProvider get(String host);
 
     void remove(String host);
 
@@ -24,5 +29,4 @@ public interface ConnectionRepository {
     Map<String, Boolean> containsByHosts(List<String> hosts);
 
     int size();
-
 }

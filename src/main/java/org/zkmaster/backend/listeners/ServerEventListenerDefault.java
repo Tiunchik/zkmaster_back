@@ -15,22 +15,23 @@ import org.zkmaster.backend.services.ZKMainService;
  */
 @Component
 public class ServerEventListenerDefault implements ServerEventListener {
-    ZKMainService zkMainService;
+    ZKMainService mainService;
 
     @Autowired
-    public ServerEventListenerDefault(@Qualifier("ZKMainServiceRWL") ZKMainService zkMainService) {
-        this.zkMainService = zkMainService;
+    public ServerEventListenerDefault(@Qualifier("ZKMainServiceFresh") ZKMainService mainService) {
+        this.mainService = mainService;
     }
 
     @Override
     @Log
     public void eventProcess(EventServerStateChange serverStateChange) {
-        zkMainService.refreshCache(serverStateChange.getHostUrl());
+        mainService.refreshCache(serverStateChange.getHostUrl());
     }
 
     @Override
     @Log
     public void serverClose(EventServerClose serverClose) {
-        zkMainService.deleteConnectionAndCache(serverClose.getHostUrl());
+        mainService.deleteConnectionAndCache(serverClose.getHostUrl());
     }
+
 }

@@ -1,22 +1,24 @@
-package org.zkmaster.backend.repositories;
+package org.zkmaster.backend.zdeprecated;
 
 import org.springframework.stereotype.Repository;
+import org.zkmaster.backend.repositories.HostProvider;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 @Repository
-public class ConnectionRepositoryDefault implements ConnectionRepository {
-    private final Map<String, ZKNodeRepository> repositories = new HashMap<>();
+public class HostServiceDepDefault implements HostServiceDep {
+    private final Map<String, HostProvider> repositories = new HashMap<>();
 
     @Override
-    public void put(String host, ZKNodeRepository repository) {
+    public void put(String host, HostProvider repository) {
         repositories.put(host, repository);
     }
 
     @Override
-    public ZKNodeRepository get(String host) {
+    public HostProvider get(String host) {
         return repositories.get(host);
     }
 

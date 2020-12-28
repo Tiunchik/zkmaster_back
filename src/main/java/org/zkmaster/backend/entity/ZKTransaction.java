@@ -36,6 +36,25 @@ public class ZKTransaction {
         return this;
     }
 
+    /**
+     * @param errMsg    smg for print, if transaction failed.
+     * @param exception outer exception.
+     * @param <E>       outer exception type.
+     * @return true, if transaction success, else throw {@param exception}.
+     * @throws E {@param exception}.
+     */
+    public <E extends Exception> boolean commit(String errMsg, E exception) throws E {
+        try {
+            transaction.commit();
+        } catch (InterruptedException | KeeperException origException) {
+            System.err.println(errMsg);
+            origException.printStackTrace();
+            throw exception;
+        }
+        return true;
+    }
+
+    @Deprecated(since = "use overload for more comfortable code API")
     public void commit() throws InterruptedException, KeeperException {
         transaction.commit();
     }

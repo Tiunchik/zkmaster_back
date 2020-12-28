@@ -1,4 +1,4 @@
-package org.zkmaster.backend.services;
+package org.zkmaster.backend.zdeprecated;
 
 import org.apache.zookeeper.KeeperException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,34 +8,35 @@ import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKNodes;
 import org.zkmaster.backend.entity.ZKTransaction;
 import org.zkmaster.backend.exceptions.*;
-import org.zkmaster.backend.repositories.CacheRepository;
-import org.zkmaster.backend.repositories.ConnectionRepository;
-import org.zkmaster.backend.repositories.ZKNodeRepository;
-import org.zkmaster.backend.services.export.TransformStrategy;
+import org.zkmaster.backend.factories.HostFactory;
+import org.zkmaster.backend.repositories.HostProvider;
+import org.zkmaster.backend.services.ZKMainService;
+import org.zkmaster.backend.services.transform.TransformStrategy;
 
 import java.util.List;
 import java.util.Map;
 
 @Service
+@Deprecated
 public class ZKMainServiceDefault implements ZKMainService {
     /**
      * Actual repository of real server facade.
      * key - String                     - hostUrl.
-     * val - {@link ZKNodeRepository}   - CRUD rep.
+     * val - {@link HostProvider}   - CRUD rep.
      */
-    private final ConnectionRepository connections;
+    private final HostServiceDep connections;
     /**
      * Actual cache of real server value.
      * key - String           - hostUrl.
      * val - {@link ZKNode}   - hostValue.
      */
     private final CacheRepository cache;
-    private final ZKConnectionFactory zkFactory;
+    private final HostFactory zkFactory;
     private final TransformStrategy transformStrategy;
 
     @Autowired
-    public ZKMainServiceDefault(ConnectionRepository connections, CacheRepository cache,
-                                ZKConnectionFactory zkFactory, TransformStrategy transformStrategy) {
+    public ZKMainServiceDefault(HostServiceDep connections, CacheRepository cache,
+                                HostFactory zkFactory, TransformStrategy transformStrategy) {
         this.connections = connections;
         this.cache = cache;
         this.zkFactory = zkFactory;
@@ -46,7 +47,7 @@ public class ZKMainServiceDefault implements ZKMainService {
     @Override
     @Log
     public boolean createNode(String host, String path, String value) throws NodeExistsException {
-        return connections.get(host).create(path, value);
+        return connections.get(host).createNode(path, value);
     }
 
     /**
@@ -65,9 +66,9 @@ public class ZKMainServiceDefault implements ZKMainService {
     public ZKNode getHostValue(String host) {
         ZKNode hostValue = cache.get(host); // value or null
         if (hostValue == null) { // if cache is null
-            ZKNodeRepository temp = connections.get(host);
+            HostProvider temp = connections.get(host);
             if (temp != null) {
-                hostValue = temp.getHostValue();
+                hostValue = temp.readHostValue();
                 cache.put(host, hostValue);
             }
         }
@@ -91,7 +92,7 @@ public class ZKMainServiceDefault implements ZKMainService {
         if (temp == null) {
             throw new NodeDeleteException(host, path);
         }
-        return temp.delete(path);
+        return temp.deleteNode(path);
     }
 
     @Log
@@ -101,28 +102,30 @@ public class ZKMainServiceDefault implements ZKMainService {
         if (temp == null) {
             throw new NodeRenameException(host, path, value);
         }
-        try {
-            rsl = temp.rename(path, name, value, cache.get(host));
-        } catch (KeeperException | InterruptedException | NodeExistsException e) {
-            e.printStackTrace();
-            throw new NodeRenameException(host, path, value);
-        }
-        return rsl;
+//        try {
+//            rsl = temp.rename(path, name, value, cache.get(host));
+//        } catch (KeeperException | InterruptedException | NodeExistsException e) {
+//            e.printStackTrace();
+//            throw new NodeRenameException(host, path, value);
+//        }
+//        return rsl;
+        return false;
     }
 
     @Log
     private boolean updateNode(String host, String path, String value) throws NodeSaveException {
-        var temp = connections.get(host);
-        if (temp == null) {
-            throw new NodeSaveException(host, path, value);
-        }
-        return temp.set(path, value);
+//        var temp = connections.get(host);
+//        if (temp == null) {
+//            throw new NodeSaveException(host, path, value);
+//        }
+//        return temp.set(path, value);
+        return false;
     }
 
     @Override
     @Log
     public void refreshCache(String host) {
-        ZKNode hostValue = connections.get(host).getHostValue();
+        ZKNode hostValue = connections.get(host).readHostValue();
         cache.put(host, hostValue);
     }
 
@@ -133,9 +136,9 @@ public class ZKMainServiceDefault implements ZKMainService {
 
     @Override
     @Log
-    public boolean createConnection(String host) throws WrongHostException {
+    public boolean createConnection(String host) throws WrongHostAddressException {
         if (!connections.contains(host)) {
-            connections.put(host, zkFactory.makeConnectionByHost(host));
+            connections.put(host, zkFactory.makeHostProvider(host));
         }
         return true;
     }

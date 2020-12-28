@@ -1,8 +1,13 @@
-package org.zkmaster.backend.services.export;
+package org.zkmaster.backend.services.transform;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.zkmaster.backend.aop.Log;
+import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.entity.ZKTransaction;
+import org.zkmaster.backend.exceptions.ImportFailException;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -19,6 +24,20 @@ public class TransformStrategy {
         this.exportMap = exportMap;
     }
 
+    @Log
+    public List<String> exportHost(ZKNode root, String type) {
+        return get(type).exportHost(root);
+    }
+
+    @Log
+    public boolean importData(ZKTransaction transaction, String host,
+                              String type, List<String> data) throws ImportFailException {
+        get(type).importData(data, transaction);
+        return transaction.commit("Import failed: Transaction failed!",
+                new ImportFailException(host, type, data.size()));
+    }
+
+    @Deprecated(since = "it should be private method.")
     public ZKNodeTransformer get(String type) {
         ZKNodeTransformer rsl = exportMap.get(type);
         if (rsl == null) {
@@ -31,5 +50,6 @@ public class TransformStrategy {
         }
         return rsl;
     }
+
 
 }

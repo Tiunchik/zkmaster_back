@@ -12,8 +12,9 @@ import java.util.List;
  * <p>
  * If you need more API from original {@link ZooKeeper},
  * decorate it in this class.
+ * TODO - сделать полную иерархию Исключений.
  */
-public class ZKServer implements AutoCloseable {
+public class Host implements AutoCloseable {
     private final String hostUrl;
     private final ZooKeeper zoo;
 
@@ -25,7 +26,7 @@ public class ZKServer implements AutoCloseable {
      * @param watcher        - catch all event(changes) from real server.
      * @throws IOException - Fail to create connection with real ZooKeeper server!
      */
-    public ZKServer(String hostUrl, int sessionTimeout, Watcher watcher) throws IOException {
+    public Host(String hostUrl, int sessionTimeout, Watcher watcher) throws IOException {
         this.hostUrl = hostUrl;
         this.zoo = new ZooKeeper(hostUrl, sessionTimeout, watcher);
     }
@@ -36,7 +37,7 @@ public class ZKServer implements AutoCloseable {
      * @param path  -
      * @param value -
      */
-    public void create(String path, String value) throws NodeExistsException {
+    public boolean create(String path, String value) throws NodeExistsException {
         try {
             zoo.create(path,
                     value.getBytes(),
@@ -48,7 +49,7 @@ public class ZKServer implements AutoCloseable {
             System.err.println("Something Wrong! Check it.");
             e.printStackTrace();
         }
-
+        return true;
     }
 
     /**

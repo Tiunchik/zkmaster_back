@@ -1,4 +1,4 @@
-package org.zkmaster.backend.repositories;
+package org.zkmaster.backend.zdeprecated;
 
 import org.zkmaster.backend.entity.ZKNode;
 
@@ -6,6 +6,7 @@ import org.zkmaster.backend.entity.ZKNode;
  * Delegate part of API from ZKMainService.
  */
 
+@Deprecated
 public interface CacheRepository {
     ZKNode get(String host);
 

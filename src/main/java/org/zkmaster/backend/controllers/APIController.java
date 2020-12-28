@@ -15,11 +15,11 @@ import java.util.Map;
 @Controller
 @RequestMapping("/api/zkm")
 public class APIController {
-    ZKMainService zkMainService;
+    ZKMainService mainService;
 
     @Autowired
-    public APIController(@Qualifier("ZKMainServiceRWL") ZKMainService zkMainService) {
-        this.zkMainService = zkMainService;
+    public APIController(@Qualifier("ZKMainServiceFresh") ZKMainService mainService) {
+        this.mainService = mainService;
     }
 
     /**
@@ -38,7 +38,7 @@ public class APIController {
     @Log
     public @ResponseBody
     Map<String, Boolean> checkHostsHealth(@RequestBody List<String> hosts) {
-        return zkMainService.checkHostsHealth(hosts);
+        return mainService.checkHostsHealth(hosts);
     }
 
     @PostMapping("/data/copy")
@@ -48,25 +48,5 @@ public class APIController {
 //        return zkMainService.checkHostsHealth(hosts);
         throw new UnsupportedOperationException();
     }
-
-//    /**
-//     * Meaning: Rename node in ZooKeeper.
-//     * HTTP - POST
-//     * expect request body: {@link RequestDTO}
-//     * {
-//     * "path": String -- absolute path of renaming node.
-//     * "value": String -- new name of renaming node.
-//     * }
-//     */
-//    @PostMapping("/rename/{host}")
-//    @Log
-//    @Deprecated
-//    public @ResponseBody
-//    boolean rename(@RequestBody RequestDTO dto,
-//                   @PathVariable String host) throws NodeRenameException {
-//        System.err.println("API IN BETA-TEST!!!");
-////        zkMainService.renameNode(host, dto.getPath(), dto.getValue());
-//        return false;
-//    }
 
 }

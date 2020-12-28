@@ -8,6 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * TODO Feature - export into YAML.
  * TODO Feature - cascade delete.
  * TODO Feature - getHostValue - re-write by List, not Recursion.
+ *
+ * TODO - process IOException for business.
+ * TODO - сделать полную иерархию Исключений.
  */
 @SpringBootApplication
 public class BackendApplication {

@@ -1,11 +1,11 @@
 package org.zkmaster.backend.repositories;
 
-import org.apache.zookeeper.KeeperException;
+import org.zkmaster.backend.entity.Host;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKNodes;
-import org.zkmaster.backend.entity.ZKServer;
 import org.zkmaster.backend.entity.ZKTransaction;
 import org.zkmaster.backend.exceptions.NodeExistsException;
+import org.zkmaster.backend.exceptions.NodeRenameException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -14,23 +14,23 @@ import java.util.List;
  * TODO Сделать обход в ширину без рекурсии при собрании getAll в репозитории,
  * TODO у Макса никогда руки не дойдут, и так фронт нихрена не делает.
  */
-public class ZKNodeRepositoryDefault implements ZKNodeRepository {
-    private final ZKServer zkServer;
 
-    public ZKNodeRepositoryDefault(ZKServer zkServer) {
-        this.zkServer = zkServer;
+public class HostProviderDefault implements HostProvider {
+    private final Host host;
+
+    public HostProviderDefault(Host host) {
+        this.host = host;
     }
 
 
     @Override
-    public boolean create(String path, String value) throws NodeExistsException {
-        zkServer.create(path, value);
-        return true;
+    public boolean createNode(String path, String value) throws NodeExistsException {
+        return host.create(path, value);
     }
 
     @Override
-    public ZKNode getHostValue() {
-        return getHostValue("/", "/");
+    public ZKNode readHostValue() {
+        return readHostValue("/", "/");
     }
 
 //    /**
@@ -39,13 +39,13 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
 //     * @param rootName -
 //     * @return -
 //     */
-//    private ZKNode getHostValueList(String rootPath, String rootName) {
-//        String rootValue = zkServer.read(rootPath);
+//    private ZKNode readHostValue(String rootPath, String rootName) {
+//        String rootValue = host.read(rootPath);
 //
 //
 //        LinkedList<ZKNode> searchList = new LinkedList<>();
 //        List<ZKNode> treeWalkList = new LinkedList<>();
-//        searchList.add(new ZKNode(rootPath, zkServer.read(rootPath)));
+//        searchList.add(new ZKNode(rootPath, host.read(rootPath)));
 //        ZKNode currentNode;
 //        while (!searchList.isEmpty()) {
 //            currentNode = searchList.getFirst();
@@ -57,27 +57,21 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
     /**
      * @implSpec Tree walk: width && recursion.
      */
-    private ZKNode getHostValue(String path, String nodeName) {
-        String nodeValue = zkServer.read(path);
+    private ZKNode readHostValue(String path, String nodeName) {
+        String nodeValue = host.read(path);
         List<ZKNode> children = new LinkedList<>();
-        List<String> childrenNames = zkServer.getChildren(path);
+        List<String> childrenNames = host.getChildren(path);
         if (childrenNames != null && !childrenNames.isEmpty()) {
             for (var childName : childrenNames) {
                 String childPath = ("/".equals(path)) // is it root
                         ? path + childName            // true
                         : path + "/" + childName;     // false
-                children.add(getHostValue(childPath, childName)); // <<-- Recursion
+                children.add(readHostValue(childPath, childName)); // <<-- Recursion
             }
         }
         return new ZKNode(path, nodeValue, nodeName, children);
     }
 
-    /**
-     * @param root - start node. Default=hostValue(root).
-     * @param path - absolute path of searching {@link ZKNode}.
-     * @return result || null ==>> if searching {@link ZKNode} doesn't found.
-     * @implSpec Tree walk: width && iterate.
-     */
     @Override
     public ZKNode getSubNode(ZKNode root, String path) {
         var treeWalkList = new LinkedList<ZKNode>();
@@ -97,24 +91,35 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
     }
 
     @Override
-    public boolean set(String path, String value) {
-        return zkServer.setData(path, value);
+    public boolean saveNode(String path, String name, String value, ZKNode actualCache)
+            throws NodeRenameException {
+        String oldName = ZKNodes.extractNodeName(path);
+        return (oldName.equals(name))
+                ? set(path, value)
+                : rename(path, name, value, getSubNode(actualCache, path));
     }
 
     @Override
-    public boolean delete(String path) {
-        return zkServer.delete(path);
+    public boolean deleteNode(String path) {
+        return host.delete(path);
+    }
+
+    @Override
+    public ZKTransaction transaction() {
+        return host.transaction();
+    }
+
+    private boolean set(String path, String value) {
+        return host.setData(path, value);
     }
 
     /**
-     * @implSpec @implSpec Tree walk: width && iterate.
+     * Spec: Tree walk: width && iterate.
      */
-    @Override
-    public boolean rename(String path, String name, String value, ZKNode hostValue)
-            throws KeeperException, InterruptedException, NodeExistsException {
-        ZKTransaction transaction = zkServer.transaction();
+    private boolean rename(String path, String name, String value, ZKNode targetNode)
+            throws NodeRenameException {
+        ZKTransaction transaction = host.transaction();
 
-        ZKNode targetNode = getSubNode(hostValue, path);
         var deleteNodePaths = new LinkedList<String>();
         var treeWalkList = new LinkedList<ZKNode>();
         treeWalkList.add(targetNode);
@@ -143,13 +148,9 @@ public class ZKNodeRepositoryDefault implements ZKNodeRepository {
         while (!deleteNodePaths.isEmpty()) {
             transaction.delete(deleteNodePaths.removeLast());
         }
-        transaction.commit();
-        return true;
-    }
 
-    @Override
-    public ZKTransaction transaction() {
-        return zkServer.transaction();
+        return transaction.commit("Rename failed: Transaction failed!",
+                new NodeRenameException(host.getHostUrl(), path, name));
     }
 
 }
