@@ -76,7 +76,7 @@ public interface MainService {
      * @return Delete success or not.
      */
     @Delegate(to = HostProvider.class)
-    boolean deleteNode(String host, String path) throws NodeSaveException, NodeDeleteException, HostProviderNotFoundException;
+    boolean deleteNode(String host, String path) throws NodeSaveException, NodeDeleteException, HostProviderNotFoundException, NodeReadException;
 
     /* ####### Advanced API ####### */
 

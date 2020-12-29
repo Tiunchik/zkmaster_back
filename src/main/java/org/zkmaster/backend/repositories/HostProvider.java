@@ -30,7 +30,8 @@ public interface HostProvider {
      *
      * @param root - start node. Default=hostValue(root).
      * @param path - absolute path of searching {@link ZKNode}.
-     * @return result || null ==>> if searching {@link ZKNode} doesn't found.
+     * @return Node with {@param path} with all sub-node OR
+     * null ==>> if searching {@link ZKNode} doesn't found.
      * @implNote Tree traversal should be: for width by List, Not recursion.
      * * Cause we don't know how deep tree is.(Argument for List)
      */
@@ -56,7 +57,7 @@ public interface HostProvider {
      * @param path Node path.
      * @return Delete success OR not.
      */
-    boolean deleteNode(String path) throws NodeDeleteException;
+    boolean deleteNode(String path, ZKNode actualCache) throws NodeDeleteException;
 
     /**
      * Access to low level API.

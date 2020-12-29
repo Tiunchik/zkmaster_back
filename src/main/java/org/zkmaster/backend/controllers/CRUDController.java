@@ -36,7 +36,8 @@ public class CRUDController {
     @GetMapping("")
     @Log
     public @ResponseBody
-    ZKNode getHostValue(@PathVariable String host) throws WrongHostAddressException, NodeReadException {
+    ZKNode getHostValue(@PathVariable String host)
+            throws WrongHostAddressException, NodeReadException {
         ZKNode rsl = null;
         if (mainService.containsConnection(host)) {
             rsl = mainService.getHostValue(host);
@@ -59,8 +60,8 @@ public class CRUDController {
     @PostMapping("")
     @Log
     public @ResponseBody
-    boolean createNode(@RequestBody RequestDTO dto,
-                       @PathVariable String host) throws HostProviderNotFoundException, NodeExistsException, NodeCreateException {
+    boolean createNode(@RequestBody RequestDTO dto, @PathVariable String host)
+            throws HostProviderNotFoundException, NodeExistsException, NodeCreateException {
         return mainService.createNode(host, dto.getPath(), dto.getValue());
     }
 
@@ -77,8 +78,8 @@ public class CRUDController {
     @PutMapping("")
     @Log
     public @ResponseBody
-    boolean updateNode(@RequestBody RequestDTO dto,
-                       @PathVariable String host) throws NodeSaveException, HostProviderNotFoundException, NodeReadException {
+    boolean updateNode(@RequestBody RequestDTO dto, @PathVariable String host)
+            throws NodeSaveException, HostProviderNotFoundException, NodeReadException {
         String[] nameAndValue = dto.getValue().split("&");
         String rslValue = (nameAndValue.length == 1) ? "" : nameAndValue[1];
         return mainService.saveNode(host, dto.getPath(), nameAndValue[0], rslValue);
@@ -91,7 +92,8 @@ public class CRUDController {
     @DeleteMapping("/**")
     @Log
     public @ResponseBody
-    boolean deleteNode(@PathVariable String host, HttpServletRequest request) throws HostProviderNotFoundException, NodeDeleteException, NodeSaveException {
+    boolean deleteNode(@PathVariable String host, HttpServletRequest request)
+            throws HostProviderNotFoundException, NodeDeleteException, NodeSaveException, NodeReadException {
         String fullPath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         String path = fullPath.substring(fullPath.indexOf(host) + host.length());
         return mainService.deleteNode(host, path);

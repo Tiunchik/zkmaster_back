@@ -66,11 +66,11 @@ public class HostProviderRWL implements HostProvider {
     }
 
     @Override
-    public boolean deleteNode(String path) throws NodeDeleteException {
+    public boolean deleteNode(String path, ZKNode actualCache) throws NodeDeleteException {
         readWriteLock.writeLock().lock();
         boolean rsl;
         try {
-            rsl = provider.deleteNode(path);
+            rsl = provider.deleteNode(path, actualCache);
         } finally {
             readWriteLock.writeLock().unlock();
         }

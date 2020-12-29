@@ -94,22 +94,20 @@ public class HostProviderDefault implements HostProvider {
             throws NodeSaveException {
         String oldName = ZKNodes.extractNodeName(path);
         return (oldName.equals(name))
-                ? set(path, value)
+                ? host.setData(path, value)
                 : rename(path, name, value, getSubNode(actualCache, path));
     }
 
     @Override
-    public boolean deleteNode(String path) throws NodeDeleteException {
-        return host.delete(path);
+    public boolean deleteNode(String path, ZKNode actualCache) throws NodeDeleteException {
+        return (host.hasChildren(path))
+                ? cascadeDelete(path, getSubNode(actualCache, path))
+                : host.delete(path);
     }
 
     @Override
     public ZKTransaction transaction() {
         return host.transaction();
-    }
-
-    private boolean set(String path, String value) throws NodeSaveException {
-        return host.setData(path, value);
     }
 
     /**
@@ -143,13 +141,35 @@ public class HostProviderDefault implements HostProvider {
                     rslValue
             );
         }
-
         while (!deleteNodePaths.isEmpty()) {
             transaction.delete(deleteNodePaths.removeLast());
         }
-
         return transaction.commit("Rename failed: Transaction failed!",
                 new NodeSaveException(host.getHostAddress(), path, name));
+    }
+
+    /**
+     * Spec: Tree walk: width && iterate.
+     */
+    private boolean cascadeDelete(String path, ZKNode targetNode) throws NodeDeleteException {
+        ZKTransaction transaction = host.transaction();
+
+        var deleteNodePaths = new LinkedList<String>();
+        var treeWalkList = new LinkedList<ZKNode>();
+        treeWalkList.add(targetNode);
+
+        while (!treeWalkList.isEmpty()) {
+            ZKNode currentZKNode = treeWalkList.removeFirst();
+            if (ZKNodes.hasChildren(currentZKNode)) {
+                treeWalkList.addAll(currentZKNode.getChildren());
+            }
+            deleteNodePaths.add(currentZKNode.getPath());
+        }
+        while (!deleteNodePaths.isEmpty()) {
+            transaction.delete(deleteNodePaths.removeLast());
+        }
+        return transaction.commit("Delete failed: Transaction failed!",
+                new NodeDeleteException(host.getHostAddress(), path));
     }
 
 }

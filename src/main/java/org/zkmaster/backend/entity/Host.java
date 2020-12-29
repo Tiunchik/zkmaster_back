@@ -130,6 +130,10 @@ public class Host implements AutoCloseable {
         return rsl;
     }
 
+    public boolean hasChildren(String path) {
+        return !this.getChildren(path).isEmpty();
+    }
+
     public ZKTransaction transaction() {
         return new ZKTransaction(zoo.transaction());
     }

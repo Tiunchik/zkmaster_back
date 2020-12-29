@@ -21,4 +21,7 @@ Content-Type: application/json
 }
 ###
 
+// delete node
+DELETE http://localhost:8081/api/zkm/data/localhost:2181/i1/i2/i2
 
+###

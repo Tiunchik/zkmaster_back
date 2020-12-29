@@ -42,8 +42,8 @@ public class MainServiceFresh implements MainService {
     }
 
     @Override
-    public boolean deleteNode(String host, String path) throws NodeDeleteException, HostProviderNotFoundException {
-        return ctx.getHostProvider(host).deleteNode(path);
+    public boolean deleteNode(String host, String path) throws NodeDeleteException, HostProviderNotFoundException, NodeReadException {
+        return ctx.getHostProvider(host).deleteNode(path, ctx.getActualHostValue(host));
     }
 
     @Override
