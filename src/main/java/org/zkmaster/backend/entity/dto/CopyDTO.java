@@ -32,13 +32,17 @@ public class CopyDTO {
 
     @Override
     public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
         CopyDTO copyDTO = (CopyDTO) object;
-        return Objects.equals(sourceHost, copyDTO.sourceHost) &&
-                Objects.equals(sourceNodePath, copyDTO.sourceNodePath) &&
-                Objects.equals(targetHost, copyDTO.targetHost) &&
-                Objects.equals(targetNodePath, copyDTO.targetNodePath);
+        return Objects.equals(sourceHost, copyDTO.sourceHost)
+                && Objects.equals(sourceNodePath, copyDTO.sourceNodePath)
+                && Objects.equals(targetHost, copyDTO.targetHost)
+                && Objects.equals(targetNodePath, copyDTO.targetNodePath);
     }
 
     @Override

@@ -3,15 +3,11 @@ package org.zkmaster.backend.repositories;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKTransaction;
-import org.zkmaster.backend.exceptions.NodeExistsException;
-import org.zkmaster.backend.exceptions.NodeRenameException;
+import org.zkmaster.backend.exceptions.node.*;
 
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/**
- * TODO - make it RWL.
- */
 public class HostProviderRWL implements HostProvider {
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private final HostProvider provider;
@@ -22,7 +18,7 @@ public class HostProviderRWL implements HostProvider {
     }
 
     @Override
-    public boolean createNode(String path, String value) throws NodeExistsException {
+    public boolean createNode(String path, String value) throws NodeExistsException, NodeCreateException {
         readWriteLock.writeLock().lock();
         boolean rsl;
         try {
@@ -34,7 +30,7 @@ public class HostProviderRWL implements HostProvider {
     }
 
     @Override
-    public ZKNode readHostValue() {
+    public ZKNode readHostValue() throws NodeReadException {
         readWriteLock.readLock().lock();
         ZKNode rsl;
         try {
@@ -58,7 +54,7 @@ public class HostProviderRWL implements HostProvider {
     }
 
     @Override
-    public boolean saveNode(String path, String name, String value, ZKNode actualCache) throws NodeRenameException {
+    public boolean saveNode(String path, String name, String value, ZKNode actualCache) throws NodeSaveException {
         readWriteLock.writeLock().lock();
         boolean rsl;
         try {
@@ -70,7 +66,7 @@ public class HostProviderRWL implements HostProvider {
     }
 
     @Override
-    public boolean deleteNode(String path) {
+    public boolean deleteNode(String path) throws NodeDeleteException {
         readWriteLock.writeLock().lock();
         boolean rsl;
         try {

@@ -4,8 +4,7 @@ import org.zkmaster.backend.entity.Host;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKNodes;
 import org.zkmaster.backend.entity.ZKTransaction;
-import org.zkmaster.backend.exceptions.NodeExistsException;
-import org.zkmaster.backend.exceptions.NodeRenameException;
+import org.zkmaster.backend.exceptions.node.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,12 +23,12 @@ public class HostProviderDefault implements HostProvider {
 
 
     @Override
-    public boolean createNode(String path, String value) throws NodeExistsException {
+    public boolean createNode(String path, String value) throws NodeExistsException, NodeCreateException {
         return host.create(path, value);
     }
 
     @Override
-    public ZKNode readHostValue() {
+    public ZKNode readHostValue() throws NodeReadException {
         return readHostValue("/", "/");
     }
 
@@ -57,7 +56,7 @@ public class HostProviderDefault implements HostProvider {
     /**
      * @implSpec Tree walk: width && recursion.
      */
-    private ZKNode readHostValue(String path, String nodeName) {
+    private ZKNode readHostValue(String path, String nodeName) throws NodeReadException {
         String nodeValue = host.read(path);
         List<ZKNode> children = new LinkedList<>();
         List<String> childrenNames = host.getChildren(path);
@@ -92,7 +91,7 @@ public class HostProviderDefault implements HostProvider {
 
     @Override
     public boolean saveNode(String path, String name, String value, ZKNode actualCache)
-            throws NodeRenameException {
+            throws NodeSaveException {
         String oldName = ZKNodes.extractNodeName(path);
         return (oldName.equals(name))
                 ? set(path, value)
@@ -100,7 +99,7 @@ public class HostProviderDefault implements HostProvider {
     }
 
     @Override
-    public boolean deleteNode(String path) {
+    public boolean deleteNode(String path) throws NodeDeleteException {
         return host.delete(path);
     }
 
@@ -109,7 +108,7 @@ public class HostProviderDefault implements HostProvider {
         return host.transaction();
     }
 
-    private boolean set(String path, String value) {
+    private boolean set(String path, String value) throws NodeSaveException {
         return host.setData(path, value);
     }
 
@@ -117,7 +116,7 @@ public class HostProviderDefault implements HostProvider {
      * Spec: Tree walk: width && iterate.
      */
     private boolean rename(String path, String name, String value, ZKNode targetNode)
-            throws NodeRenameException {
+            throws NodeSaveException {
         ZKTransaction transaction = host.transaction();
 
         var deleteNodePaths = new LinkedList<String>();
@@ -150,7 +149,7 @@ public class HostProviderDefault implements HostProvider {
         }
 
         return transaction.commit("Rename failed: Transaction failed!",
-                new NodeRenameException(host.getHostUrl(), path, name));
+                new NodeSaveException(host.getHostAddress(), path, name));
     }
 
 }

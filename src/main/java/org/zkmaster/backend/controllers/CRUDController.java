@@ -7,8 +7,10 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.dto.RequestDTO;
-import org.zkmaster.backend.exceptions.*;
-import org.zkmaster.backend.services.ZKMainService;
+import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
+import org.zkmaster.backend.exceptions.WrongHostAddressException;
+import org.zkmaster.backend.exceptions.node.*;
+import org.zkmaster.backend.services.MainService;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,10 +21,10 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/api/zkm/data/{host}")
 @CrossOrigin(value = {"*"})
 public class CRUDController {
-    ZKMainService mainService;
+    MainService mainService;
 
     @Autowired
-    public CRUDController(@Qualifier("ZKMainServiceFresh") ZKMainService mainService) {
+    public CRUDController(@Qualifier("mainServiceFresh") MainService mainService) {
         this.mainService = mainService;
     }
 
@@ -34,7 +36,7 @@ public class CRUDController {
     @GetMapping("")
     @Log
     public @ResponseBody
-    ZKNode getHostValue(@PathVariable String host) throws WrongHostAddressException {
+    ZKNode getHostValue(@PathVariable String host) throws WrongHostAddressException, NodeReadException {
         ZKNode rsl = null;
         if (mainService.containsConnection(host)) {
             rsl = mainService.getHostValue(host);
@@ -58,7 +60,7 @@ public class CRUDController {
     @Log
     public @ResponseBody
     boolean createNode(@RequestBody RequestDTO dto,
-                       @PathVariable String host) throws NodeExistsException, HostNotFoundException {
+                       @PathVariable String host) throws HostProviderNotFoundException, NodeExistsException, NodeCreateException {
         return mainService.createNode(host, dto.getPath(), dto.getValue());
     }
 
@@ -76,7 +78,7 @@ public class CRUDController {
     @Log
     public @ResponseBody
     boolean updateNode(@RequestBody RequestDTO dto,
-                       @PathVariable String host) throws NodeSaveException, NodeRenameException, HostNotFoundException {
+                       @PathVariable String host) throws NodeSaveException, HostProviderNotFoundException, NodeReadException {
         String[] nameAndValue = dto.getValue().split("&");
         String rslValue = (nameAndValue.length == 1) ? "" : nameAndValue[1];
         return mainService.saveNode(host, dto.getPath(), nameAndValue[0], rslValue);
@@ -89,7 +91,7 @@ public class CRUDController {
     @DeleteMapping("/**")
     @Log
     public @ResponseBody
-    boolean deleteNode(@PathVariable String host, HttpServletRequest request) throws NodeDeleteException, HostNotFoundException {
+    boolean deleteNode(@PathVariable String host, HttpServletRequest request) throws HostProviderNotFoundException, NodeDeleteException, NodeSaveException {
         String fullPath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         String path = fullPath.substring(fullPath.indexOf(host) + host.length());
         return mainService.deleteNode(host, path);

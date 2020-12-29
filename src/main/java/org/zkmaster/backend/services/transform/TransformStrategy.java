@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKTransaction;
-import org.zkmaster.backend.exceptions.ImportFailException;
+import org.zkmaster.backend.exceptions.DataImportFailException;
 
 import java.util.List;
 import java.util.Map;
@@ -31,10 +31,10 @@ public class TransformStrategy {
 
     @Log
     public boolean importData(ZKTransaction transaction, String host,
-                              String type, List<String> data) throws ImportFailException {
+                              String type, List<String> data) throws DataImportFailException {
         get(type).importData(data, transaction);
         return transaction.commit("Import failed: Transaction failed!",
-                new ImportFailException(host, type, data.size()));
+                new DataImportFailException(host, type, data.size()));
     }
 
     @Deprecated(since = "it should be private method.")

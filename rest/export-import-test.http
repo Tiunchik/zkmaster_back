@@ -1,16 +1,10 @@
+# TODO - make it as whole test
+
 # get host-value - WORK
 GET http://localhost:8081/api/zkm/data/localhost:2181
 
 ###
 
-# export to TXT - WORK
-#GET http://localhost:8081/api/zkm/transform/localhost:2181
-#Content-Type: application/json
-#
-#{
-#  "type" : "TXT"
-#}
-###
 
 ## import TXT - WORK
 POST http://localhost:8081/api/zkm/transform/localhost:2181

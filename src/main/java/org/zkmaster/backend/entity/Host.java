@@ -1,10 +1,11 @@
 package org.zkmaster.backend.entity;
 
 import org.apache.zookeeper.*;
-import org.zkmaster.backend.exceptions.NodeExistsException;
+import org.zkmaster.backend.exceptions.node.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -12,23 +13,22 @@ import java.util.List;
  * <p>
  * If you need more API from original {@link ZooKeeper},
  * decorate it in this class.
- * TODO - сделать полную иерархию Исключений.
  */
 public class Host implements AutoCloseable {
-    private final String hostUrl;
+    private final String hostAddress;
     private final ZooKeeper zoo;
 
     /**
      * Regular constructor for facade of real server.
      *
-     * @param hostUrl        - URL of real ZooKeeper server.
+     * @param hostAddress    - URL of real ZooKeeper server.
      * @param sessionTimeout - timeout for query to real server.
      * @param watcher        - catch all event(changes) from real server.
      * @throws IOException - Fail to create connection with real ZooKeeper server!
      */
-    public Host(String hostUrl, int sessionTimeout, Watcher watcher) throws IOException {
-        this.hostUrl = hostUrl;
-        this.zoo = new ZooKeeper(hostUrl, sessionTimeout, watcher);
+    public Host(String hostAddress, int sessionTimeout, Watcher watcher) throws IOException {
+        this.hostAddress = hostAddress;
+        this.zoo = new ZooKeeper(hostAddress, sessionTimeout, watcher);
     }
 
     /**
@@ -37,7 +37,7 @@ public class Host implements AutoCloseable {
      * @param path  -
      * @param value -
      */
-    public boolean create(String path, String value) throws NodeExistsException {
+    public boolean create(String path, String value) throws NodeExistsException, NodeCreateException {
         try {
             zoo.create(path,
                     value.getBytes(),
@@ -48,6 +48,7 @@ public class Host implements AutoCloseable {
         } catch (KeeperException | InterruptedException e) {
             System.err.println("Something Wrong! Check it.");
             e.printStackTrace();
+            throw new NodeCreateException(hostAddress, path, value);
         }
         return true;
     }
@@ -58,7 +59,7 @@ public class Host implements AutoCloseable {
      * @param path -
      * @return String value by nude.
      */
-    public String read(String path) {
+    public String read(String path) throws NodeReadException {
         String rsl = null;
         try {
             byte[] temp = zoo.getData(path, true, null);
@@ -68,45 +69,48 @@ public class Host implements AutoCloseable {
         } catch (KeeperException | InterruptedException e) {
             System.err.println("Something Wrong! Check it.");
             e.printStackTrace();
+            throw new NodeReadException(hostAddress, path);
         }
         return rsl;
     }
 
     /**
-     * !!! If the given version is -1, it matches any node's versions.
+     * Update node value by params.
+     * * If the given version is "-1", it matches any node's versions.
      *
-     * @param path  -
-     * @param value -
-     * @return - update complete success or not.
+     * @param path  Node path.
+     * @param value new Node name.
+     * @return Update OR throw {@link NodeSaveException}.
+     * @throws NodeSaveException throw if something went wrong.
      */
-    public boolean setData(String path, String value) {
-        boolean rsl = true;
+    public boolean setData(String path, String value) throws NodeSaveException {
         try {
             zoo.setData(path, value.getBytes(), -1);
         } catch (KeeperException | InterruptedException e) {
-            rsl = false;
             System.err.println("Something Wrong! Check it.");
             e.printStackTrace();
+            throw new NodeSaveException(hostAddress, path, value);
         }
-        return rsl;
+        return true;
     }
 
     /**
-     * !!! If the given version is -1, it matches any node's versions.
+     * Delete node by {@param path}.
+     * * If the given version is "-1", it matches any node's versions.
      *
-     * @param path -
-     * @return - delete complete success or not.
+     * @param path Node path.
+     * @return Delete OR throw {@link NodeDeleteException}.
+     * @throws NodeDeleteException throw if something went wrong.
      */
-    public boolean delete(String path) {
-        boolean rsl = true;
+    public boolean delete(String path) throws NodeDeleteException {
         try {
             zoo.delete(path, -1);
         } catch (InterruptedException | KeeperException e) {
-            rsl = false;
             System.err.println("Something Wrong! Check it.");
             e.printStackTrace();
+            throw new NodeDeleteException(hostAddress, path);
         }
-        return rsl;
+        return true;
     }
 
     /**
@@ -116,11 +120,11 @@ public class Host implements AutoCloseable {
      * @return children names OR null.
      */
     public List<String> getChildren(String path) {
-        List<String> rsl = null;
+        List<String> rsl = new LinkedList<>();
         try {
             rsl = zoo.getChildren(path, true, null);
         } catch (KeeperException | InterruptedException e) {
-            System.err.println("Something Wrong! Check it.");
+            System.err.println("Something Wrong! Unexpected ZK API Exception! Check the case.");
             e.printStackTrace();
         }
         return rsl;
@@ -130,8 +134,8 @@ public class Host implements AutoCloseable {
         return new ZKTransaction(zoo.transaction());
     }
 
-    public String getHostUrl() {
-        return hostUrl;
+    public String getHostAddress() {
+        return hostAddress;
     }
 
     @Override

@@ -3,8 +3,9 @@ package org.zkmaster.backend.repositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.exceptions.HostNotFoundException;
+import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.WrongHostAddressException;
+import org.zkmaster.backend.exceptions.node.NodeReadException;
 import org.zkmaster.backend.factories.HostFactory;
 
 import java.util.HashMap;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Ready
  * Work with: servers cache && map of HostProvider.
  */
 @Service
@@ -30,7 +30,7 @@ public class HostContextDefault implements HostContext {
 
 
     @Override
-    public ZKNode getActualHostValue(String host) {
+    public ZKNode getActualHostValue(String host) throws NodeReadException {
         ZKNode hostValue = caches.get(host); // value or null
         if (hostValue == null) { // if cache is null
             hostValue = providers.get(host).readHostValue();
@@ -40,10 +40,10 @@ public class HostContextDefault implements HostContext {
     }
 
     @Override
-    public HostProvider getHostService(String host) throws HostNotFoundException {
+    public HostProvider getHostProvider(String host) throws HostProviderNotFoundException {
         HostProvider rsl = providers.get(host);
         if (rsl == null) {
-            throw new HostNotFoundException(host);
+            throw new HostProviderNotFoundException(host);
         }
         return rsl;
     }
@@ -57,7 +57,7 @@ public class HostContextDefault implements HostContext {
     }
 
     @Override
-    public void refreshCache(String host) {
+    public void refreshCache(String host) throws NodeReadException {
         caches.put(host, providers.get(host).readHostValue());
     }
 

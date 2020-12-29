@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.dto.CopyDTO;
 import org.zkmaster.backend.entity.dto.RequestDTO;
-import org.zkmaster.backend.services.ZKMainService;
+import org.zkmaster.backend.services.MainService;
 
 import java.util.List;
 import java.util.Map;
@@ -15,10 +15,10 @@ import java.util.Map;
 @Controller
 @RequestMapping("/api/zkm")
 public class APIController {
-    ZKMainService mainService;
+    MainService mainService;
 
     @Autowired
-    public APIController(@Qualifier("ZKMainServiceFresh") ZKMainService mainService) {
+    public APIController(@Qualifier("mainServiceFresh") MainService mainService) {
         this.mainService = mainService;
     }
 

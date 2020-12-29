@@ -37,7 +37,7 @@ public class ZKTransaction {
     }
 
     /**
-     * @param errMsg    smg for print, if transaction failed.
+     * @param errMsg    msg for print, if transaction failed.
      * @param exception outer exception.
      * @param <E>       outer exception type.
      * @return true, if transaction success, else throw {@param exception}.

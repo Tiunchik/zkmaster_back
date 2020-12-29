@@ -1,31 +1,33 @@
 // HTTP test for version 2.0.
-# get host-value - WORK
+# get host-value(connect)
 GET http://localhost:8081/api/zkm/data/localhost:2181
+
 ###
 
-
-// create node - WORK
+// create node
 POST http://localhost:8081/api/zkm/data/localhost:2181
 Content-Type: application/json
 
 {
-  "path": "/t1",
+  "path": "/crud-test-node",
   "value": "value"
 }
+
 ###
 
-// update node - WORK
+// update node
 PUT http://localhost:8081/api/zkm/data/localhost:2181
 Content-Type: application/json
 
 {
-  "path": "/t1",
-  "value": "t777&value"
+  "path": "/crud-test-node",
+  "value": "crud-test-node-update&value-update"
 }
+
 ###
 
-// delete node - WORK
-DELETE http://localhost:8081/api/zkm/data/localhost:2181/t1
+// delete node
+DELETE http://localhost:8081/api/zkm/data/localhost:2181/crud-test-node-update
 
 ###
 

@@ -7,7 +7,8 @@ import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.ZKWatcherDefault;
 import org.zkmaster.backend.events.EventServerClose;
 import org.zkmaster.backend.events.EventServerStateChange;
-import org.zkmaster.backend.services.ZKMainService;
+import org.zkmaster.backend.exceptions.node.NodeReadException;
+import org.zkmaster.backend.services.MainService;
 
 /**
  * Event Listener - listens all events from "real servers" and process it.
@@ -15,16 +16,16 @@ import org.zkmaster.backend.services.ZKMainService;
  */
 @Component
 public class ServerEventListenerDefault implements ServerEventListener {
-    ZKMainService mainService;
+    MainService mainService;
 
     @Autowired
-    public ServerEventListenerDefault(@Qualifier("ZKMainServiceFresh") ZKMainService mainService) {
+    public ServerEventListenerDefault(@Qualifier("mainServiceFresh") MainService mainService) {
         this.mainService = mainService;
     }
 
     @Override
     @Log
-    public void eventProcess(EventServerStateChange serverStateChange) {
+    public void eventProcess(EventServerStateChange serverStateChange) throws NodeReadException {
         mainService.refreshCache(serverStateChange.getHostUrl());
     }
 

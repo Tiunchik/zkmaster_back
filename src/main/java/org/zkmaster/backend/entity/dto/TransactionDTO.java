@@ -4,6 +4,7 @@ import org.zkmaster.backend.entity.ZKNode;
 
 import java.util.List;
 
+@Deprecated
 public class TransactionDTO {
 
     private List<ZKNode> deletes; // list of Tree - signature like "deletes"

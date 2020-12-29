@@ -4,8 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.exceptions.HostNotFoundException;
+import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.WrongHostAddressException;
+import org.zkmaster.backend.exceptions.node.NodeReadException;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class HostContextRWL implements HostContext {
     }
 
     @Override
-    public ZKNode getActualHostValue(String host) {
+    public ZKNode getActualHostValue(String host) throws NodeReadException {
         readWriteLock.readLock().lock();
         ZKNode rsl;
         try {
@@ -35,11 +36,11 @@ public class HostContextRWL implements HostContext {
     }
 
     @Override
-    public HostProvider getHostService(String host) throws HostNotFoundException {
+    public HostProvider getHostProvider(String host) throws HostProviderNotFoundException {
         readWriteLock.readLock().lock();
         HostProvider rsl;
         try {
-            rsl = ctx.getHostService(host);
+            rsl = ctx.getHostProvider(host);
         } finally {
             readWriteLock.readLock().unlock();
         }
@@ -59,7 +60,7 @@ public class HostContextRWL implements HostContext {
     }
 
     @Override
-    public void refreshCache(String host) {
+    public void refreshCache(String host) throws NodeReadException {
         readWriteLock.writeLock().lock();
         try {
             ctx.refreshCache(host);

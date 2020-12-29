@@ -1,10 +1,10 @@
-package org.zkmaster.backend.exceptions;
+package org.zkmaster.backend.exceptions.node;
 
 public class NodeExistsException extends Exception {
 
     public NodeExistsException(String path) {
         super("ZKM EXCEPTION: NodeExistsException:"
-                + " path : " + path
+                + " path=" + path
                 + " exists! Can't create node that exists.");
     }
 

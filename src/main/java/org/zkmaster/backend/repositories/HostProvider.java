@@ -3,8 +3,7 @@ package org.zkmaster.backend.repositories;
 import org.zkmaster.backend.entity.Host;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKTransaction;
-import org.zkmaster.backend.exceptions.NodeExistsException;
-import org.zkmaster.backend.exceptions.NodeRenameException;
+import org.zkmaster.backend.exceptions.node.*;
 
 /**
  * High level api of real-server. Provide and extend {@link Host} API.
@@ -17,14 +16,14 @@ public interface HostProvider {
      * @return Create success OR not.
      * @throws NodeExistsException ZooKeeper API - exception
      */
-    boolean createNode(String path, String value) throws NodeExistsException;
+    boolean createNode(String path, String value) throws NodeExistsException, NodeCreateException;
 
     /**
      * Read host-value(root with all sub-nodes) from real server, packed as tree-node{@link ZKNode}.
      *
      * @return {@link ZKNode} host-value OR null.
      */
-    ZKNode readHostValue();
+    ZKNode readHostValue() throws NodeReadException;
 
     /**
      * Select inner sub-node from {@param root}.
@@ -49,7 +48,7 @@ public interface HostProvider {
      *                    every time then need just rename one node.
      * @return Save success OR not.
      */
-    boolean saveNode(String path, String name, String value, ZKNode actualCache) throws NodeRenameException;
+    boolean saveNode(String path, String name, String value, ZKNode actualCache) throws NodeSaveException;
 
     /**
      * Delete Node in real server.
@@ -57,7 +56,7 @@ public interface HostProvider {
      * @param path Node path.
      * @return Delete success OR not.
      */
-    boolean deleteNode(String path);
+    boolean deleteNode(String path) throws NodeDeleteException;
 
     /**
      * Access to low level API.

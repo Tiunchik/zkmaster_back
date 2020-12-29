@@ -2,6 +2,7 @@
 GET http://localhost:8081/api/zkm/data/localhost:2181
 ###
 
+# healt-check
 GET http://localhost:8081/api/zkm/conn/check
 Content-Type: application/json
 
