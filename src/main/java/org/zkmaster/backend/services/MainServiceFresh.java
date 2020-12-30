@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.entity.dto.InjectionDTO;
 import org.zkmaster.backend.exceptions.DataImportFailException;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
+import org.zkmaster.backend.exceptions.InjectionFailException;
 import org.zkmaster.backend.exceptions.WrongHostAddressException;
 import org.zkmaster.backend.exceptions.node.*;
 import org.zkmaster.backend.repositories.HostContext;
@@ -47,8 +49,8 @@ public class MainServiceFresh implements MainService {
     }
 
     @Override
-    public void refreshCache(String host) throws NodeReadException {
-        ctx.refreshCache(host);
+    public boolean refreshCache(String host) throws NodeReadException {
+        return ctx.refreshCache(host);
     }
 
     @Override
@@ -69,6 +71,11 @@ public class MainServiceFresh implements MainService {
     @Override
     public Map<String, Boolean> checkHostsHealth(List<String> hosts) {
         return ctx.checkHostsHealth(hosts);
+    }
+
+    @Override
+    public boolean injectFromTo(InjectionDTO dto) throws InjectionFailException {
+        return ctx.injectFromTo(dto);
     }
 
     @Override

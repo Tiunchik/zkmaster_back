@@ -6,40 +6,32 @@ import org.zkmaster.backend.entity.ZKTransaction;
 import org.zkmaster.backend.exceptions.node.*;
 
 /**
+ * Interface that provider you API for make any changes on real-server that this host is.
  * High level api of real-server. Provide and extend {@link Host} API.
  */
 public interface HostProvider {
 
     /**
+     * Create Node on real-server by provided params.
+     *
      * @param path  Node path.
      * @param value Node value.
      * @return Create success OR not.
-     * @throws NodeExistsException ZooKeeper API - exception
+     * @throws NodeExistsException -
+     * @throws NodeCreateException -
      */
     boolean createNode(String path, String value) throws NodeExistsException, NodeCreateException;
 
     /**
-     * Read host-value(root with all sub-nodes) from real server, packed as tree-node{@link ZKNode}.
+     * Read host-value from real server.
      *
-     * @return {@link ZKNode} host-value OR null.
+     * @return host-value OR throw Exception.
+     * @throws NodeReadException -
      */
     ZKNode readHostValue() throws NodeReadException;
 
     /**
-     * Select inner sub-node from {@param root}.
-     *
-     * @param root - start node. Default=hostValue(root).
-     * @param path - absolute path of searching {@link ZKNode}.
-     * @return Node with {@param path} with all sub-node OR
-     * null ==>> if searching {@link ZKNode} doesn't found.
-     * @implNote Tree traversal should be: for width by List, Not recursion.
-     * * Cause we don't know how deep tree is.(Argument for List)
-     */
-    ZKNode getSubNode(ZKNode root, String path);
-
-    /**
-     * Update Node value if Node name == {@param name}
-     * Rename Node and all sub-nodes if Node name != {@param name}
+     * Save any changes with Node on real-server by provided params.
      *
      * @param path        Node path.
      * @param name        new Node name.
@@ -48,19 +40,23 @@ public interface HostProvider {
      *                    In order not to read host-value from real server
      *                    every time then need just rename one node.
      * @return Save success OR not.
+     * @throws NodeSaveException -
      */
     boolean saveNode(String path, String name, String value, ZKNode actualCache) throws NodeSaveException;
 
     /**
-     * Delete Node in real server.
+     * Delete Node on real server by provided params.
      *
      * @param path Node path.
      * @return Delete success OR not.
+     * @throws NodeDeleteException -
      */
     boolean deleteNode(String path, ZKNode actualCache) throws NodeDeleteException;
 
     /**
-     * Access to low level API.
+     * Provide transaction for real-server.
+     *
+     * @see ZKTransaction
      */
     ZKTransaction transaction();
 

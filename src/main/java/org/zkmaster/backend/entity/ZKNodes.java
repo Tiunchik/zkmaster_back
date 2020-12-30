@@ -1,6 +1,9 @@
 package org.zkmaster.backend.entity;
 
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Utility class for {@link ZKNode}.
@@ -8,37 +11,89 @@ import java.util.LinkedList;
 public class ZKNodes {
 
     /**
-     * Info for any change in code:
-     * /1/1/1 :: oldPath
-     * /1/    :: corePathWithoutName
-     * set    :: newName
-     * 1      :: oldName
-     * <p>
-     * /1/set/1 :: return
+     * Check {@param node} has children or not? Just pretty API
      */
-    public static String replacePath(String oldPath, String corePathWithoutName,
-                                     String newName, String oldName) {
-//        System.out.println("DEV :: method: Replace START");
-//        System.out.println("DEV :: corePath==" + corePath);
-//        System.out.println("DEV :: oldPath==" + oldPath);
-//        System.out.println("DEV :: corePathWithoutName==" + corePathWithoutName);
-//        System.out.println("DEV :: newName==" + newName);
-//        System.out.println("DEV :: oldName==" + oldName);
-//        System.out.println("DEV :: method: Replace RUN");
-
-        var corePathWithoutNameLength = corePathWithoutName.length();
-        var endPart = oldPath.substring(corePathWithoutNameLength + oldName.length());
-        return corePathWithoutName + newName + endPart;
-    }
-
     public static boolean hasChildren(ZKNode node) {
         return node.getChildren().size() != 0;
     }
 
+    /**
+     * @return Example: "/1/2/3/4 : value" ->> "4"
+     */
     public static String extractNodeName(String path) {
         return path.substring(path.lastIndexOf('/') + 1);
     }
 
+    /**
+     * @return Example: "/1/2/3/4 : value" ->> "/1/2/3/"
+     */
+    public static String extractNodePathWithoutName(String path) {
+        return path.substring(0, path.lastIndexOf('/') + 1);
+    }
+
+    /**
+     * Iterate by Node as tree and collect all Node path is {@link Set}.
+     *
+     * @param node root for iterate.
+     * @return {@link Set} with paths of {@param node} and all inner sub-Nodes and etc.
+     */
+    public static Set<String> collectAllPaths(ZKNode node) {
+        Set<String> rsl = new HashSet<>();
+        treeIterateWidthList(node, (each) -> rsl.add(each.getPath()));
+        return rsl;
+    }
+
+    /**
+     * Select sub-node from {@param root} by {@param path}.
+     * !!! Return null, if doesn't find.
+     *
+     * @param root - start node (could be root or any other).
+     * @param path - absolute path of searching {@link ZKNode}.
+     * @return Node with path with == {@param path} with all sub-nodes OR
+     * null ==>> if searching {@link ZKNode} doesn't found.
+     * @implNote Tree traversal should be: for width by List, Not recursion.
+     * * Cause we don't know how deep tree is.(Argument for List)
+     */
+    public static ZKNode getSubNode(ZKNode root, String path) {
+        var treeWalkList = new LinkedList<ZKNode>();
+        treeWalkList.add(root);
+        ZKNode rsl = null;
+        while (!treeWalkList.isEmpty()) {
+            var current = treeWalkList.removeFirst();
+            if (current.getPath().equals(path)) {
+                rsl = current;
+                break;
+            } else if (ZKNodes.hasChildren(current)) {
+                treeWalkList.addAll(current.getChildren());
+            }
+        }
+        return rsl;
+    }
+
+    /**
+     * For each by full tree for {@param node}.
+     * * IMPORTANT: you should use Collections & Atomic wraps in your lambda func!
+     *
+     * @param node        node for iterate. (could be root or any other).
+     * @param forEachFunc - forEach function.
+     */
+    public static void treeIterateWidthList(ZKNode node, Consumer<ZKNode> forEachFunc) {
+        var treeWalkList = new LinkedList<ZKNode>();
+        treeWalkList.add(node);
+        while (!treeWalkList.isEmpty()) {
+            ZKNode currentZKNode = treeWalkList.removeFirst();
+            forEachFunc.accept(currentZKNode);
+            if (hasChildren(currentZKNode)) {
+                treeWalkList.addAll(currentZKNode.getChildren());
+            }
+        }
+    }
+
+    /**
+     * Default using of print {@link ZKNode}.
+     *
+     * @see #printNode(ZKNode, boolean, boolean, boolean)
+     */
     public static void printNode(ZKNode node) {
         printNode(node, false, true, true);
     }
@@ -47,9 +102,9 @@ public class ZKNodes {
      * Print {@link ZKNode} with all children as pretty table.
      *
      * @param node  print source.
-     * @param name  turn on print: name.
-     * @param path  turn on print: path.
-     * @param value turn on print: value.
+     * @param name  turn on/off print: name.
+     * @param path  turn on/off print: path.
+     * @param value turn on/off print: value.
      */
     public static void printNode(ZKNode node, boolean name, boolean path, boolean value) {
         var sb = new StringBuilder("Print ZKNode format: " + System.lineSeparator());
@@ -61,22 +116,14 @@ public class ZKNodes {
         sb.append((value) ? "value" : "");
         sb.append(System.lineSeparator());
 
-        var nodeList = new LinkedList<ZKNode>();
-        nodeList.add(node);
-        while (!nodeList.isEmpty()) {
-            var current = nodeList.removeFirst();
-
-            sb.append((name) ? current.getName() : "");
+        treeIterateWidthList(node, each -> {
+            sb.append((name) ? each.getName() : "");
             sb.append((name && path) ? dataSeparator : "");
-            sb.append((path) ? current.getPath() : "");
+            sb.append((path) ? each.getPath() : "");
             sb.append((path && value) ? dataSeparator : "");
-            sb.append((value) ? current.getValue() : "");
+            sb.append((value) ? each.getValue() : "");
             sb.append(System.lineSeparator());
-
-            if (hasChildren(current)) {
-                nodeList.addAll(current.getChildren());
-            }
-        }
+        });
         System.out.println(sb.toString());
     }
 

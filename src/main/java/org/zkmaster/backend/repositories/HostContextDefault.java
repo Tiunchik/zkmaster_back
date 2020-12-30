@@ -3,18 +3,19 @@ package org.zkmaster.backend.repositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.entity.ZKNodes;
+import org.zkmaster.backend.entity.dto.InjectionDTO;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
+import org.zkmaster.backend.exceptions.InjectionFailException;
 import org.zkmaster.backend.exceptions.WrongHostAddressException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
 import org.zkmaster.backend.factories.HostFactory;
+import org.zkmaster.backend.services.injection.InjectionService;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Work with: servers cache && map of HostProvider.
- */
 @Service
 public class HostContextDefault implements HostContext {
     /**
@@ -27,6 +28,8 @@ public class HostContextDefault implements HostContext {
     private final Map<String, ZKNode> caches = new HashMap<>();
     @Autowired
     private HostFactory zkFactory;
+    @Autowired
+    private InjectionService injectionService;
 
 
     @Override
@@ -57,8 +60,9 @@ public class HostContextDefault implements HostContext {
     }
 
     @Override
-    public void refreshCache(String host) throws NodeReadException {
+    public boolean refreshCache(String host) throws NodeReadException {
         caches.put(host, providers.get(host).readHostValue());
+        return true;
     }
 
     @Override
@@ -76,6 +80,24 @@ public class HostContextDefault implements HostContext {
     public Map<String, Boolean> checkHostsHealth(List<String> hosts) {
         var rsl = new HashMap<String, Boolean>();
         hosts.forEach(host -> rsl.put(host, providers.containsKey(host)));
+        return rsl;
+    }
+
+    @Override
+    public boolean injectFromTo(InjectionDTO dto) throws InjectionFailException {
+        boolean rsl;
+        try {
+            rsl = injectionService.injectFromTo(
+                    ZKNodes.getSubNode(getActualHostValue(dto.getSourceHost()), dto.getSourceNodePath()),
+                    ZKNodes.collectAllPaths(getActualHostValue(dto.getTargetHost())),
+                    getHostProvider(dto.getTargetHost()).transaction(),
+                    dto
+            );
+        } catch (Exception e) {
+            System.err.println("Something Wrong! Check it.");
+            e.printStackTrace();
+            throw new InjectionFailException(dto);
+        }
         return rsl;
     }
 

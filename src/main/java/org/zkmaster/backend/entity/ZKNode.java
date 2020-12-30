@@ -5,26 +5,38 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+/**
+ * <p> Main Entity for work with ZooKeeper. It's a tree data structure.
+ * It contains information like one ZooKeeper node AND children of this Node.
+ *
+ * <p> As it looks like a tree-collection, it have util methods for work with it: {@link ZKNodes}.
+ *
+ * <p> It could be:
+ * # host-value :: meaning that Node is: full view of real-server(root with all sub-nodes).
+ * # sub-node   :: meaning that Node is: inner node, not a Root. (May have children).
+ * # leaf       :: meaning that Node is: no children Node.
+ *
+ * @see ZKNodes - Util class for work with this entity.
+ */
 public class ZKNode {
 
     /**
-     * Full path of "this" "node" on ZK server.
+     * This Node absolute path.
      */
     private String path;
 
     /**
-     * data value from ZK.
-     * * converted from bytes. (default by UTF-8)
+     * This Node data value. Converted from bytes(default by UTF-8).
      */
     private String value;
 
     /**
-     * name of node.
+     * This Node name.
      */
     private String name;
 
     /**
-     * List of children "node".
+     * This Node children.
      */
     private List<ZKNode> children = new LinkedList<>();
 

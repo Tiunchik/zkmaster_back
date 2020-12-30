@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.entity.dto.InjectionDTO;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
+import org.zkmaster.backend.exceptions.InjectionFailException;
 import org.zkmaster.backend.exceptions.WrongHostAddressException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
 
@@ -60,13 +62,15 @@ public class HostContextRWL implements HostContext {
     }
 
     @Override
-    public void refreshCache(String host) throws NodeReadException {
+    public boolean refreshCache(String host) throws NodeReadException {
         readWriteLock.writeLock().lock();
+        boolean rsl;
         try {
-            ctx.refreshCache(host);
+            rsl = ctx.refreshCache(host);
         } finally {
             readWriteLock.writeLock().unlock();
         }
+        return rsl;
     }
 
     @Override
@@ -99,6 +103,18 @@ public class HostContextRWL implements HostContext {
             rsl = ctx.checkHostsHealth(hosts);
         } finally {
             readWriteLock.readLock().unlock();
+        }
+        return rsl;
+    }
+
+    @Override
+    public boolean injectFromTo(InjectionDTO dto) throws InjectionFailException {
+        readWriteLock.writeLock().lock();
+        boolean rsl;
+        try {
+            rsl = ctx.injectFromTo(dto);
+        } finally {
+            readWriteLock.writeLock().unlock();
         }
         return rsl;
     }

@@ -5,8 +5,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.zkmaster.backend.aop.Log;
-import org.zkmaster.backend.entity.dto.CopyDTO;
+import org.zkmaster.backend.entity.dto.InjectionDTO;
 import org.zkmaster.backend.entity.dto.RequestDTO;
+import org.zkmaster.backend.exceptions.InjectionFailException;
 import org.zkmaster.backend.services.MainService;
 
 import java.util.List;
@@ -41,12 +42,11 @@ public class APIController {
         return mainService.checkHostsHealth(hosts);
     }
 
-    @PostMapping("/data/copy")
+    @PostMapping("/data/injection")
     @Log
     public @ResponseBody
-    boolean copyFromHostToOther(@RequestBody CopyDTO dto) {
-//        return zkMainService.checkHostsHealth(hosts);
-        throw new UnsupportedOperationException();
+    boolean injectFromTo(@RequestBody InjectionDTO dto) throws InjectionFailException {
+        return mainService.injectFromTo(dto);
     }
 
 }

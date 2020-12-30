@@ -135,7 +135,7 @@ public class Host implements AutoCloseable {
     }
 
     public ZKTransaction transaction() {
-        return new ZKTransaction(zoo.transaction());
+        return new ZKTransactionDefault(zoo.transaction());
     }
 
     public String getHostAddress() {

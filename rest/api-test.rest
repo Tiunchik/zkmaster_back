@@ -2,6 +2,19 @@
 GET http://localhost:8081/api/zkm/data/localhost:2181
 ###
 
+# data injection
+POST http://localhost:8081/api/zkm/data/injection
+Content-Type: application/json
+
+{
+  "sourceHost": "localhost:2181",
+  "sourceNodePath": "/b1/b2",
+  "targetHost": "localhost:2181",
+  "targetNodePath": "/i1/i2",
+  "updOldValues": true
+}
+###
+
 # healt-check
 GET http://localhost:8081/api/zkm/conn/check
 Content-Type: application/json
@@ -22,6 +35,6 @@ Content-Type: application/json
 ###
 
 // delete node
-DELETE http://localhost:8081/api/zkm/data/localhost:2181/i1/i2/i2
+DELETE http://localhost:8081/api/zkm/data/localhost:2181/i1/i2/b2
 
 ###

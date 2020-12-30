@@ -1,9 +1,7 @@
 package org.zkmaster.backend.entity;
 
-import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Transaction;
-import org.apache.zookeeper.ZooDefs;
 
 /**
  * Warp default {@link Transaction} API into comfortable API.
@@ -11,30 +9,13 @@ import org.apache.zookeeper.ZooDefs;
  * If you need more API from original {@link Transaction},
  * decorate it in this class.
  */
-public class ZKTransaction {
-    private final Transaction transaction;
+public interface ZKTransaction {
 
-    public ZKTransaction(Transaction transaction) {
-        this.transaction = transaction;
-    }
+    ZKTransaction create(final String path, String value);
 
-    public ZKTransaction create(final String path, String value) {
-        transaction.create(path,
-                value.getBytes(),
-                ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                CreateMode.PERSISTENT);
-        return this;
-    }
+    ZKTransaction delete(final String path);
 
-    public ZKTransaction delete(final String path) {
-        transaction.delete(path, -1);
-        return this;
-    }
-
-    public ZKTransaction setData(final String path, String value) {
-        transaction.setData(path, value.getBytes(), -1);
-        return this;
-    }
+    ZKTransaction update(final String path, String value);
 
     /**
      * @param errMsg    msg for print, if transaction failed.
@@ -43,20 +24,9 @@ public class ZKTransaction {
      * @return true, if transaction success, else throw {@param exception}.
      * @throws E {@param exception}.
      */
-    public <E extends Exception> boolean commit(String errMsg, E exception) throws E {
-        try {
-            transaction.commit();
-        } catch (InterruptedException | KeeperException origException) {
-            System.err.println(errMsg);
-            origException.printStackTrace();
-            throw exception;
-        }
-        return true;
-    }
+    <E extends Exception> boolean commit(String errMsg, E exception) throws E;
 
     @Deprecated(since = "use overload for more comfortable code API")
-    public void commit() throws InterruptedException, KeeperException {
-        transaction.commit();
-    }
+    void commit() throws InterruptedException, KeeperException;
 
 }

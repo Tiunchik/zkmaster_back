@@ -8,6 +8,8 @@ import org.zkmaster.backend.exceptions.node.*;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * TODO Сделать обход в ширину без рекурсии при собрании getAll в репозитории,
@@ -71,37 +73,25 @@ public class HostProviderDefault implements HostProvider {
         return new ZKNode(path, nodeValue, nodeName, children);
     }
 
-    @Override
-    public ZKNode getSubNode(ZKNode root, String path) {
-        var treeWalkList = new LinkedList<ZKNode>();
-        treeWalkList.add(root);
-        ZKNode rsl = null;
 
-        while (!treeWalkList.isEmpty()) {
-            var current = treeWalkList.removeFirst();
-            if (current.getPath().equals(path)) {
-                rsl = current;
-                break;
-            } else if (ZKNodes.hasChildren(current)) {
-                treeWalkList.addAll(current.getChildren());
-            }
-        }
-        return rsl;
-    }
-
+    /**
+     * @implSpec Info:
+     * * (Node name == {@param name}) >> Update Node value.
+     * * (Node name != {@param name}) >> Rename Node and all sub-nodes.
+     */
     @Override
     public boolean saveNode(String path, String name, String value, ZKNode actualCache)
             throws NodeSaveException {
         String oldName = ZKNodes.extractNodeName(path);
         return (oldName.equals(name))
                 ? host.setData(path, value)
-                : rename(path, name, value, getSubNode(actualCache, path));
+                : rename(name, value, ZKNodes.getSubNode(actualCache, path));
     }
 
     @Override
     public boolean deleteNode(String path, ZKNode actualCache) throws NodeDeleteException {
         return (host.hasChildren(path))
-                ? cascadeDelete(path, getSubNode(actualCache, path))
+                ? cascadeDelete(path, ZKNodes.getSubNode(actualCache, path))
                 : host.delete(path);
     }
 
@@ -110,61 +100,50 @@ public class HostProviderDefault implements HostProvider {
         return host.transaction();
     }
 
+
     /**
-     * Spec: Tree walk: width && iterate.
+     * Iterate by {@param targetNode} with {@link ZKNodes#treeIterateWidthList(ZKNode, Consumer)}
+     * and collect transaction for:
+     * - delete old Nodes. (targetNode & all sub-nodes).
+     * - create new Nodes. (targetNode with new Name and all sub Nodes with correct path).
+     *
+     * @param name       new Node Name.
+     * @param value      (possible new) Node value.
+     * @param targetNode Node for rename.(with inner nodes).
+     * @return Rename success OR throw Exception.
+     * @throws NodeSaveException -
      */
-    private boolean rename(String path, String name, String value, ZKNode targetNode)
+    private boolean rename(String name, String value, ZKNode targetNode)
             throws NodeSaveException {
-        ZKTransaction transaction = host.transaction();
-
+        final ZKTransaction transaction = host.transaction();
         var deleteNodePaths = new LinkedList<String>();
-        var treeWalkList = new LinkedList<ZKNode>();
-        treeWalkList.add(targetNode);
+        var firstIteration = new AtomicBoolean(true);
 
-        var corePathWithoutName = path.substring(0, path.lastIndexOf('/') + 1);
-        var oldName = path.substring(path.lastIndexOf('/') + 1);
-        boolean firstIteration = true;
-
-        while (!treeWalkList.isEmpty()) {
-            ZKNode currentZKNode = treeWalkList.removeFirst();
-            String rslValue = (firstIteration) ? value : currentZKNode.getValue();
-            firstIteration = false;
-
-            if (ZKNodes.hasChildren(currentZKNode)) {
-                treeWalkList.addAll(currentZKNode.getChildren());
-            }
-            deleteNodePaths.add(currentZKNode.getPath());
-            transaction.create(
-                    ZKNodes.replacePath(
-                            currentZKNode.getPath(),
-                            corePathWithoutName, name, oldName),
-                    rslValue
-            );
-        }
+        ZKNodes.treeIterateWidthList(targetNode, currentNode -> {
+            String rslValue = (firstIteration.getAndSet(false))
+                    ? value : currentNode.getValue();
+            String newPath = currentNode.getPath().replace(currentNode.getName(), name);
+            transaction.create(newPath, rslValue);
+            deleteNodePaths.add(currentNode.getPath());
+        });
         while (!deleteNodePaths.isEmpty()) {
             transaction.delete(deleteNodePaths.removeLast());
         }
         return transaction.commit("Rename failed: Transaction failed!",
-                new NodeSaveException(host.getHostAddress(), path, name));
+                new NodeSaveException(host.getHostAddress(), targetNode.getPath(), name));
     }
 
     /**
-     * Spec: Tree walk: width && iterate.
+     * Iterate by {@param targetNode} with {@link ZKNodes#treeIterateWidthList(ZKNode, Consumer)}
+     * and collect transaction for: delete targetNode & all inner Nodes.
      */
     private boolean cascadeDelete(String path, ZKNode targetNode) throws NodeDeleteException {
         ZKTransaction transaction = host.transaction();
-
         var deleteNodePaths = new LinkedList<String>();
-        var treeWalkList = new LinkedList<ZKNode>();
-        treeWalkList.add(targetNode);
 
-        while (!treeWalkList.isEmpty()) {
-            ZKNode currentZKNode = treeWalkList.removeFirst();
-            if (ZKNodes.hasChildren(currentZKNode)) {
-                treeWalkList.addAll(currentZKNode.getChildren());
-            }
-            deleteNodePaths.add(currentZKNode.getPath());
-        }
+        ZKNodes.treeIterateWidthList(targetNode, currentNode ->
+            deleteNodePaths.add(currentNode.getPath())
+        );
         while (!deleteNodePaths.isEmpty()) {
             transaction.delete(deleteNodePaths.removeLast());
         }

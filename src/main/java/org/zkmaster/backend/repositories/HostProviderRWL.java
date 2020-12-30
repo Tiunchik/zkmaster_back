@@ -42,18 +42,6 @@ public class HostProviderRWL implements HostProvider {
     }
 
     @Override
-    public ZKNode getSubNode(ZKNode root, String path) {
-        readWriteLock.readLock().lock();
-        ZKNode rsl;
-        try {
-            rsl = provider.getSubNode(root, path);
-        } finally {
-            readWriteLock.readLock().unlock();
-        }
-        return rsl;
-    }
-
-    @Override
     public boolean saveNode(String path, String name, String value, ZKNode actualCache) throws NodeSaveException {
         readWriteLock.writeLock().lock();
         boolean rsl;

@@ -6,22 +6,24 @@ import org.zkmaster.backend.entity.ZKTransaction;
 import java.util.List;
 
 /**
- * Interface for Import & Export the host-value into different data format and back. Example:
+ * Interface for Import & Export host-value into different data format and back. Example:
  * export: {@link ZKNode} -> TXT content.
  * import: TXT content -> {@link ZKTransaction} // it straight import into real server.
+ *
+ * <p> It's work like injection  by transaction into server.
  */
 public interface ZKNodeTransformer {
 
     /**
-     * Transform host-value into List<String>
+     * Export host-value into List<String>.
      *
-     * @param hostValue -
+     * @param hostValue host-value for export.
      * @return exported {@param hostValue}.
      */
     List<String> exportHost(ZKNode hostValue);
 
     /**
-     * Import data into {@param transaction}. Fill transaction by imported data.
+     * Import data into {@param transaction}. Fill transaction by import data.
      *
      * @param data        import data.
      * @param transaction filled up by {@param data} transaction, ready to commit.
