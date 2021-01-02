@@ -6,8 +6,8 @@ import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKNodes;
 import org.zkmaster.backend.entity.dto.InjectionDTO;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
+import org.zkmaster.backend.exceptions.HostWrongAddressException;
 import org.zkmaster.backend.exceptions.InjectionFailException;
-import org.zkmaster.backend.exceptions.WrongHostAddressException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
 import org.zkmaster.backend.factories.HostFactory;
 import org.zkmaster.backend.services.injection.InjectionService;
@@ -52,7 +52,7 @@ public class HostContextDefault implements HostContext {
     }
 
     @Override
-    public boolean createHost(String host) throws WrongHostAddressException {
+    public boolean createHost(String host) throws HostWrongAddressException {
         if (!providers.containsKey(host)) {
             providers.put(host, zkFactory.makeHostProvider(host));
         }
@@ -77,7 +77,7 @@ public class HostContextDefault implements HostContext {
     }
 
     @Override
-    public Map<String, Boolean> checkHostsHealth(List<String> hosts) {
+    public Map<String, Boolean> containsHostAll(List<String> hosts) {
         var rsl = new HashMap<String, Boolean>();
         hosts.forEach(host -> rsl.put(host, providers.containsKey(host)));
         return rsl;

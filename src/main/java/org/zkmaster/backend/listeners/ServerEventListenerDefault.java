@@ -19,7 +19,7 @@ public class ServerEventListenerDefault implements ServerEventListener {
     MainService mainService;
 
     @Autowired
-    public ServerEventListenerDefault(@Qualifier("mainServiceFresh") MainService mainService) {
+    public ServerEventListenerDefault(@Qualifier("mainServiceDefault") MainService mainService) {
         this.mainService = mainService;
     }
 

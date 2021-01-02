@@ -61,6 +61,11 @@ public class ZKNode {
         this.children = children;
     }
 
+    public void addChildFirst(ZKNode child) {
+        var temp = (LinkedList<ZKNode>) this.children;
+        temp.addFirst(child);
+    }
+
     public String getPath() {
         return path;
     }

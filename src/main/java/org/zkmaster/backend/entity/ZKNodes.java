@@ -14,21 +14,34 @@ public class ZKNodes {
      * Check {@param node} has children or not? Just pretty API
      */
     public static boolean hasChildren(ZKNode node) {
-        return node.getChildren().size() != 0;
+        return !node.getChildren().isEmpty();
     }
 
     /**
+     * Extract Node name from Node path.
+     *
      * @return Example: "/1/2/3/4 : value" ->> "4"
      */
-    public static String extractNodeName(String path) {
+    public static String nameFromPath(String path) {
         return path.substring(path.lastIndexOf('/') + 1);
     }
 
     /**
+     * Substring from path with deleted name.
+     *
      * @return Example: "/1/2/3/4 : value" ->> "/1/2/3/"
      */
-    public static String extractNodePathWithoutName(String path) {
+    public static String pathWithoutName(String path) {
         return path.substring(0, path.lastIndexOf('/') + 1);
+    }
+
+    /**
+     * Extract parent path from Node path.
+     *
+     * @return Example: "/1/2/3/4 : value" ->> "/1/2/3"
+     */
+    public static String parentNodePath(String nodePath) {
+        return nodePath.substring(0, nodePath.lastIndexOf('/'));
     }
 
     /**

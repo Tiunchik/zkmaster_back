@@ -22,7 +22,7 @@ public class InjectionServiceDefault implements InjectionService {
         final String trgPath = dto.getTargetNodePath();
         var isTransactionEmpty = new AtomicBoolean(true);
 
-        var corePath = ZKNodes.extractNodePathWithoutName(srcPath);
+        var corePath = ZKNodes.pathWithoutName(srcPath);
         boolean isSrcPathRootSubNode = corePath.equals("/");
         final String corePathFinal = (isSrcPathRootSubNode) ? " " : corePath;
 
@@ -40,7 +40,7 @@ public class InjectionServiceDefault implements InjectionService {
                 isTransactionEmpty.set(false);
             }
         }));
-        // NPE throw if transaction is empty and it was commited.
+        // NPE throw if transaction is empty and it was committed.
         if (!isTransactionEmpty.get()) {
             trgHostTransaction.commit("Injection failed: Transaction failed!",
                     new InjectionFailException(dto));

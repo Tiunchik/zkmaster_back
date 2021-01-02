@@ -8,8 +8,8 @@ import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.dto.InjectionDTO;
 import org.zkmaster.backend.exceptions.DataImportFailException;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
+import org.zkmaster.backend.exceptions.HostWrongAddressException;
 import org.zkmaster.backend.exceptions.InjectionFailException;
-import org.zkmaster.backend.exceptions.WrongHostAddressException;
 import org.zkmaster.backend.exceptions.node.*;
 import org.zkmaster.backend.listeners.ServerEventListener;
 import org.zkmaster.backend.listeners.ServerEventListenerDefault;
@@ -127,10 +127,10 @@ public interface MainService {
      *
      * @param host host for that it will create.
      * @return Create connection success OR throw Exception.
-     * @throws WrongHostAddressException -
+     * @throws HostWrongAddressException -
      */
     @Delegate(to = HostContext.class)
-    boolean createConnection(String host) throws WrongHostAddressException;
+    boolean createConnection(String host) throws HostWrongAddressException;
 
     /**
      * IMPORTANT: Need to discuss about "how we delete and keep connections"

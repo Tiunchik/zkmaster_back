@@ -19,7 +19,7 @@ public class APIController {
     MainService mainService;
 
     @Autowired
-    public APIController(@Qualifier("mainServiceFresh") MainService mainService) {
+    public APIController(@Qualifier("mainServiceDefault") MainService mainService) {
         this.mainService = mainService;
     }
 

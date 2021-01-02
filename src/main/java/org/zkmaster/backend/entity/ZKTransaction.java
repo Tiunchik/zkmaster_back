@@ -1,6 +1,5 @@
 package org.zkmaster.backend.entity;
 
-import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Transaction;
 
 /**
@@ -25,8 +24,5 @@ public interface ZKTransaction {
      * @throws E {@param exception}.
      */
     <E extends Exception> boolean commit(String errMsg, E exception) throws E;
-
-    @Deprecated(since = "use overload for more comfortable code API")
-    void commit() throws InterruptedException, KeeperException;
 
 }

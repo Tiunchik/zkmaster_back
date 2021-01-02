@@ -7,8 +7,8 @@ import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.dto.InjectionDTO;
 import org.zkmaster.backend.exceptions.DataImportFailException;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
+import org.zkmaster.backend.exceptions.HostWrongAddressException;
 import org.zkmaster.backend.exceptions.InjectionFailException;
-import org.zkmaster.backend.exceptions.WrongHostAddressException;
 import org.zkmaster.backend.exceptions.node.*;
 import org.zkmaster.backend.repositories.HostContext;
 import org.zkmaster.backend.services.transform.TransformStrategy;
@@ -17,13 +17,13 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class MainServiceFresh implements MainService {
+public class MainServiceDefault implements MainService {
     HostContext ctx;
     TransformStrategy transformStrategy;
 
     @Autowired
-    public MainServiceFresh(@Qualifier("hostContextRWL") HostContext ctx,
-                            TransformStrategy transformStrategy) {
+    public MainServiceDefault(@Qualifier("hostContextRWL") HostContext ctx,
+                              TransformStrategy transformStrategy) {
         this.ctx = ctx;
         this.transformStrategy = transformStrategy;
     }
@@ -59,7 +59,7 @@ public class MainServiceFresh implements MainService {
     }
 
     @Override
-    public boolean createConnection(String host) throws WrongHostAddressException {
+    public boolean createConnection(String host) throws HostWrongAddressException {
         return ctx.createHost(host);
     }
 
@@ -70,7 +70,7 @@ public class MainServiceFresh implements MainService {
 
     @Override
     public Map<String, Boolean> checkHostsHealth(List<String> hosts) {
-        return ctx.checkHostsHealth(hosts);
+        return ctx.containsHostAll(hosts);
     }
 
     @Override

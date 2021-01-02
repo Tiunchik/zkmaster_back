@@ -51,7 +51,7 @@ public interface HostProvider {
      * @return Delete success OR not.
      * @throws NodeDeleteException -
      */
-    boolean deleteNode(String path, ZKNode actualCache) throws NodeDeleteException;
+    boolean deleteNode(String path, ZKNode actualCache) throws NodeDeleteException, NodeReadException;
 
     /**
      * Provide transaction for real-server.

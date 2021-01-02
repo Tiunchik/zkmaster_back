@@ -19,7 +19,7 @@ public class TransformController {
     MainService mainService;
 
     @Autowired
-    public TransformController(@Qualifier("mainServiceFresh") MainService mainService) {
+    public TransformController(@Qualifier("mainServiceDefault") MainService mainService) {
         this.mainService = mainService;
     }
 

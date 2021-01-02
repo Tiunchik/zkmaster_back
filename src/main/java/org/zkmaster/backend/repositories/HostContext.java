@@ -3,8 +3,8 @@ package org.zkmaster.backend.repositories;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.dto.InjectionDTO;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
+import org.zkmaster.backend.exceptions.HostWrongAddressException;
 import org.zkmaster.backend.exceptions.InjectionFailException;
-import org.zkmaster.backend.exceptions.WrongHostAddressException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
 import org.zkmaster.backend.services.MainService;
 
@@ -35,9 +35,9 @@ public interface HostContext {
      *
      * @param host - address of real-serve, for try create connection.
      * @return Create connection success OR Throw Exception.
-     * @throws WrongHostAddressException -
+     * @throws HostWrongAddressException -
      */
-    boolean createHost(String host) throws WrongHostAddressException;
+    boolean createHost(String host) throws HostWrongAddressException;
 
     /**
      * Refresh inner cache for {@param host}.
@@ -66,7 +66,7 @@ public interface HostContext {
      * Need to discuss about "how we delete and keep connections"
      */
     @Deprecated(since = "not use in program, Maybe in future.")
-    Map<String, Boolean> checkHostsHealth(List<String> hosts);
+    Map<String, Boolean> containsHostAll(List<String> hosts);
 
     /**
      * Process {@param dto}. Inject/copy Node from one place into other place.

@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.dto.InjectionDTO;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
+import org.zkmaster.backend.exceptions.HostWrongAddressException;
 import org.zkmaster.backend.exceptions.InjectionFailException;
-import org.zkmaster.backend.exceptions.WrongHostAddressException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
 
 import java.util.List;
@@ -50,7 +50,7 @@ public class HostContextRWL implements HostContext {
     }
 
     @Override
-    public boolean createHost(String host) throws WrongHostAddressException {
+    public boolean createHost(String host) throws HostWrongAddressException {
         readWriteLock.writeLock().lock();
         boolean rsl;
         try {
@@ -96,11 +96,11 @@ public class HostContextRWL implements HostContext {
     }
 
     @Override
-    public Map<String, Boolean> checkHostsHealth(List<String> hosts) {
+    public Map<String, Boolean> containsHostAll(List<String> hosts) {
         readWriteLock.readLock().lock();
         Map<String, Boolean> rsl;
         try {
-            rsl = ctx.checkHostsHealth(hosts);
+            rsl = ctx.containsHostAll(hosts);
         } finally {
             readWriteLock.readLock().unlock();
         }

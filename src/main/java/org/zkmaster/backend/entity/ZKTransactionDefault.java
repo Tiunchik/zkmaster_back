@@ -54,9 +54,4 @@ public class ZKTransactionDefault implements ZKTransaction {
         return true;
     }
 
-    @Deprecated(since = "use overload for more comfortable code API")
-    public void commit() throws InterruptedException, KeeperException {
-        transaction.commit();
-    }
-
 }

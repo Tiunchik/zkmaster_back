@@ -8,7 +8,7 @@ import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.dto.RequestDTO;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
-import org.zkmaster.backend.exceptions.WrongHostAddressException;
+import org.zkmaster.backend.exceptions.HostWrongAddressException;
 import org.zkmaster.backend.exceptions.node.*;
 import org.zkmaster.backend.services.MainService;
 
@@ -24,7 +24,7 @@ public class CRUDController {
     MainService mainService;
 
     @Autowired
-    public CRUDController(@Qualifier("mainServiceFresh") MainService mainService) {
+    public CRUDController(@Qualifier("mainServiceDefault") MainService mainService) {
         this.mainService = mainService;
     }
 
@@ -37,7 +37,7 @@ public class CRUDController {
     @Log
     public @ResponseBody
     ZKNode getHostValue(@PathVariable String host)
-            throws WrongHostAddressException, NodeReadException {
+            throws HostWrongAddressException, NodeReadException {
         ZKNode rsl = null;
         if (mainService.containsConnection(host)) {
             rsl = mainService.getHostValue(host);
