@@ -1,15 +1,18 @@
 package org.zkmaster.backend.mocks;
 
+import org.zkmaster.backend.devutil.DevLog;
 import org.zkmaster.backend.entity.Host;
 import org.zkmaster.backend.exceptions.HostWrongAddressException;
 import org.zkmaster.backend.factories.HostFactory;
 import org.zkmaster.backend.repositories.HostProvider;
 import org.zkmaster.backend.repositories.HostProviderDefault;
 
+//@Service
 public class HostFactoryMock implements HostFactory {
     private Host mockHost;
     @Override
     public HostProvider makeHostProvider(String host) throws HostWrongAddressException {
+        DevLog.print("Factory", "init HostFactoryFake");
         return new HostProviderDefault(mockHost);
     }
 

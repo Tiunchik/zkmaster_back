@@ -2,6 +2,7 @@ package org.zkmaster.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.zkmaster.backend.annotations.Delegate;
 import org.zkmaster.backend.entity.Host;
 import org.zkmaster.backend.entity.ZKTransaction;
 import org.zkmaster.backend.services.MainServiceDefault;
@@ -13,6 +14,7 @@ import org.zkmaster.backend.services.MainServiceDefault;
  * TODO - full-inform docs of {@link Host}.
  * TODO - full-inform docs of {@link ZKTransaction}.
  * TODO - split {@link MainServiceDefault} to several services.
+ * TODO - delete annotation {@link Delegate}
  *
  * possible features:
  * - Save cache then server have been close.

@@ -1,10 +1,14 @@
 package org.zkmaster.backend.entity.dto;
 
+import org.zkmaster.backend.controllers.APIController;
+
 import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
  * Use specially for injection node from Source real-server to Other real-server.
+ *
+ * @see APIController
  */
 public class InjectionDTO {
     private String sourceHost;

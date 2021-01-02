@@ -1,10 +1,8 @@
 package org.zkmaster.backend.repositories;
 
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.entity.dto.InjectionDTO;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.HostWrongAddressException;
-import org.zkmaster.backend.exceptions.InjectionFailException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
 import org.zkmaster.backend.services.MainService;
 
@@ -68,13 +66,13 @@ public interface HostContext {
     @Deprecated(since = "not use in program, Maybe in future.")
     Map<String, Boolean> containsHostAll(List<String> hosts);
 
-    /**
-     * Process {@param dto}. Inject/copy Node from one place into other place.
-     *
-     * @param dto -
-     * @return Success OR throw {@link InjectionFailException}.
-     * @throws InjectionFailException -
-     */
-    boolean injectFromTo(InjectionDTO dto) throws InjectionFailException;
+//    /**
+//     * Process {@param dto}. Inject/copy Node from one place into other place.
+//     *
+//     * @param dto -
+//     * @return Success OR throw {@link InjectionFailException}.
+//     * @throws InjectionFailException -
+//     */
+//    boolean injectFromTo(InjectionDTO dto) throws InjectionFailException;
 
 }

@@ -4,10 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.entity.dto.InjectionDTO;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.HostWrongAddressException;
-import org.zkmaster.backend.exceptions.InjectionFailException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
 
 import java.util.List;
@@ -103,18 +101,6 @@ public class HostContextRWL implements HostContext {
             rsl = ctx.containsHostAll(hosts);
         } finally {
             readWriteLock.readLock().unlock();
-        }
-        return rsl;
-    }
-
-    @Override
-    public boolean injectFromTo(InjectionDTO dto) throws InjectionFailException {
-        readWriteLock.writeLock().lock();
-        boolean rsl;
-        try {
-            rsl = ctx.injectFromTo(dto);
-        } finally {
-            readWriteLock.writeLock().unlock();
         }
         return rsl;
     }

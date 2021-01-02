@@ -1,5 +1,7 @@
 package org.zkmaster.backend.aop;
 
+import org.springframework.stereotype.Service;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -8,9 +10,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Custom Spring AOP annotation - mark any method for add simple Logging.
- * * DON'T WORK with:
- * static method - cause AOP can't create proxy for static methods.
- * ??? private methods
+ * Work only with {@link Service} with scope Singleton.
  *
  * @see LogAspect
  */

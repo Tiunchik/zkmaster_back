@@ -35,9 +35,8 @@ public class HostProviderDefault implements HostProvider {
             String parentPath = ZKNodes.parentNodePath(currPath);
 
             ZKNode currNode = host.readNode(currPath);
-            boolean MCPPContainsParentPath = mccp.containsKey(parentPath);
-            prevNode = (MCPPContainsParentPath) ? mccp.get(parentPath) : prevNode; // new parent || prev parent
-            List<String> childrenPaths = host.getChildren(currPath);
+            prevNode = mccp.getOrDefault(parentPath, prevNode); // new parent || prev parent
+            List<String> childrenPaths = host.getChildrenPaths(currPath);
 
             if (childrenPaths.size() >= 2) mccp.put(currPath, currNode);
             iteratePaths.addAll(childrenPaths);

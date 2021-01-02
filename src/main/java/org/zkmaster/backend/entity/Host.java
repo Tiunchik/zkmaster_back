@@ -20,7 +20,9 @@ public interface Host extends AutoCloseable {
 
     boolean delete(String path) throws NodeDeleteException;
 
-    List<String> getChildren(String path) throws NodeReadException;
+    List<String> getChildrenNames(String path) throws NodeReadException;
+
+    List<String> getChildrenPaths(String path) throws NodeReadException;
 
     boolean hasChildren(String path) throws NodeReadException;
 

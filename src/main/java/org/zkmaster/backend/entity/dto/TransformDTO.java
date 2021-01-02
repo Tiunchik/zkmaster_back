@@ -1,9 +1,18 @@
 package org.zkmaster.backend.entity.dto;
 
+import org.zkmaster.backend.controllers.TransformController;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+/**
+ * Use specially for:
+ * export host-value into supported transform types
+ * && for import supported transform types into real-server.
+ *
+ * @see TransformController
+ */
 public class TransformDTO {
     private String type;
     private List<String> content;
@@ -57,4 +66,5 @@ public class TransformDTO {
                 .add("content=" + content)
                 .toString();
     }
+
 }

@@ -9,6 +9,7 @@ import org.zkmaster.backend.entity.dto.InjectionDTO;
 import org.zkmaster.backend.entity.dto.RequestDTO;
 import org.zkmaster.backend.exceptions.InjectionFailException;
 import org.zkmaster.backend.services.MainService;
+import org.zkmaster.backend.services.injection.InjectionService;
 
 import java.util.List;
 import java.util.Map;
@@ -17,10 +18,13 @@ import java.util.Map;
 @RequestMapping("/api/zkm")
 public class APIController {
     MainService mainService;
+    InjectionService injectionService;
 
     @Autowired
-    public APIController(@Qualifier("mainServiceDefault") MainService mainService) {
+    public APIController(@Qualifier("mainServiceDefault") MainService mainService,
+                         InjectionService injectionService) {
         this.mainService = mainService;
+        this.injectionService = injectionService;
     }
 
     /**
@@ -46,7 +50,8 @@ public class APIController {
     @Log
     public @ResponseBody
     boolean injectFromTo(@RequestBody InjectionDTO dto) throws InjectionFailException {
-        return mainService.injectFromTo(dto);
+        return injectionService.injectFromTo(dto);
+//        return mainService.injectFromTo(dto);
     }
 
 }

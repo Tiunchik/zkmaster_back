@@ -6,6 +6,7 @@ import org.zkmaster.backend.exceptions.node.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Warp default {@link ZooKeeper} API into comfortable API. We call it "facade" of real server.
@@ -123,7 +124,7 @@ public class HostDefault implements Host {
      * @return children names OR null.
      */
     @Override
-    public List<String> getChildren(String path) throws NodeReadException {
+    public List<String> getChildrenNames(String path) throws NodeReadException {
         List<String> rsl;
         try {
             rsl = zoo.getChildren(path, true, null);
@@ -136,8 +137,17 @@ public class HostDefault implements Host {
     }
 
     @Override
+    public List<String> getChildrenPaths(String path) throws NodeReadException {
+        return getChildrenNames(path).stream()
+                .map(childName -> ("/".equals(path))   // is it root
+                        ? path + childName             // true
+                        : path + "/" + childName       // false
+                ).collect(Collectors.toList());
+    }
+
+    @Override
     public boolean hasChildren(String path) throws NodeReadException {
-        return !this.getChildren(path).isEmpty();
+        return !this.getChildrenNames(path).isEmpty();
     }
 
     @Override

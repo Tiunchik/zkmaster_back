@@ -5,9 +5,11 @@ import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKNodes;
 import org.zkmaster.backend.entity.ZKTransaction;
 import org.zkmaster.backend.exceptions.node.*;
+import org.zkmaster.backend.zexprun.mocks.ZKTransactionFake;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Work by ZKNode, not List
@@ -58,14 +60,20 @@ public class HostMock implements Host {
     }
 
     @Override
-    public List<String> getChildren(String path) {
-        List<String> paths = new LinkedList<>();
-        for (ZKNode each : ZKNodes.getSubNode(root, path).getChildren()) {
-            paths.add(each.getPath());
-        }
-        return paths;
-//        return ZKNodes.getSubNode(root, path).getChildren().stream()
-//                .map(ZKNode::getPath).collect(Collectors.toList());
+    public List<String> getChildrenNames(String path) {
+//        List<String> paths = new LinkedList<>();
+//        for (ZKNode each : ZKNodes.getSubNode(root, path).getChildren()) {
+//            paths.add(each.getName());
+//        }
+//        return paths;
+        return ZKNodes.getSubNode(root, path).getChildren().stream()
+                .map(ZKNode::getName).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getChildrenPaths(String path) throws NodeReadException {
+        return ZKNodes.getSubNode(root, path).getChildren().stream()
+                .map(ZKNode::getPath).collect(Collectors.toList());
     }
 
     @Override
@@ -85,7 +93,7 @@ public class HostMock implements Host {
 
     @Override
     public ZKTransaction transaction() {
-        return new ZKTransactionMock(this);
+        return new ZKTransactionFake(this);
     }
 
     @Override
@@ -95,7 +103,7 @@ public class HostMock implements Host {
 
     @Override
     public void close() throws Exception {
-        System.out.println("HostMock :: method=close() - invoked");
+        System.out.println("HostFake :: method=close() - invoked");
     }
 
 

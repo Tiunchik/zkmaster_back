@@ -3,14 +3,10 @@ package org.zkmaster.backend.repositories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.entity.ZKNodes;
-import org.zkmaster.backend.entity.dto.InjectionDTO;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.HostWrongAddressException;
-import org.zkmaster.backend.exceptions.InjectionFailException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
 import org.zkmaster.backend.factories.HostFactory;
-import org.zkmaster.backend.services.injection.InjectionService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,11 +22,12 @@ public class HostContextDefault implements HostContext {
      * Actual cache of real server value.
      */
     private final Map<String, ZKNode> caches = new HashMap<>();
-    @Autowired
     private HostFactory zkFactory;
-    @Autowired
-    private InjectionService injectionService;
 
+    @Autowired
+    public HostContextDefault(HostFactory zkFactory) {
+        this.zkFactory = zkFactory;
+    }
 
     @Override
     public ZKNode getActualHostValue(String host) throws NodeReadException {
@@ -83,22 +80,22 @@ public class HostContextDefault implements HostContext {
         return rsl;
     }
 
-    @Override
-    public boolean injectFromTo(InjectionDTO dto) throws InjectionFailException {
-        boolean rsl;
-        try {
-            rsl = injectionService.injectFromTo(
-                    ZKNodes.getSubNode(getActualHostValue(dto.getSourceHost()), dto.getSourceNodePath()),
-                    ZKNodes.collectAllPaths(getActualHostValue(dto.getTargetHost())),
-                    getHostProvider(dto.getTargetHost()).transaction(),
-                    dto
-            );
-        } catch (Exception e) {
-            System.err.println("Something Wrong! Check it.");
-            e.printStackTrace();
-            throw new InjectionFailException(dto);
-        }
-        return rsl;
-    }
+//    @Override
+//    public boolean injectFromTo(InjectionDTO dto) throws InjectionFailException {
+//        boolean rsl;
+//        try {
+//            rsl = injectionService.injectFromTo(
+//                    ZKNodes.getSubNode(getActualHostValue(dto.getSourceHost()), dto.getSourceNodePath()),
+//                    ZKNodes.collectAllPaths(getActualHostValue(dto.getTargetHost())),
+//                    getHostProvider(dto.getTargetHost()).transaction(),
+//                    dto
+//            );
+//        } catch (Exception e) {
+//            System.err.println("Something Wrong! Check it.");
+//            e.printStackTrace();
+//            throw new InjectionFailException(dto);
+//        }
+//        return rsl;
+//    }
 
 }

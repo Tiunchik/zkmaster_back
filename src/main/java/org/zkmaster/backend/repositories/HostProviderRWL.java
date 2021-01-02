@@ -54,7 +54,7 @@ public class HostProviderRWL implements HostProvider {
     }
 
     @Override
-    public boolean deleteNode(String path, ZKNode actualCache) throws NodeDeleteException {
+    public boolean deleteNode(String path, ZKNode actualCache) throws NodeDeleteException, NodeReadException {
         readWriteLock.writeLock().lock();
         boolean rsl;
         try {

@@ -5,18 +5,13 @@ import org.zkmaster.backend.controllers.APIController;
 import org.zkmaster.backend.controllers.CRUDController;
 import org.zkmaster.backend.controllers.TransformController;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.entity.dto.InjectionDTO;
-import org.zkmaster.backend.exceptions.DataImportFailException;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.HostWrongAddressException;
-import org.zkmaster.backend.exceptions.InjectionFailException;
 import org.zkmaster.backend.exceptions.node.*;
 import org.zkmaster.backend.listeners.ServerEventListener;
 import org.zkmaster.backend.listeners.ServerEventListenerDefault;
 import org.zkmaster.backend.repositories.HostContext;
 import org.zkmaster.backend.repositories.HostProvider;
-import org.zkmaster.backend.services.injection.InjectionService;
-import org.zkmaster.backend.services.transform.TransformStrategy;
 
 import java.util.List;
 import java.util.Map;
@@ -160,35 +155,5 @@ public interface MainService {
     @Deprecated(since = "not use in program, Maybe in future.")
     @Delegate(to = HostContext.class)
     Map<String, Boolean> checkHostsHealth(List<String> hosts);
-
-    @Delegate(to = InjectionService.class)
-    boolean injectFromTo(InjectionDTO dto) throws InjectionFailException;
-
-    /**
-     * Export host-value by provided params.
-     * For: {@link TransformController}.
-     *
-     * @param host host for that it will export host-value.
-     * @param type export type.
-     * @return Export success OR throw Exception.
-     * @throws NodeReadException -
-     */
-    @Delegate(to = TransformStrategy.class)
-    List<String> exportHost(String host, String type) throws NodeReadException;
-
-    /**
-     * Export host-value by provided params.
-     * For: {@link TransformController}.
-     *
-     * @param host host for that it will data import.
-     * @param type export type.
-     * @param data nodes for import.
-     * @return Import success OR throw Exception.
-     * @throws HostProviderNotFoundException -
-     * @throws DataImportFailException       -
-     */
-    @Delegate(to = TransformStrategy.class)
-    boolean importData(String host, String type, List<String> data)
-            throws HostProviderNotFoundException, DataImportFailException;
 
 }

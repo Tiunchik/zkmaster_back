@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ZKTransactionMock implements ZKTransaction {
-    private Host host;
+    private final Host host;
     private List<String> actions = new LinkedList<>();
 
     public ZKTransactionMock(Host host) {
@@ -61,6 +61,12 @@ public class ZKTransactionMock implements ZKTransaction {
             throw exception;
         }
         return true;
+    }
+
+    public void print() {
+        System.out.println("ZKTransactionMock#print() RUN");
+        actions.forEach(System.out::println);
+        System.out.println("ZKTransactionMock#print() END");
     }
 
     private static final String COMMAND_SPLIT = " :: ";

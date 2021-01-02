@@ -4,14 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.entity.dto.InjectionDTO;
-import org.zkmaster.backend.exceptions.DataImportFailException;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.HostWrongAddressException;
-import org.zkmaster.backend.exceptions.InjectionFailException;
 import org.zkmaster.backend.exceptions.node.*;
 import org.zkmaster.backend.repositories.HostContext;
-import org.zkmaster.backend.services.transform.TransformStrategy;
 
 import java.util.List;
 import java.util.Map;
@@ -19,13 +15,10 @@ import java.util.Map;
 @Service
 public class MainServiceDefault implements MainService {
     HostContext ctx;
-    TransformStrategy transformStrategy;
 
     @Autowired
-    public MainServiceDefault(@Qualifier("hostContextRWL") HostContext ctx,
-                              TransformStrategy transformStrategy) {
+    public MainServiceDefault(@Qualifier("hostContextRWL") HostContext ctx) {
         this.ctx = ctx;
-        this.transformStrategy = transformStrategy;
     }
 
     @Override
@@ -71,21 +64,6 @@ public class MainServiceDefault implements MainService {
     @Override
     public Map<String, Boolean> checkHostsHealth(List<String> hosts) {
         return ctx.containsHostAll(hosts);
-    }
-
-    @Override
-    public boolean injectFromTo(InjectionDTO dto) throws InjectionFailException {
-        return ctx.injectFromTo(dto);
-    }
-
-    @Override
-    public List<String> exportHost(String host, String type) throws NodeReadException {
-        return transformStrategy.exportHost(ctx.getActualHostValue(host), type);
-    }
-
-    @Override
-    public boolean importData(String host, String type, List<String> data) throws DataImportFailException, HostProviderNotFoundException {
-        return transformStrategy.importData(ctx.getHostProvider(host).transaction(), host, type, data);
     }
 
 }

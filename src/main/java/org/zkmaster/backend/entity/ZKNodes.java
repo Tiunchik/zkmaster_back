@@ -1,5 +1,7 @@
 package org.zkmaster.backend.entity;
 
+import org.zkmaster.backend.devutil.DevLog;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -20,7 +22,9 @@ public class ZKNodes {
     /**
      * Extract Node name from Node path.
      *
-     * @return Example: "/1/2/3/4 : value" ->> "4"
+     * @return Example:
+     * "/1/2/3/4" : value" ->> "4"
+     * "/" : value" ->> "/"
      */
     public static String nameFromPath(String path) {
         return path.substring(path.lastIndexOf('/') + 1);
@@ -38,10 +42,13 @@ public class ZKNodes {
     /**
      * Extract parent path from Node path.
      *
-     * @return Example: "/1/2/3/4 : value" ->> "/1/2/3"
+     * @return Example:
+     * "/1/2/3/4" : value" ->> "/1/2/3"
+     * "/" : value" ->> "/"
      */
     public static String parentNodePath(String nodePath) {
-        return nodePath.substring(0, nodePath.lastIndexOf('/'));
+        return (nodePath.lastIndexOf('/') == 0)
+                ? "/" : nodePath.substring(0, nodePath.lastIndexOf('/'));
     }
 
     /**
@@ -75,11 +82,14 @@ public class ZKNodes {
             var current = treeWalkList.removeFirst();
             if (current.getPath().equals(path)) {
                 rsl = current;
+//                DevLog.print("getSubNode", "children", rsl.getChildren());
+//                rsl.setChildren(new LinkedList<>());
                 break;
             } else if (ZKNodes.hasChildren(current)) {
                 treeWalkList.addAll(current.getChildren());
             }
         }
+        DevLog.print("getSubNode", "rsl", rsl);
         return rsl;
     }
 

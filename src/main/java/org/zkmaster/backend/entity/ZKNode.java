@@ -1,5 +1,7 @@
 package org.zkmaster.backend.entity;
 
+import org.zkmaster.backend.devutil.DevLog;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -46,24 +48,37 @@ public class ZKNode {
     public ZKNode(String path, String value) {
         this.path = path;
         this.value = value;
+        this.value = ZKNodes.nameFromPath(path);
+        this.children = new LinkedList<>();
     }
 
     public ZKNode(String path, String value, String name, List<ZKNode> children) {
         this.path = path;
         this.value = value;
         this.name = name;
-        this.children = children;
+        DevLog.print("ZKNode", "Constructor", "first");
+        if (children instanceof LinkedList) {
+            this.children = children;
+        } else {
+            this.children.addAll(children);
+        }
     }
 
     public ZKNode(String path, String value, List<ZKNode> children) {
         this.path = path;
         this.value = value;
-        this.children = children;
+        DevLog.print("ZKNode", "Constructor", "second");
+        if (children instanceof LinkedList) {
+            this.children = children;
+        } else {
+            this.children.addAll(children);
+        }
     }
 
     public void addChildFirst(ZKNode child) {
         var temp = (LinkedList<ZKNode>) this.children;
         temp.addFirst(child);
+//        temp.add(child);
     }
 
     public String getPath() {
