@@ -1,4 +1,4 @@
-package org.zkmaster.backend.mocks;
+package org.zkmaster.backend.deprecated.mocks;
 
 import org.zkmaster.backend.entity.Host;
 import org.zkmaster.backend.entity.ZKNode;
@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
  * Work by ZKNode, not List
  * TODO : TEST IT!!!
  */
+@Deprecated
 public class HostMock implements Host {
     private String hostAddress;
     private ZKNode root;
@@ -88,7 +89,7 @@ public class HostMock implements Host {
     @Override
     public ZKNode readNode(String path) {
         ZKNode rsl = ZKNodes.getSubNode(root, path);
-        return new ZKNode(rsl.getPath(), rsl.getValue(), rsl.getName(), new LinkedList<>());
+        return new ZKNode(rsl.getPath(), rsl.getValue(), new LinkedList<>());
     }
 
     @Override

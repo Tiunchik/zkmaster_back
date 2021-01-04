@@ -1,4 +1,4 @@
-package org.zkmaster.backend.mocks;
+package org.zkmaster.backend.deprecated.mocks;
 
 import org.zkmaster.backend.devutil.DevLog;
 import org.zkmaster.backend.entity.Host;
@@ -8,6 +8,7 @@ import org.zkmaster.backend.repositories.HostProvider;
 import org.zkmaster.backend.repositories.HostProviderDefault;
 
 //@Service
+@Deprecated
 public class HostFactoryMock implements HostFactory {
     private Host mockHost;
     @Override

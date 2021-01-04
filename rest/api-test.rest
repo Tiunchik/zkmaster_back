@@ -2,39 +2,40 @@
 GET http://localhost:8081/api/zkm/data/localhost:2181
 ###
 
-# data injection
-POST http://localhost:8081/api/zkm/data/injection
-Content-Type: application/json
-
-{
-  "sourceHost": "localhost:2181",
-  "sourceNodePath": "/b1/b2",
-  "targetHost": "localhost:2181",
-  "targetNodePath": "/i1/i2",
-  "updOldValues": true
-}
-###
-
-# healt-check
-GET http://localhost:8081/api/zkm/conn/check
-Content-Type: application/json
-
-[
-  "localhost:2181", "someTestData"
-]
-###
-
-## rename node - WORK
-#POST http://localhost:8081/api/zkm/rename/localhost:2181
+## data injection
+#POST http://localhost:8081/api/zkm/data/injection
 #Content-Type: application/json
 #
 #{
-#  "path": "/d1/d2/d3",
-#  "value": "d3-rename"
+#  "sourceHost": "localhost:2181",
+#  "sourceNodePath": "/b1/b2",
+#  "targetHost": "localhost:2181",
+#  "targetNodePath": "/i1/i2",
+#  "updOldValues": true
 #}
 ####
 
-// delete node
-DELETE http://localhost:8081/api/zkm/data/localhost:2181/i1/i2/b2
+## healt-check
+#GET http://localhost:8081/api/zkm/conn/check
+#Content-Type: application/json
+#
+#[
+#  "localhost:2181", "someTestData"
+#]
+####
+
+// update node
+PUT http://localhost:8081/api/zkm/data/localhost:2181
+Content-Type: application/json
+
+{
+  "path": "/d1/d2",
+  "value": "d2-rename&value"
+}
 
 ###
+
+#// delete node
+#DELETE http://localhost:8081/api/zkm/data/localhost:2181/i1/i2/b2
+#
+####

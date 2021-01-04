@@ -64,20 +64,47 @@ public class ZKWatcherDefault implements Watcher {
      */
     @Override
     public void process(WatchedEvent event) {
-        System.out.println("Watcher notification :: host = " + host);
-        if (event.getState() == Event.KeeperState.SyncConnected) {
-            System.out.println("LOG: Connection created.");
-        } else {
-            System.out.println("event = " + event);
-        }
+        System.out.println("ZKWatcherDefault :: Event watched:");
+        System.out.println("ZKWatcherDefault :: host = " + host);
 
-        if (event.getState() == Event.KeeperState.Disconnected) {
+        if (event.getState() == Event.KeeperState.SyncConnected
+                && event.getType() == Event.EventType.None
+                && event.getPath() == null) {
+
+            System.out.println("ZKWatcherDefault :: event = Connection created.");
+            System.out.println("ZKWatcherDefault :: event informer.");
+
+        } else if (event.getState() == Event.KeeperState.SyncConnected
+                && event.getType() == Event.EventType.NodeDataChanged
+                && event.getPath().equals("/")) {
+
+            System.out.println("ZKWatcherDefault :: event = " + event);
+            System.out.println("ZKWatcherDefault :: event published.");
             context.publishEvent(new EventServerClose(host));
-        } else if (event.getType() == Event.EventType.NodeCreated
-                || event.getType() == Event.EventType.NodeDeleted
-                || event.getType() == Event.EventType.NodeDataChanged
-                || event.getType() == Event.EventType.NodeChildrenChanged) {
+
+        } else if (event.getState() == Event.KeeperState.Disconnected) {
+
+            System.out.println("ZKWatcherDefault :: event = " + event);
+            System.out.println("ZKWatcherDefault :: event published.");
+            context.publishEvent(new EventServerClose(host));
+
+//        } else if (event.getType() == Event.EventType.NodeCreated
+//                || event.getType() == Event.EventType.NodeDeleted
+//                || event.getType() == Event.EventType.NodeDataChanged
+//                || event.getType() == Event.EventType.NodeChildrenChanged) {
+        } else if (
+//                event.getType() == Event.EventType.NodeCreated
+//                || event.getType() == Event.EventType.NodeDeleted
+//                || event.getType() == Event.EventType.NodeDataChanged
+//                ||
+                event.getType() == Event.EventType.NodeChildrenChanged
+        ) {
+            System.out.println("ZKWatcherDefault :: event = " + event);
+            System.out.println("ZKWatcherDefault :: event published.");
             context.publishEvent(new EventServerStateChange(host));
+        } else {
+            System.out.println("ZKWatcherDefault :: event = " + event);
+            System.out.println("ZKWatcherDefault :: event ignored.");
         }
     }
 

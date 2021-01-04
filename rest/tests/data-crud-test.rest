@@ -12,8 +12,12 @@ Content-Type: application/json
   "path": "/crud-test-node",
   "value": "value"
 }
-
 ###
+
+#// delete node
+#DELETE http://localhost:8081/api/zkm/data/localhost:2181/crud-test-node
+#
+####
 
 // update node
 PUT http://localhost:8081/api/zkm/data/localhost:2181

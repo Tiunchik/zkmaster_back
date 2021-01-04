@@ -1,5 +1,8 @@
 package org.zkmaster.backend.devutil;
 
+import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.entity.ZKNodes;
+
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +19,8 @@ public class DevLog {
             printList(place, info, (List<Object>) val);
         } else if (val instanceof Map) {
             printMap(place, info, (Map<Object, Object>) val);
+        } else if (val instanceof ZKNode) {
+            printZKNode(place, info, (ZKNode) val);
         } else {
             System.err.println("DEV " + place + " :: " + info + "==" + val);
         }
@@ -49,6 +54,10 @@ public class DevLog {
                 );
             }
         }
+    }
+    private static void printZKNode(String place, String info, ZKNode node) {
+        System.err.println("DEV " + place + " :: " + info);
+        ZKNodes.printNode(node, System.err::println);
     }
 
 }

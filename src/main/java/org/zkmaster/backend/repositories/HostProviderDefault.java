@@ -51,35 +51,6 @@ public class HostProviderDefault implements HostProvider {
         return root;
     }
 
-//    /**
-//     * @implSpec Tree walk: width && recursion.
-//     */
-//    @Override
-//    @Deprecated(since = "recursion, risk to catch SOF")
-//    public ZKNode readHostValue() throws NodeReadException {
-//        return readHostValue("/", "/");
-//    }
-//
-//    /**
-//     * @implSpec Tree walk: width && recursion.
-//     */
-//    @Deprecated(since = "recursion, risk to catch SOF")
-//    private ZKNode readHostValue(String path, String nodeName) throws NodeReadException {
-//        String nodeValue = host.read(path);
-//        List<ZKNode> children = new LinkedList<>();
-//        List<String> childrenNames = host.getChildren(path);
-//        if (childrenNames != null && !childrenNames.isEmpty()) {
-//            for (var childName : childrenNames) {
-//                String childPath = ("/".equals(path)) // is it root
-//                        ? path + childName            // true
-//                        : path + "/" + childName;     // false
-//                children.add(readHostValue(childPath, childName)); // <<-- Recursion
-//            }
-//        }
-//        return new ZKNode(path, nodeValue, nodeName, children);
-//    }
-
-
     /**
      * @implSpec Info:
      * * (Node name == {@param name}) >> Update Node value.
@@ -121,14 +92,26 @@ public class HostProviderDefault implements HostProvider {
      */
     private boolean rename(String name, String value, ZKNode targetNode)
             throws NodeSaveException {
+        if (targetNode == null) {
+            System.err.println("Rename failed: Transaction failed!");
+            throw new NodeSaveException(host.getHostAddress(), null, name);
+        }
         final ZKTransaction transaction = host.transaction();
         var deleteNodePaths = new LinkedList<String>();
         var firstIteration = new AtomicBoolean(true);
+        var renameNodeName = targetNode.getName();
 
         ZKNodes.treeIterateWidthList(targetNode, currentNode -> {
             String rslValue = (firstIteration.getAndSet(false))
                     ? value : currentNode.getValue();
-            String newPath = currentNode.getPath().replace(currentNode.getName(), name);
+//            DevLog.print("Rename", "currentNode.name", currentNode.getName());
+//            DevLog.print("Rename", "new name", name);
+//            DevLog.print("Rename", "new currentNode", currentNode);
+//            DevLog.print("Rename", "getPath", currentNode.getPath());
+//            DevLog.print("Rename", "renameNodeName", renameNodeName);
+            String newPath = currentNode.getPath().replace(renameNodeName, name);
+//            DevLog.print("Rename", "newPath", newPath);
+//            DevLog.print("Rename", "rslValue", rslValue);
             transaction.create(newPath, rslValue);
             deleteNodePaths.add(currentNode.getPath());
         });

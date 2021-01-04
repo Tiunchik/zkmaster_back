@@ -1,10 +1,9 @@
 package org.zkmaster.backend.entity;
 
-import org.zkmaster.backend.devutil.DevLog;
-
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -82,14 +81,11 @@ public class ZKNodes {
             var current = treeWalkList.removeFirst();
             if (current.getPath().equals(path)) {
                 rsl = current;
-//                DevLog.print("getSubNode", "children", rsl.getChildren());
-//                rsl.setChildren(new LinkedList<>());
                 break;
             } else if (ZKNodes.hasChildren(current)) {
                 treeWalkList.addAll(current.getChildren());
             }
         }
-        DevLog.print("getSubNode", "rsl", rsl);
         return rsl;
     }
 
@@ -112,13 +108,22 @@ public class ZKNodes {
         }
     }
 
+    public static int treeNodeCount(ZKNode root) {
+        AtomicInteger rsl = new AtomicInteger();
+        treeIterateWidthList(root, node -> rsl.getAndIncrement());
+        return rsl.get();
+    }
+
     /**
      * Default using of print {@link ZKNode}.
      *
-     * @see #printNode(ZKNode, boolean, boolean, boolean)
+     * @see #printNode(ZKNode, boolean, boolean, boolean, Consumer)
      */
     public static void printNode(ZKNode node) {
-        printNode(node, false, true, true);
+        printNode(node, false, true, true, System.out::println);
+    }
+    public static void printNode(ZKNode node,  Consumer<String> output) {
+        printNode(node, false, true, true, output);
     }
 
     /**
@@ -129,7 +134,8 @@ public class ZKNodes {
      * @param path  turn on/off print: path.
      * @param value turn on/off print: value.
      */
-    public static void printNode(ZKNode node, boolean name, boolean path, boolean value) {
+    public static void printNode(ZKNode node, boolean name, boolean path, boolean value,
+                                 Consumer<String> output) {
         var sb = new StringBuilder("Print ZKNode format: " + System.lineSeparator());
         final String dataSeparator = " :: ";
         sb.append((name) ? "name " : "");
@@ -147,7 +153,9 @@ public class ZKNodes {
             sb.append((value) ? each.getValue() : "");
             sb.append(System.lineSeparator());
         });
-        System.out.println(sb.toString());
+        output.accept(sb.toString());
+//        System.out.println(sb.toString());
     }
+
 
 }

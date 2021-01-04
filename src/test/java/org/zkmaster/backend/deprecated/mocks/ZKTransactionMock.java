@@ -1,4 +1,4 @@
-package org.zkmaster.backend.mocks;
+package org.zkmaster.backend.deprecated.mocks;
 
 import org.zkmaster.backend.entity.Host;
 import org.zkmaster.backend.entity.ZKTransaction;
@@ -10,6 +10,7 @@ import org.zkmaster.backend.exceptions.node.NodeSaveException;
 import java.util.LinkedList;
 import java.util.List;
 
+@Deprecated
 public class ZKTransactionMock implements ZKTransaction {
     private final Host host;
     private List<String> actions = new LinkedList<>();

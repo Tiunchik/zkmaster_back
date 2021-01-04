@@ -1,6 +1,7 @@
 package org.zkmaster.backend.repositories;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
@@ -22,11 +23,13 @@ public class HostContextDefault implements HostContext {
      * Actual cache of real server value.
      */
     private final Map<String, ZKNode> caches = new HashMap<>();
-    private HostFactory zkFactory;
+    private HostFactory hostFactory;
 
     @Autowired
-    public HostContextDefault(HostFactory zkFactory) {
-        this.zkFactory = zkFactory;
+    @Qualifier("hostFactoryDefault")
+//    @Qualifier("hostFactoryFake")
+    public void setHostFactory(HostFactory hostFactory) {
+        this.hostFactory = hostFactory;
     }
 
     @Override
@@ -51,7 +54,7 @@ public class HostContextDefault implements HostContext {
     @Override
     public boolean createHost(String host) throws HostWrongAddressException {
         if (!providers.containsKey(host)) {
-            providers.put(host, zkFactory.makeHostProvider(host));
+            providers.put(host, hostFactory.makeHostProvider(host));
         }
         return true;
     }
@@ -79,23 +82,5 @@ public class HostContextDefault implements HostContext {
         hosts.forEach(host -> rsl.put(host, providers.containsKey(host)));
         return rsl;
     }
-
-//    @Override
-//    public boolean injectFromTo(InjectionDTO dto) throws InjectionFailException {
-//        boolean rsl;
-//        try {
-//            rsl = injectionService.injectFromTo(
-//                    ZKNodes.getSubNode(getActualHostValue(dto.getSourceHost()), dto.getSourceNodePath()),
-//                    ZKNodes.collectAllPaths(getActualHostValue(dto.getTargetHost())),
-//                    getHostProvider(dto.getTargetHost()).transaction(),
-//                    dto
-//            );
-//        } catch (Exception e) {
-//            System.err.println("Something Wrong! Check it.");
-//            e.printStackTrace();
-//            throw new InjectionFailException(dto);
-//        }
-//        return rsl;
-//    }
 
 }
