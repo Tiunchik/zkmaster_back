@@ -83,4 +83,10 @@ public class HostContextDefault implements HostContext {
         return rsl;
     }
 
+    @Override
+    public void clearContext() {
+        providers.clear();
+        caches.clear();
+    }
+
 }

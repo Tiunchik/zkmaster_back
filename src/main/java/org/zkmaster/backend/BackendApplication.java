@@ -2,19 +2,18 @@ package org.zkmaster.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.zkmaster.backend.annotations.Delegate;
-import org.zkmaster.backend.entity.Host;
 import org.zkmaster.backend.entity.ZKTransaction;
 import org.zkmaster.backend.services.MainServiceDefault;
 
 /**
- * TODO Feature - export into YAML.
- *
  * TODO - process IOException for business.
- * TODO - full-inform docs of {@link Host}.
  * TODO - full-inform docs of {@link ZKTransaction}.
  * TODO - split {@link MainServiceDefault} to several services.
- * TODO - delete annotation {@link Delegate}
+ *
+ * TODO - discuss about "how & then do deleteCacheAndConnection".
+ * TODO - discuss about "Expired event & reconnect".
+ * TODO - discuss about "injection API - new variant of InjectionDTO & how it must work in details".
+ * TODO - discuss about "that ExceptionHandlers must throw to Front-end then catch exception".
  *
  * possible features:
  * - Save cache then server have been close.

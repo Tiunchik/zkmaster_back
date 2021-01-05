@@ -1,6 +1,5 @@
 package org.zkmaster.backend.services;
 
-import org.zkmaster.backend.annotations.Delegate;
 import org.zkmaster.backend.controllers.APIController;
 import org.zkmaster.backend.controllers.CRUDController;
 import org.zkmaster.backend.controllers.TransformController;
@@ -18,7 +17,7 @@ import java.util.Map;
 
 /**
  * Main service that provide API for using in Controllers & other Out-work classes(see below).
- * * Delegate real code to other classes. You see it by look at annotation {@link Delegate}.
+ * * Delegate real code to other classes. You see it by look at methods docs.
  *
  * <p>{@param host} :: mean host address of real server. It use as pair <hostAddress & RealHost>
  *
@@ -35,6 +34,8 @@ public interface MainService {
     /**
      * Create Node on real-server by provided params.
      * For: {@link CRUDController}
+     * <p>
+     * Delegate business code: {@link HostProvider}.
      *
      * @param host  host for that it will create a new Node.
      * @param path  Node path.
@@ -44,25 +45,27 @@ public interface MainService {
      * @throws NodeExistsException           -
      * @throws NodeCreateException           -
      */
-    @Delegate(to = HostProvider.class)
     boolean createNode(String host, String path, String value) throws HostProviderNotFoundException, NodeExistsException, NodeCreateException;
 
     /**
      * Read actual host-value from real-server.
      * For: {@link CRUDController}
+     * <p>
+     * Delegate business code: {@link HostProvider}.
      *
      * @param host host for that it will read host-value.
      * @return Read host-value success OR Throw Exception.
      * @throws NodeReadException -
      * @implNote If other thread(controller) will ask host-value, it MUST wait while cache is refreshing.
      */
-    @Delegate(to = HostProvider.class)
     ZKNode getHostValue(String host) throws NodeReadException;
 
 
     /**
      * Save any changes with node by provided params.
      * For: {@link CRUDController}
+     * <p>
+     * Delegate business code: {@link HostProvider}.
      *
      * @param host  host for that it will save node.
      * @param path  Node path.
@@ -73,13 +76,14 @@ public interface MainService {
      * @throws HostProviderNotFoundException -
      * @throws NodeReadException             -
      */
-    @Delegate(to = HostProvider.class)
     boolean saveNode(String host, String path, String name, String value)
             throws NodeSaveException, HostProviderNotFoundException, NodeReadException;
 
     /**
      * Delete Node by provided params.
      * For: {@link CRUDController}
+     * <p>
+     * Delegate business code: {@link HostProvider}.
      *
      * @param host host for that it will delete.
      * @param path Node path.
@@ -88,7 +92,6 @@ public interface MainService {
      * @throws HostProviderNotFoundException -
      * @throws NodeReadException             -
      */
-    @Delegate(to = HostProvider.class)
     boolean deleteNode(String host, String path)
             throws NodeDeleteException, HostProviderNotFoundException, NodeReadException;
 
@@ -97,55 +100,61 @@ public interface MainService {
     /**
      * Refresh cache by provided params.
      * For: {@link ServerEventListener}
+     * <p>
+     * Delegate business code: {@link HostContext}.
      *
      * @param host host for that it will refresh.
      * @return refresh success OR throw Exception.
      * @throws NodeReadException -
      * @implNote This method MUST block cache and other threads MUST wait until refresh isn't finish.
      */
-    @Delegate(to = HostContext.class)
     boolean refreshCache(String host) throws NodeReadException;
 
     /**
      * Check contains host in program OR not.
      * For: {@link CRUDController}
+     * <p>
+     * Delegate business code: {@link HostContext}.
      *
      * @param host host for that it will check.
      * @return true if contains, else false.
      */
-    @Delegate(to = HostContext.class)
     boolean containsConnection(String host);
 
     /**
      * Try create connection by provided params.
      * For: {@link APIController}
+     * <p>
+     * Delegate business code: {@link HostContext}.
      *
      * @param host host for that it will create.
      * @return Create connection success OR throw Exception.
      * @throws HostWrongAddressException -
      */
-    @Delegate(to = HostContext.class)
     boolean createConnection(String host) throws HostWrongAddressException;
 
     /**
      * IMPORTANT: Need to discuss about "how we delete and keep connections"
      * <p>
-     * For: {@link ServerEventListener}
      * Delete connection and chase.
+     * For: {@link ServerEventListener}
+     * <p>
+     * Delegate business code: {@link HostContext}.
      * <p>
      * !!! This method MUST block cache and other threads MUST wait until refresh isn't finish.
      *
      * @param host -
      */
     @Deprecated(since = "not use in program, Maybe in future.")
-    @Delegate(to = HostContext.class)
     void deleteConnectionAndCache(String host);
 
     /**
      * IMPORTANT: Need to discuss about "how we delete and keep connections"
      * <p>
-     * For: {@link APIController}
      * Check: is this hosts still alive?
+     * For: {@link APIController}
+     * <p>
+     * Delegate business code: {@link HostContext}.
      *
      * @param hosts -
      * @return map :
@@ -153,7 +162,6 @@ public interface MainService {
      * val - alive OR close.
      */
     @Deprecated(since = "not use in program, Maybe in future.")
-    @Delegate(to = HostContext.class)
     Map<String, Boolean> checkHostsHealth(List<String> hosts);
 
 }

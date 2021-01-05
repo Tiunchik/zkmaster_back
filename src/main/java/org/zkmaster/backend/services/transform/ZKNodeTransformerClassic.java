@@ -2,7 +2,6 @@ package org.zkmaster.backend.services.transform;
 
 import org.springframework.stereotype.Component;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.entity.ZKNodes;
 import org.zkmaster.backend.entity.ZKTransaction;
 
 import java.util.LinkedList;
@@ -24,7 +23,7 @@ public class ZKNodeTransformerClassic implements ZKNodeTransformer {
         while (!treeWalkList.isEmpty()) {
             var currentNode = treeWalkList.removeFirst();
 
-            if (ZKNodes.hasChildren(currentNode)) {
+            if (currentNode.hasChildren()) {
                 currentNode.getChildren().forEach(treeWalkList::addFirst);
             }
             rsl.add(currentNode.getPath() + " : " + currentNode.getValue());

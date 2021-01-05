@@ -1,5 +1,7 @@
 package org.zkmaster.backend.entity;
 
+import org.zkmaster.backend.entity.utils.ZKNodes;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -61,10 +63,21 @@ public class ZKNode {
         }
     }
 
+    /* methods */
+
+    /**
+     * Check has this Node children or not? Just pretty API
+     */
+    public boolean hasChildren() {
+        return !this.children.isEmpty();
+    }
+
     public void addChildFirst(ZKNode child) {
         var temp = (LinkedList<ZKNode>) this.children;
         temp.addFirst(child);
     }
+
+    /* Getters & Setters & equals & hashCode & toString*/
 
     public String getPath() {
         return path;

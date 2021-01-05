@@ -1,6 +1,10 @@
 package org.zkmaster.backend.repositories;
 
-import org.zkmaster.backend.entity.*;
+import org.zkmaster.backend.entity.Host;
+import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.entity.ZKTransaction;
+import org.zkmaster.backend.entity.utils.ZKNodes;
+import org.zkmaster.backend.entity.utils.ZKTransactions;
 import org.zkmaster.backend.exceptions.node.*;
 
 import java.util.*;
@@ -38,7 +42,9 @@ public class HostProviderDefault implements HostProvider {
             prevNode = mccp.getOrDefault(parentPath, prevNode); // new parent || prev parent
             List<String> childrenPaths = host.getChildrenPaths(currPath);
 
-            if (childrenPaths.size() >= 2) mccp.put(currPath, currNode);
+            if (childrenPaths.size() >= 2) {
+                mccp.put(currPath, currNode);
+            }
             iteratePaths.addAll(childrenPaths);
             if (firstIterate) {
                 firstIterate = false;

@@ -1,4 +1,6 @@
-package org.zkmaster.backend.entity;
+package org.zkmaster.backend.entity.utils;
+
+import org.zkmaster.backend.entity.ZKNode;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -11,12 +13,9 @@ import java.util.function.Consumer;
  */
 public class ZKNodes {
 
-    /**
-     * Check {@param node} has children or not? Just pretty API
-     */
-    public static boolean hasChildren(ZKNode node) {
-        return !node.getChildren().isEmpty();
-    }
+
+    /* Methods for work with Node path */
+
 
     /**
      * Extract Node name from Node path.
@@ -26,13 +25,16 @@ public class ZKNodes {
      * "/" : value" ->> "/"
      */
     public static String nameFromPath(String path) {
-        return path.substring(path.lastIndexOf('/') + 1);
+        return ("/".equals(path))
+                ? "/" : path.substring(path.lastIndexOf('/') + 1);
     }
 
     /**
      * Substring from path with deleted name.
      *
-     * @return Example: "/1/2/3/4 : value" ->> "/1/2/3/"
+     * @return Example:
+     * "/1/2/3/4 : value" ->> "/1/2/3/"
+     * "/" : value" ->> "/"
      */
     public static String pathWithoutName(String path) {
         return path.substring(0, path.lastIndexOf('/') + 1);
@@ -46,15 +48,19 @@ public class ZKNodes {
      * "/" : value" ->> "/"
      */
     public static String parentNodePath(String nodePath) {
-        return (nodePath.lastIndexOf('/') == 0)
+        return ("/".equals(nodePath))
                 ? "/" : nodePath.substring(0, nodePath.lastIndexOf('/'));
     }
 
+
+    /* Methods for work as tree */
+
+
     /**
-     * Iterate by Node as tree and collect all Node path is {@link Set}.
+     * Iterate by Node as tree and collect all Node paths is {@link Set}.
      *
      * @param node root for iterate.
-     * @return {@link Set} with paths of {@param node} and all inner sub-Nodes and etc.
+     * @return {@link Set} with paths of {@param node} and all sub-Nodes and etc.
      */
     public static Set<String> collectAllPaths(ZKNode node) {
         Set<String> rsl = new HashSet<>();
@@ -63,14 +69,14 @@ public class ZKNodes {
     }
 
     /**
-     * Select sub-node from {@param root} by {@param path}.
-     * !!! Return null, if doesn't find.
+     * Search sub-node in {@param root} tree with equals Node path that {@param path}.
+     * IMPORTANT: !!! Return null, if doesn't find.
      *
-     * @param root - start node (could be root or any other).
+     * @param root - start node (could be root or any Node).
      * @param path - absolute path of searching {@link ZKNode}.
      * @return Node with path with == {@param path} with all sub-nodes OR
      * null ==>> if searching {@link ZKNode} doesn't found.
-     * @implNote Tree traversal should be: for width by List, Not recursion.
+     * @implSpec Tree traversal is width with list.
      * * Cause we don't know how deep tree is.(Argument for List)
      */
     public static ZKNode getSubNode(ZKNode root, String path) {
@@ -82,7 +88,7 @@ public class ZKNodes {
             if (current.getPath().equals(path)) {
                 rsl = current;
                 break;
-            } else if (ZKNodes.hasChildren(current)) {
+            } else if (current.hasChildren()) {
                 treeWalkList.addAll(current.getChildren());
             }
         }
@@ -90,11 +96,11 @@ public class ZKNodes {
     }
 
     /**
-     * For each by full tree for {@param node}.
+     * For each for full {@param node} tree.
      * * IMPORTANT: you should use Collections & Atomic wraps in your lambda func!
      *
-     * @param node        node for iterate. (could be root or any other).
-     * @param forEachFunc - forEach function.
+     * @param node        Node for iterate. (could be root or any Node).
+     * @param forEachFunc forEach function.
      */
     public static void treeIterateWidthList(ZKNode node, Consumer<ZKNode> forEachFunc) {
         var treeWalkList = new LinkedList<ZKNode>();
@@ -102,15 +108,22 @@ public class ZKNodes {
         while (!treeWalkList.isEmpty()) {
             ZKNode currentZKNode = treeWalkList.removeFirst();
             forEachFunc.accept(currentZKNode);
-            if (hasChildren(currentZKNode)) {
+            if (currentZKNode.hasChildren()) {
                 treeWalkList.addAll(currentZKNode.getChildren());
             }
         }
     }
 
-    public static int treeNodeCount(ZKNode root) {
+    /**
+     * Count how much Node is in {@param node} tree.
+     * * Root count as well.
+     *
+     * @param node root for counting.
+     * @return Node tree size.
+     */
+    public static int treeNodeCount(ZKNode node) {
         AtomicInteger rsl = new AtomicInteger();
-        treeIterateWidthList(root, node -> rsl.getAndIncrement());
+        treeIterateWidthList(node, each -> rsl.getAndIncrement());
         return rsl.get();
     }
 
@@ -122,7 +135,8 @@ public class ZKNodes {
     public static void printNode(ZKNode node) {
         printNode(node, false, true, true, System.out::println);
     }
-    public static void printNode(ZKNode node,  Consumer<String> output) {
+
+    public static void printNode(ZKNode node, Consumer<String> output) {
         printNode(node, false, true, true, output);
     }
 

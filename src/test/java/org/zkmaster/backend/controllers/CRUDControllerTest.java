@@ -1,5 +1,6 @@
 package org.zkmaster.backend.controllers;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,20 +10,21 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.zkmaster.backend.BackendApplication;
-import org.zkmaster.backend.entity.ZKNodes;
+import org.zkmaster.backend.entity.utils.ZKNodes;
 
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = BackendApplication.class)
 @AutoConfigureMockMvc
-@ContextConfiguration(classes = AbstractTemplateControllersTest.class)
+@ContextConfiguration(classes = ControllersTestEnvironment.class)
 public class CRUDControllerTest {
 
     @Autowired
-    private AbstractTemplateControllersTest template;
+    private ControllersTestEnvironment template;
     @Autowired
     private MockMvc mockMvc;
     private static final String CRUD_CONTROLLER_URL = "/api/zkm/data/localhost:2181";
@@ -36,6 +38,11 @@ public class CRUDControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @AfterEach
+    void tearDown() {
+        template.clearEnvironmentContext();
+    }
+
     @Test
     public void getHostValue() throws Exception {
         var rsl = this.mockMvc.perform(get(CRUD_CONTROLLER_URL))
@@ -44,7 +51,9 @@ public class CRUDControllerTest {
                 .andReturn();
 
         String rslAsString = rsl.getResponse().getContentAsString();
-        assertEquals(453, rslAsString.length());
+        System.out.println("rsl");
+        System.out.println(rslAsString);
+        assertEquals(452, rslAsString.length());
     }
 
     @Test
@@ -58,7 +67,7 @@ public class CRUDControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyJson))
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(content().string("true"));
 
         var createdNode = ZKNodes.getSubNode(template.getTestRoot(), "/crud-test-node");
         assertNotNull(createdNode);
@@ -75,7 +84,7 @@ public class CRUDControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyJson))
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(content().string("true"));
 
         var updatedNode = ZKNodes.getSubNode(template.getTestRoot(), "/1/2-1");
         assertNotNull(updatedNode);
@@ -94,7 +103,7 @@ public class CRUDControllerTest {
                 .content(requestBodyJson))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(content().string("true"));
 
         var renamedNode = ZKNodes.getSubNode(template.getTestRoot(), "/1/crud-test-node-update");
         assertNotNull(renamedNode);
@@ -112,9 +121,8 @@ public class CRUDControllerTest {
         this.mockMvc.perform(put(CRUD_CONTROLLER_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyJson))
-                .andDo(print())
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(content().string("true"));
 
         var updatedNode = ZKNodes.getSubNode(template.getTestRoot(), "/1/crud-test-node-update");
         assertNotNull(updatedNode);
@@ -132,13 +140,11 @@ public class CRUDControllerTest {
         this.mockMvc.perform(put(CRUD_CONTROLLER_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyJson))
-                .andDo(print())
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(content().string("true"));
 
         var updatedNode = ZKNodes.getSubNode(template.getTestRoot(), "/1/crud-test-node-update");
 
-        template.printRoot();
         assertNotNull(updatedNode);
         assertEquals("crud-test-node-update", updatedNode.getName());
         assertEquals("value-update", updatedNode.getValue());
@@ -155,7 +161,7 @@ public class CRUDControllerTest {
 
         this.mockMvc.perform(delete(CRUD_CONTROLLER_URL + "/1/2-2"))
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(content().string("true"));
 
         assertNull(ZKNodes.getSubNode(template.getTestRoot(), "/1/2-2"));
     }
@@ -166,7 +172,7 @@ public class CRUDControllerTest {
 
         this.mockMvc.perform(delete(CRUD_CONTROLLER_URL + "/1/2-1"))
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(content().string("true"));
 
         assertNull(ZKNodes.getSubNode(template.getTestRoot(), "/1/2-1"));
         assertNull(ZKNodes.getSubNode(template.getTestRoot(), "/1/2-1/3-1"));

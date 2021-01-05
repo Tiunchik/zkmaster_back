@@ -66,13 +66,10 @@ public interface HostContext {
     @Deprecated(since = "not use in program, Maybe in future.")
     Map<String, Boolean> containsHostAll(List<String> hosts);
 
-//    /**
-//     * Process {@param dto}. Inject/copy Node from one place into other place.
-//     *
-//     * @param dto -
-//     * @return Success OR throw {@link InjectionFailException}.
-//     * @throws InjectionFailException -
-//     */
-//    boolean injectFromTo(InjectionDTO dto) throws InjectionFailException;
+    /**
+     * Reset to empty inner state.
+     * * Usual for tests.
+     */
+    void clearContext();
 
 }

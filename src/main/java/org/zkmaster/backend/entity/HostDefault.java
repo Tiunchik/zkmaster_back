@@ -1,6 +1,8 @@
 package org.zkmaster.backend.entity;
 
 import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
+import org.zkmaster.backend.entity.utils.ZKNodes;
 import org.zkmaster.backend.exceptions.node.*;
 
 import java.io.IOException;
@@ -9,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Warp default {@link ZooKeeper} API into comfortable API. We call it "facade" of real server.
+ * Default warp {@link ZooKeeper} API into comfortable API.
  * <p>
  * If you need more API from original {@link ZooKeeper},
  * decorate it in this class.
@@ -19,7 +21,7 @@ public class HostDefault implements Host {
     private final ZooKeeper zoo;
 
     /**
-     * Regular constructor for facade of real server.
+     * Regular constructor for wrap of code class(ZooKeeper real-server).
      *
      * @param hostAddress    - URL of real ZooKeeper server.
      * @param sessionTimeout - timeout for query to real server.
@@ -32,10 +34,12 @@ public class HostDefault implements Host {
     }
 
     /**
-     * Default wrap. Don't use Watcher and State.
-     *
-     * @param path  -
-     * @param value -
+     * @implSpec docs for {@link ZooKeeper#create(String, byte[], List, CreateMode)}:
+     * params:
+     * String : path - Node path.
+     * byte[] : String as bytes
+     * List : acl{@link org.apache.zookeeper.data.ACL}
+     * CreateMode : createMode{@link CreateMode}
      */
     @Override
     public boolean create(String path, String value) throws NodeExistsException, NodeCreateException {
@@ -55,10 +59,18 @@ public class HostDefault implements Host {
     }
 
     /**
-     * Default wrap. Don't use Watcher and State.
-     *
-     * @param path -
-     * @return String value by nude.
+     * @implSpec docs for {@link ZooKeeper#getData(String, boolean, Stat)}:
+     * params:
+     * String : path - Node path for read.
+     * boolean : watch - touch watchers for this server-action.
+     * Stat : state - could be null. Need for save full info of Node state.
+     * <p>
+     * return: encoded String as bytes. Ways to decode:
+     * {@code String value = new String(bytes, StandardCharsets.UTF_8); }
+     * IMPORTANT: Workable StandardCharsets (only):
+     * StandardCharsets.UTF_8
+     * StandardCharsets.US_ASCII
+     * StandardCharsets.ISO_8859_1
      */
     @Override
     public String read(String path) throws NodeReadException {
@@ -77,13 +89,12 @@ public class HostDefault implements Host {
     }
 
     /**
-     * Update node value by params.
-     * * If the given version is "-1", it matches any node's versions.
-     *
-     * @param path  Node path.
-     * @param value new Node name.
-     * @return Update OR throw {@link NodeSaveException}.
      * @throws NodeSaveException throw if something went wrong.
+     * @implSpec docs for {@link ZooKeeper#setData(String, byte[], int)}:
+     * String : path - Node path for set new value.
+     * byte[] : data - String as bytes.
+     * int : version - Node state version.
+     * * If the given version is "-1", it matches any Node versions.
      */
     @Override
     public boolean setData(String path, String value) throws NodeSaveException {
@@ -98,12 +109,10 @@ public class HostDefault implements Host {
     }
 
     /**
-     * Delete node by {@param path}.
-     * * If the given version is "-1", it matches any node's versions.
-     *
-     * @param path Node path.
-     * @return Delete OR throw {@link NodeDeleteException}.
-     * @throws NodeDeleteException throw if something went wrong.
+     * @implSpec docs for {@link ZooKeeper#delete(String, int)}:
+     * String : path - Node path for set new value.
+     * int : version - Node state version.
+     * * If the given version is "-1", it matches any Node versions.
      */
     @Override
     public boolean delete(String path) throws NodeDeleteException {
@@ -118,10 +127,10 @@ public class HostDefault implements Host {
     }
 
     /**
-     * Default wrap, doesn't use watch and State.
-     *
-     * @param path -
-     * @return children names OR null.
+     * @implSpec docs for {@link ZooKeeper#getChildren(String, boolean)}:
+     * String : path - Node path for read.
+     * boolean : watch - touch watchers for this server-action.
+     * Stat : state - could be null. Need for save full info of Node state.
      */
     @Override
     public List<String> getChildrenNames(String path) throws NodeReadException {

@@ -1,4 +1,6 @@
-package org.zkmaster.backend.entity;
+package org.zkmaster.backend.entity.utils;
+
+import org.zkmaster.backend.entity.ZKTransaction;
 
 import java.util.LinkedList;
 

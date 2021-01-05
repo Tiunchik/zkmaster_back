@@ -15,7 +15,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  * This class must to process all events from server.
  * Process - do correct logic things, do correct code.
  * <p>
- * TODO: доделать - через Map, как завещал Пётр - I didn't start it.
+ * TODO - доделать - через Map, как завещал Пётр - I didn't start it.
  */
 @Component("watcherDefault")
 @Scope(SCOPE_PROTOTYPE)

@@ -3,8 +3,8 @@ package org.zkmaster.backend.mocks;
 import org.apache.zookeeper.Watcher;
 import org.zkmaster.backend.entity.Host;
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.entity.ZKNodes;
 import org.zkmaster.backend.entity.ZKTransaction;
+import org.zkmaster.backend.entity.utils.ZKNodes;
 import org.zkmaster.backend.exceptions.node.*;
 
 import java.util.LinkedList;
@@ -29,14 +29,8 @@ public class HostFake implements Host {
     @Override
     public boolean create(String path, String value) throws NodeExistsException, NodeCreateException {
         String parentNodePath = ZKNodes.parentNodePath(path);
-
-//        DevLog.print("HostFake ADD", "parentNodePath", parentNodePath);
-//        DevLog.print("HostFake ADD", "root", root);
         var subNode = ZKNodes.getSubNode(root, parentNodePath);
-//        DevLog.print("HostFake ADD", "subNode", subNode);
-
         subNode.addChildFirst(new ZKNode(path, value));
-//        DevLog.print("HostFake ADD", "root", root);
         watcherFake.process(eventFactory.makeNodeChildrenChangedEvent(parentNodePath));
         return true;
     }
@@ -60,15 +54,9 @@ public class HostFake implements Host {
 
     @Override
     public boolean delete(String path) throws NodeDeleteException {
-//        DevLog.print("HostFake DEL", "root", root);
-//        DevLog.print("HostFake DEL", "root nods", ZKNodes.treeNodeCount(root));
-
         final String parentPath = ZKNodes.parentNodePath(path);
         ZKNodes.getSubNode(root, parentPath).getChildren()
                 .removeIf(node -> path.equals(node.getPath()));
-
-//        DevLog.print("HostFake DEL", "root nods", ZKNodes.treeNodeCount(root) + "\r\n");
-//        DevLog.print("HostFake DEL", "root", root);
 
         watcherFake.process(eventFactory.makeNodeChildrenChangedEvent(parentPath));
         watcherFake.process(eventFactory.makeNodeDeletedEvent(path));
@@ -89,7 +77,7 @@ public class HostFake implements Host {
 
     @Override
     public boolean hasChildren(String path) {
-        return ZKNodes.hasChildren(ZKNodes.getSubNode(root, path));
+        return ZKNodes.getSubNode(root, path).hasChildren();
     }
 
     /**

@@ -50,9 +50,6 @@ public class ZKTransactionFake implements ZKTransaction {
             for (var action : actions) {
                 System.out.println("ZKTransactionFake :: action==" + action + " RUN");
                 if (action.startsWith("ADD")) {
-//                    DevLog.print("TransFake", "action", action);
-//                    DevLog.print("TransFake", "ext path", extractPath(action));
-//                    DevLog.print("TransFake", "ext val", extractValue(action));
                     host.create(extractPath(action), extractValue(action));
                 } else if (action.startsWith("DEL")) {
                     host.delete(extractPath(action));
@@ -76,13 +73,17 @@ public class ZKTransactionFake implements ZKTransaction {
         System.out.println("ZKTransactionMock#print() END");
     }
 
+    @Override
+    public String toString() {
+        var builder = new StringBuilder("ZKTransactionFake :: toSting()==");
+        actions.forEach(builder::append);
+        return builder.toString();
+    }
+
     private static final String COMMAND_SPLIT = " :: ";
     private static final String VALUE_SPLIT = " : ";
 
     private static String extractPath(String action) {
-//        DevLog.print("TransFake", "ext path action", action);
-//        DevLog.print("TransFake", "ext path action length", action.length());
-//        DevLog.print("TransFake", "ext path COMMAND_SPLIT", COMMAND_SPLIT.length());
         return action.substring(action.indexOf(COMMAND_SPLIT) + COMMAND_SPLIT.length(),
                 action.indexOf(VALUE_SPLIT));
     }
@@ -90,4 +91,5 @@ public class ZKTransactionFake implements ZKTransaction {
     private static String extractValue(String action) {
         return action.substring(action.indexOf(VALUE_SPLIT) + VALUE_SPLIT.length());
     }
+
 }

@@ -19,25 +19,6 @@ public class HostFactoryFake implements HostFactory {
         this.context = context;
     }
 
-//    @PostConstruct
-//    public void init() {
-////        hostFake = new HostFake("localhost:2181", new ZKNode("/", "v", List.of(
-////                new ZKNode("/1", "v", List.of(
-////                        new ZKNode("/1/2-1", "v", List.of(
-////                                new ZKNode("/1/2-1/3-1", "v", List.of(
-////                                        new ZKNode("/1/2-1/3-1/4", "v", List.of())
-////                                )),
-////                                new ZKNode("/1/2-1/3-2", "v", List.of(
-////                                        new ZKNode("/1/2-1/3-2/4", "v", List.of())
-////                                ))
-////                        )),
-////                        new ZKNode("/1/2-2", "v", List.of(
-////                        ))
-////                ))
-////        )));
-////        DevLog.print("Factory", "init HostFactoryFake");
-//    }
-
 
     @Override
     public HostProvider makeHostProvider(String host) throws HostWrongAddressException {
@@ -56,4 +37,5 @@ public class HostFactoryFake implements HostFactory {
     public void setHostFake(Host hostFake) {
         this.hostFake = hostFake;
     }
+
 }

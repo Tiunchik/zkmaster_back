@@ -21,65 +21,72 @@ import java.util.List;
  * Update(setValue) -  WORK
  * Update(rename) -  WORK
  * Update(rename & setValue) -  WORK
- * Update cascade(rename & setValue) - REPAIR!!!!!!!!!!!!!!!!!!!!!!!
+ * Update cascade(rename & setValue) -  WORK
  * Delete -  WORK
  * Delete cascade -  WORK
- *
+ * <p>
  * Transform
- * Export -
- * Import -
- *
+ * Export - WORK
+ * Import - WORK
+ * <p>
  * API
- * HealthCheck -
- * Injection -
+ * HealthCheck - WORK
+ * Injection save values - WORK
+ * Injection update values - WORK
  */
 @TestComponent("template")
-public class AbstractTemplateControllersTest {
+public class ControllersTestEnvironment {
     private ZKNode testRoot;
     @Autowired
     @Qualifier("hostFactoryFake")
     private HostFactory testFactory;
     private Host testHost;
-    //    private HostProvider testProvider;
     @Qualifier("hostContextDefault")
     @Autowired
     private HostContext ctx;
-
-    public AbstractTemplateControllersTest() {
-    }
 
     /**
      * Reset all inner state on default.
      */
     public void initNewTestTempleState() throws Exception {
-        testRoot = new ZKNode("/", "v", List.of(
-                new ZKNode("/1", "v", List.of(
-                        new ZKNode("/1/2-1", "v", List.of(
-                                new ZKNode("/1/2-1/3-1", "v", List.of(
-                                        new ZKNode("/1/2-1/3-1/4", "v", List.of())
+        testRoot =
+                new ZKNode("/", "v", List.of(
+                        new ZKNode("/1", "v", List.of(
+                                new ZKNode("/1/2-1", "v", List.of(
+                                        new ZKNode("/1/2-1/3-1", "v", List.of(
+                                                new ZKNode("/1/2-1/3-1/4", "v", List.of())
+                                        )),
+                                        new ZKNode("/1/2-1/3-2", "v", List.of(
+                                                new ZKNode("/1/2-1/3-2/4", "v", List.of())
+                                        ))
                                 )),
-                                new ZKNode("/1/2-1/3-2", "v", List.of(
-                                        new ZKNode("/1/2-1/3-2/4", "v", List.of())
+                                new ZKNode("/1/2-2", "v", List.of(
                                 ))
-                        )),
-                        new ZKNode("/1/2-2", "v", List.of(
                         ))
-                ))
-        ));
+                ));
         testHost = new HostFake("localhost:2181", testRoot);
 
-        var castFactory = (HostFactoryFake) testFactory;
-        castFactory.setHostFake(testHost);
+        factorySetHostFake(testHost);
+    }
 
-//        testProvider = testFactory.makeHostProvider("");
+    /**
+     * Don't set Host for {object ControllersTestEnvironment}, use setter for set ${testHost}
+     */
+    public void factorySetHostFake(Host newFakeHost) {
+        var castFactory = (HostFactoryFake) testFactory;
+        castFactory.setHostFake(newFakeHost);
 
         var castCtx = (HostContextDefault) ctx;
         castCtx.setHostFactory(testFactory);
     }
 
-//    public String getHostAddressFake() {
-//        return testHost.getHostAddress();
-//    }
+    public void printRoot() {
+        DevLog.print("Temple", "print root", testRoot);
+    }
+
+    public void clearEnvironmentContext() {
+        ctx.clearContext();
+    }
 
     public ZKNode getTestRoot() {
         return testRoot;
@@ -91,15 +98,6 @@ public class AbstractTemplateControllersTest {
 
     public Host getTestHost() {
         return testHost;
-    }
-
-//    public HostProvider getTestProvider() {
-//        return testProvider;
-//    }
-
-
-    public void printRoot() {
-        DevLog.print("Temple", "print root", testRoot);
     }
 
 }

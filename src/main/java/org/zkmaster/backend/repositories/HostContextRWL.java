@@ -105,4 +105,14 @@ public class HostContextRWL implements HostContext {
         return rsl;
     }
 
+    @Override
+    public void clearContext() {
+        readWriteLock.writeLock().lock();
+        try {
+            ctx.clearContext();
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
+    }
+
 }

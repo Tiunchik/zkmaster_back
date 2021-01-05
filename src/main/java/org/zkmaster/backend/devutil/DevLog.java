@@ -1,17 +1,29 @@
 package org.zkmaster.backend.devutil;
 
 import org.zkmaster.backend.entity.ZKNode;
-import org.zkmaster.backend.entity.ZKNodes;
+import org.zkmaster.backend.entity.utils.ZKNodes;
 
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Simple custom log for dev environment.
+ */
 public class DevLog {
 
+    /**
+     * @param place place marker, info about class, method, or something other.
+     * @param info  your msg.
+     */
     public static void print(String place, String info) {
         System.err.println("DEV " + place + " :: " + info);
     }
 
+    /**
+     * @param place place marker, info about class, method, or something other.
+     * @param info  value description, usually variable name.
+     * @param val   value || variable for logging|debugging.
+     */
     public static void print(String place, String info, Object val) {
         if (val instanceof String) {
             System.err.println("DEV " + place + " :: " + info + "==\"" + val + '\"');
@@ -55,6 +67,7 @@ public class DevLog {
             }
         }
     }
+
     private static void printZKNode(String place, String info, ZKNode node) {
         System.err.println("DEV " + place + " :: " + info);
         ZKNodes.printNode(node, System.err::println);
