@@ -6,14 +6,28 @@ import org.zkmaster.backend.entity.ZKTransaction;
 import org.zkmaster.backend.services.MainServiceDefault;
 
 /**
- * TODO - process IOException for business.
+ * TODO - process IOException for business(Exception handlers).
  * TODO - full-inform docs of {@link ZKTransaction}.
  * TODO - split {@link MainServiceDefault} to several services.
+ * TODO - pathVariable(String nodePath) for import(export sub-node, not full hostValue).
+ * TODO - injection: srcNode become trgNode child. re write code of this moment.
  *
  * TODO - discuss about "how & then do deleteCacheAndConnection".
  * TODO - discuss about "Expired event & reconnect".
  * TODO - discuss about "injection API - new variant of InjectionDTO & how it must work in details".
  * TODO - discuss about "that ExceptionHandlers must throw to Front-end then catch exception".
+ *
+ * TODO - rewrite import for new business requirements. (import into sub-node)
+ * TODO - how to export sub-node's path? cut-off nodePath or stay ful???
+ * original: /1/2-1/3-1 : v
+ *           /1/2-1/3-1/4-1 : v
+ *           /1/2-1/3-1/4-1 : v
+ * export v1: /1/2-1/3-1 : v
+ *            /1/2-1/3-1/4-1 : v
+ *            /1/2-1/3-1/4-1 : v
+ * export v2: 3-1 : v
+ *            3-1/4-1 : v
+ *            3-1/4-1 : v
  *
  * possible features:
  * - Save cache then server have been close.

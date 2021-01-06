@@ -27,7 +27,7 @@ class TransformControllerTest {
     @Autowired
     private MockMvc mockMvc;
     private static final String CRUD_CONTROLLER_URL = "/api/zkm/data/localhost:2181";
-    private static final String TRANSFORM_CONTROLLER_URL = "/api/zkm/transform/localhost:2181";
+    private static final String TRANSFORM_CONTROLLER_URL = "/api/zkm/transform/localhost:2181/TXT";
 
 
     @BeforeEach
@@ -45,13 +45,8 @@ class TransformControllerTest {
 
     @Test
     void export() throws Exception {
-        final String requestBodyJson
-                = "{\n"
-                + "  \"type\": \"TXT\"\n"
-                + "}";
         var rsl = this.mockMvc.perform(get(TRANSFORM_CONTROLLER_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBodyJson))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -69,16 +64,13 @@ class TransformControllerTest {
     @Test
     void importData() throws Exception {
         final String requestBodyJson
-                = "{\n"
-                + "  \"type\": \"TXT\",\n"
-                + "  \"content\": [\n"
-                + "    \"/1/2-2 : value\",\n"
-                + "    \"/1/2-2/i1 : value\",\n"
-                + "    \"/1/2-2/i1/i2 : value\",\n"
-                + "    \"/1/2-2/i1/i2/i3 : value\",\n"
-                + "    \"/1/2-2/i1/i2/i3/i4 : value\"\n"
-                + "  ]\n"
-                + "}\n";
+                = "[\n"
+                + "\"/1/2-2 : value\",\n"
+                + "\"/1/2-2/i1 : value\",\n"
+                + "\"/1/2-2/i1/i2 : value\",\n"
+                + "\"/1/2-2/i1/i2/i3 : value\",\n"
+                + "\"/1/2-2/i1/i2/i3/i4 : value\"\n"
+                + "]\n";
         this.mockMvc.perform(post(TRANSFORM_CONTROLLER_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyJson))

@@ -39,3 +39,14 @@ Content-Type: application/json
 #DELETE http://localhost:8081/api/zkm/data/localhost:2181/i1/i2/b2
 #
 ####
+
+
+// update node
+POST http://localhost:8081/api/zkm/data/injection/test
+Content-Type: application/json
+
+[
+  "/1", "/1/2-1", "/1/2-2"
+]
+
+###

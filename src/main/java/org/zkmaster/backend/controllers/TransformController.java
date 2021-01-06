@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.zkmaster.backend.aop.Log;
-import org.zkmaster.backend.entity.dto.TransformDTO;
 import org.zkmaster.backend.exceptions.DataImportFailException;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
@@ -13,7 +12,7 @@ import org.zkmaster.backend.services.transform.TransformService;
 import java.util.List;
 
 @Controller
-@RequestMapping("/api/zkm/transform/{host}")
+@RequestMapping("/api/zkm/transform/{host}/{type}")
 public class TransformController {
     TransformService transformService;
 
@@ -25,18 +24,22 @@ public class TransformController {
     @GetMapping("")
     @Log
     public @ResponseBody
-    List<String> export(@RequestBody TransformDTO dto,
-                        @PathVariable String host) throws NodeReadException {
-        return transformService.exportHost(host, dto.getType());
+    List<String> export(@PathVariable String host,
+                        @PathVariable String type) throws NodeReadException {
+        return transformService.exportHost(host, type);
     }
 
+    /**
+     * TODO - import into sub-node.
+     */
     @PostMapping("")
     @Log
     public @ResponseBody
-    boolean importData(@RequestBody TransformDTO dto,
-                       @PathVariable String host)
+    boolean importData(@PathVariable String host,
+                       @PathVariable String type,
+                       @RequestBody List<String> content)
             throws HostProviderNotFoundException, DataImportFailException {
-        return transformService.importData(host, dto.getType(), dto.getContent());
+        return transformService.importData(host, type, content);
     }
 
 }

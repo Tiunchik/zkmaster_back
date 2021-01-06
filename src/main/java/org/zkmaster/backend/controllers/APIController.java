@@ -13,6 +13,7 @@ import org.zkmaster.backend.services.injection.InjectionService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/api/zkm")
@@ -51,7 +52,16 @@ public class APIController {
     public @ResponseBody
     boolean injectFromTo(@RequestBody InjectionDTO dto) throws InjectionFailException {
         return injectionService.injectFromTo(dto);
-//        return mainService.injectFromTo(dto);
     }
+
+    @PostMapping("/data/injection/test")
+    @Log
+    public @ResponseBody
+    boolean setTest(@RequestBody Set<String> nodePaths) throws InjectionFailException {
+        nodePaths.forEach(System.err::println);
+        return true;
+    }
+
+
 
 }

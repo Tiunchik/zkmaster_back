@@ -153,6 +153,8 @@ class APIControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
 
+        DevLog.print("TEST", "print secondFakeServerRoot", secondFakeServerRoot);
+
         assertNodeChanged(secondFakeServerRoot, "/1/2-1", "v");
         assertNodeChanged(secondFakeServerRoot, "/1/2-1/3-1", "v");
         assertNodeChanged(secondFakeServerRoot, "/1/2-1/3-1/4", "v");
