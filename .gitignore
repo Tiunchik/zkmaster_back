@@ -36,3 +36,4 @@ build/
 /src/main/java/org/zkmaster/backend/zexprun/
 
 /src/test/java/org/zkmaster/backend/dev/
+/src/main/java/org/zkmaster/backend/controllers/secret/

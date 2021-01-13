@@ -7,8 +7,7 @@ import org.zkmaster.backend.entity.utils.ZKNodes;
 import org.zkmaster.backend.entity.utils.ZKTransactions;
 import org.zkmaster.backend.exceptions.node.*;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -25,58 +24,62 @@ public class HostProviderDefault implements HostProvider {
         return host.create(path, value);
     }
 
-    @Override
-    public ZKNode readHostValue() throws NodeReadException {
-        return readHostValue("/", "/");
-    }
-
-    private ZKNode readHostValue(String path, String nodeName) throws NodeReadException {
-        String nodeValue = host.read(path);
-        List<ZKNode> children = new LinkedList<>();
-        List<String> childrenNames = host.getChildrenNames(path);
-        if (childrenNames != null && !childrenNames.isEmpty()) {
-            for (var childName : childrenNames) {
-                String childPath = ("/".equals(path)) // is it root
-                        ? path + childName            // true
-                        : path + "/" + childName;     // false
-                children.add(readHostValue(childPath, childName)); // <<-- Recursion
-            }
-        }
-        return new ZKNode(path, nodeValue, children);
-    }
-
 //    @Override
 //    public ZKNode readHostValue() throws NodeReadException {
-//        ZKNode root = null;
-//        Map<String, ZKNode> mccp = new HashMap<>(); // short-cut of: multiChildrenParentPool
-//
-//        Deque<String> iteratePaths = new LinkedList<>();
-//        iteratePaths.add("/");
-//        ZKNode prevNode = null;
-//        boolean firstIterate = true;
-//
-//        while (!iteratePaths.isEmpty()) {
-//            String currPath = iteratePaths.removeLast();
-//            String parentPath = ZKNodes.parentNodePath(currPath);
-//
-//            ZKNode currNode = host.readNode(currPath);
-//            prevNode = mccp.getOrDefault(parentPath, prevNode); // new parent || prev parent
-//            List<String> childrenPaths = host.getChildrenPaths(currPath);
-//
-//            if (childrenPaths.size() >= 2) {
-//                mccp.put(currPath, currNode);
-//            }
-//            iteratePaths.addAll(childrenPaths);
-//            if (firstIterate) {
-//                firstIterate = false;
-//                root = currNode;
-//            } else {
-//                prevNode.addChildFirst(currNode);
-//            }
-//            prevNode = currNode;
-//        }
-//        return root;
+//        return readHostValue("/");
 //    }
+//
+//    private ZKNode readHostValue(String path) throws NodeReadException {
+////        DevLog.print("ReadHostVal", "arg^path", path);
+//        String nodeValue = host.read(path);
+//        List<ZKNode> children = new LinkedList<>();
+//        List<String> childrenNames = host.getChildrenNames(path);
+////        DevLog.print("ReadHostVal", "names", childrenNames);
+//        if (childrenNames != null && !childrenNames.isEmpty()) {
+//            for (var childName : childrenNames) {
+//                String childPath = ("/".equals(path)) // is it root
+//                        ? path + childName            // true
+//                        : path + "/" + childName;     // false
+////                DevLog.print("ReadHostVal", "childPath", childPath);
+//                children.add(readHostValue(childPath)); // <<-- Recursion
+//            }
+//        }
+//        return new ZKNode(path, nodeValue, children);
+//    }
+
+    @Override
+    public ZKNode readHostValue() throws NodeReadException {
+        ZKNode root = null;
+        Map<String, ZKNode> mccp = new HashMap<>(); // short-cut of: multiChildrenParentPool
+
+        Deque<String> iteratePaths = new LinkedList<>();
+        iteratePaths.add("/");
+        ZKNode prevNode = null;
+        boolean firstIterate = true;
+
+        while (!iteratePaths.isEmpty()) {
+            String currPath = iteratePaths.removeLast();
+            String parentPath = ZKNodes.parentNodePath(currPath);
+
+            ZKNode currNode = host.readNode(currPath);
+            prevNode = mccp.getOrDefault(parentPath, prevNode); // new parent || prev parent
+            List<String> childrenPaths = host.getChildrenPaths(currPath);
+
+            if (childrenPaths.size() >= 2) {
+                mccp.put(currPath, currNode);
+            }
+            iteratePaths.addAll(childrenPaths);
+
+            if (firstIterate) {
+                firstIterate = false;
+                root = currNode;
+            } else {
+                prevNode.addChildFirst(currNode);
+            }
+            prevNode = currNode;
+        }
+        return root;
+    }
 
     /**
      * @implSpec Info:

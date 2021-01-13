@@ -7,6 +7,7 @@ import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.HostWrongAddressException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
+import org.zkmaster.backend.factories.HostFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -103,6 +104,16 @@ public class HostContextRWL implements HostContext {
             readWriteLock.readLock().unlock();
         }
         return rsl;
+    }
+
+    @Override
+    public void setHostFactory(HostFactory hostFactory) {
+        readWriteLock.writeLock().lock();
+        try {
+            ctx.setHostFactory(hostFactory);
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
     }
 
     @Override

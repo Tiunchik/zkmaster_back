@@ -37,6 +37,7 @@ public class HostFake implements Host {
 
     @Override
     public String read(String path) throws NodeReadException {
+//        DevLog.print("HostFake", "path", path);
         return ZKNodes.getSubNode(root, path).getValue();
     }
 
@@ -66,7 +67,7 @@ public class HostFake implements Host {
     @Override
     public List<String> getChildrenNames(String path) {
         return ZKNodes.getSubNode(root, path).getChildren().stream()
-                .map(ZKNode::getPath).collect(Collectors.toList());
+                .map(ZKNode::getName).collect(Collectors.toList());
     }
 
     @Override

@@ -11,7 +11,7 @@
 
     <groupId>org.zkmaster</groupId>
     <artifactId>backend</artifactId>
-    <version>${v}</version>
+    <version>0.9</version>
 
     <packaging>jar</packaging>
 

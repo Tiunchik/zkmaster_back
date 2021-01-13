@@ -4,6 +4,7 @@ import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.HostWrongAddressException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
+import org.zkmaster.backend.factories.HostFactory;
 import org.zkmaster.backend.services.MainService;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.Map;
 /**
  * Work with: cache of real-server && host providers{@link HostProvider}.
  * Execute API that delegated by {@link MainService}.
- *
+ * <p>
  * {@param host} :: mean host address of real server. It use as pair <hostAddress & RealHost>
  */
 public interface HostContext {
@@ -65,6 +66,13 @@ public interface HostContext {
      */
     @Deprecated(since = "not use in program, Maybe in future.")
     Map<String, Boolean> containsHostAll(List<String> hosts);
+
+    /**
+     * Set new Host factory.
+     *
+     * @param hostFactory new factory.
+     */
+    void setHostFactory(HostFactory hostFactory);
 
     /**
      * Reset to empty inner state.

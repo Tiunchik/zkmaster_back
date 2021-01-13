@@ -48,7 +48,7 @@ public class ZKNodes {
      * "/" : value" ->> "/"
      */
     public static String parentNodePath(String nodePath) {
-        return ("/".equals(nodePath))
+        return ("/".equals(nodePath) || nodePath.lastIndexOf('/') == 0)
                 ? "/" : nodePath.substring(0, nodePath.lastIndexOf('/'));
     }
 

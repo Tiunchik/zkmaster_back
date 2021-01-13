@@ -26,7 +26,7 @@ public class DevLog {
      */
     public static void print(String place, String info, Object val) {
         if (val instanceof String) {
-            System.err.println("DEV " + place + " :: " + info + "==\"" + val + '\"');
+            System.err.println("DEV " + place + " :: " + info + "==" + prettyWrapString(val));
         } else if (val instanceof List) {
             printList(place, info, (List<Object>) val);
         } else if (val instanceof Map) {
@@ -42,11 +42,11 @@ public class DevLog {
         if (!list.isEmpty()) {
             if (list.get(0) instanceof String) {
                 list.forEach(each -> System.err.println("DEV " + place + " :: " + info
-                        + "== key:\"" + each + '\"'
+                        + "==" + prettyWrapString(each)
                 ));
             } else {
                 list.forEach(each -> System.err.println("DEV " + place + " :: " + info
-                        + "== key:" + each
+                        + "==" + each
                 ));
             }
         }
@@ -56,12 +56,12 @@ public class DevLog {
         for (var each : map.entrySet()) {
             if (each.getKey() instanceof String) {
                 System.err.println("DEV " + place + " :: " + info
-                        + "== key:\"" + each.getKey() + '\"'
+                        + "== key:" + prettyWrapString(each.getKey())
                         + " val: " + each.getValue()
                 );
             } else {
                 System.err.println("DEV " + place + " :: " + info
-                        + "== key:\"" + each.getKey() + '\"'
+                        + "== key:" + prettyWrapString(each.getKey())
                         + " val: \"" + each.getValue() + '\"'
                 );
             }
@@ -71,6 +71,10 @@ public class DevLog {
     private static void printZKNode(String place, String info, ZKNode node) {
         System.err.println("DEV " + place + " :: " + info);
         ZKNodes.printNode(node, System.err::println);
+    }
+
+    private static String prettyWrapString(Object object) {
+        return "\"" + object + "\"";
     }
 
 }
