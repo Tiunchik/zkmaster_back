@@ -12,11 +12,11 @@ import java.util.function.Consumer;
  * Utility class for {@link ZKNode}.
  */
 public class ZKNodes {
-
-
+    
+    
     /* Methods for work with Node path */
-
-
+    
+    
     /**
      * Extract Node name from Node path.
      *
@@ -28,7 +28,7 @@ public class ZKNodes {
         return ("/".equals(path))
                 ? "/" : path.substring(path.lastIndexOf('/') + 1);
     }
-
+    
     /**
      * Substring from path with deleted name.
      *
@@ -39,7 +39,7 @@ public class ZKNodes {
     public static String pathWithoutName(String path) {
         return path.substring(0, path.lastIndexOf('/') + 1);
     }
-
+    
     /**
      * Extract parent path from Node path.
      *
@@ -51,11 +51,11 @@ public class ZKNodes {
         return ("/".equals(nodePath) || nodePath.lastIndexOf('/') == 0)
                 ? "/" : nodePath.substring(0, nodePath.lastIndexOf('/'));
     }
-
-
+    
+    
     /* Methods for work as tree */
-
-
+    
+    
     /**
      * Iterate by Node as tree and collect all Node paths is {@link Set}.
      *
@@ -67,7 +67,7 @@ public class ZKNodes {
         treeIterateWidthList(node, (each) -> rsl.add(each.getPath()));
         return rsl;
     }
-
+    
     /**
      * Search sub-node in {@param root} tree with equals Node path that {@param path}.
      * IMPORTANT: !!! Return null, if doesn't find.
@@ -76,6 +76,7 @@ public class ZKNodes {
      * @param path - absolute path of searching {@link ZKNode}.
      * @return Node with path with == {@param path} with all sub-nodes OR
      * null ==>> if searching {@link ZKNode} doesn't found.
+     *
      * @implSpec Tree traversal is width with list.
      * * Cause we don't know how deep tree is.(Argument for List)
      */
@@ -94,7 +95,7 @@ public class ZKNodes {
         }
         return rsl;
     }
-
+    
     /**
      * For each for full {@param node} tree.
      * * IMPORTANT: you should use Collections & Atomic wraps in your lambda func!
@@ -113,7 +114,7 @@ public class ZKNodes {
             }
         }
     }
-
+    
     /**
      * Count how much Node is in {@param node} tree.
      * * Root count as well.
@@ -126,7 +127,12 @@ public class ZKNodes {
         treeIterateWidthList(node, each -> rsl.getAndIncrement());
         return rsl.get();
     }
-
+    
+    
+    
+    /* Methods for printing */
+    
+    
     /**
      * Default using of print {@link ZKNode}.
      *
@@ -135,11 +141,11 @@ public class ZKNodes {
     public static void printNode(ZKNode node) {
         printNode(node, false, true, true, System.out::println);
     }
-
+    
     public static void printNode(ZKNode node, Consumer<String> output) {
         printNode(node, false, true, true, output);
     }
-
+    
     /**
      * Print {@link ZKNode} with all children as pretty table.
      *
@@ -158,7 +164,7 @@ public class ZKNodes {
         sb.append((path && value) ? dataSeparator : "");
         sb.append((value) ? "value" : "");
         sb.append(System.lineSeparator());
-
+        
         treeIterateWidthList(node, each -> {
             sb.append((name) ? each.getName() : "");
             sb.append((name && path) ? dataSeparator : "");
@@ -170,6 +176,5 @@ public class ZKNodes {
         output.accept(sb.toString());
 //        System.out.println(sb.toString());
     }
-
-
+    
 }

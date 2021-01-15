@@ -5,8 +5,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.zkmaster.backend.aop.Log;
-import org.zkmaster.backend.entity.dto.InjectionDTO;
+import org.zkmaster.backend.entity.dto.InjectionDTONew;
 import org.zkmaster.backend.entity.dto.RequestDTO;
+import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.InjectionFailException;
 import org.zkmaster.backend.services.MainService;
 import org.zkmaster.backend.services.injection.InjectionService;
@@ -20,14 +21,14 @@ import java.util.Set;
 public class APIController {
     MainService mainService;
     InjectionService injectionService;
-
+    
     @Autowired
     public APIController(@Qualifier("mainServiceDefault") MainService mainService,
                          InjectionService injectionService) {
         this.mainService = mainService;
         this.injectionService = injectionService;
     }
-
+    
     /**
      * HTTP - GET
      * Meaning: Check is this servers still alive?
@@ -47,13 +48,21 @@ public class APIController {
         return mainService.checkHostsHealth(hosts);
     }
 
+//    @PostMapping("/data/injection")
+//    @Log
+//    public @ResponseBody
+//    boolean injectFromTo(@RequestBody InjectionDTO dto) throws InjectionFailException {
+//        return injectionService.injectFromTo(dto);
+//    }
+    
     @PostMapping("/data/injection")
     @Log
     public @ResponseBody
-    boolean injectFromTo(@RequestBody InjectionDTO dto) throws InjectionFailException {
-        return injectionService.injectFromTo(dto);
+    void injectFromTo(@RequestBody InjectionDTONew dto)
+            throws InjectionFailException, HostProviderNotFoundException {
+        injectionService.injection(dto.getCreateNodeList(), dto.getUpdateNodeList(), dto.getTargetHost());
     }
-
+    
     @PostMapping("/data/injection/test")
     @Log
     public @ResponseBody
@@ -61,7 +70,6 @@ public class APIController {
         nodePaths.forEach(System.err::println);
         return true;
     }
-
-
-
+    
+    
 }

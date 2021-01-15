@@ -4,7 +4,6 @@ import org.zkmaster.backend.entity.Host;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKTransaction;
 import org.zkmaster.backend.entity.utils.ZKNodes;
-import org.zkmaster.backend.entity.utils.ZKTransactions;
 import org.zkmaster.backend.exceptions.node.*;
 
 import java.util.*;
@@ -145,7 +144,7 @@ public class HostProviderDefault implements HostProvider {
             transaction.create(newPath, rslValue);
             deleteNodePaths.add(currentNode.getPath());
         });
-        ZKTransactions.pushDeleteListReverse(transaction, deleteNodePaths);
+        ZKTransaction.pushDeleteListReverse(transaction, deleteNodePaths);
         return transaction.commit("Rename failed: Transaction failed!",
                 new NodeSaveException(host.getHostAddress(), targetNode.getPath(), name));
     }
@@ -161,7 +160,7 @@ public class HostProviderDefault implements HostProvider {
         ZKNodes.treeIterateWidthList(targetNode, currentNode ->
                 deleteNodePaths.add(currentNode.getPath())
         );
-        ZKTransactions.pushDeleteListReverse(transaction, deleteNodePaths);
+        ZKTransaction.pushDeleteListReverse(transaction, deleteNodePaths);
         return transaction.commit("Delete failed: Transaction failed!",
                 new NodeDeleteException(host.getHostAddress(), path));
     }

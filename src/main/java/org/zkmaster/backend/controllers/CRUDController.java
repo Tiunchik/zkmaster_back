@@ -22,12 +22,12 @@ import javax.servlet.http.HttpServletRequest;
 @CrossOrigin(value = {"*"})
 public class CRUDController {
     MainService mainService;
-
+    
     @Autowired
     public CRUDController(@Qualifier("mainServiceDefault") MainService mainService) {
         this.mainService = mainService;
     }
-
+    
     /**
      * CRUD - READ
      * HTTP - GET ALL
@@ -46,7 +46,7 @@ public class CRUDController {
         }
         return rsl;
     }
-
+    
     /**
      * CRUD - CREATE
      * HTTP - POST
@@ -64,7 +64,7 @@ public class CRUDController {
             throws HostProviderNotFoundException, NodeExistsException, NodeCreateException {
         return mainService.createNode(host, dto.getPath(), dto.getValue());
     }
-
+    
     /**
      * CRUD - UPDATE
      * HTTP - PUT
@@ -84,7 +84,7 @@ public class CRUDController {
         String rslValue = (nameAndValue.length == 1) ? "" : nameAndValue[1];
         return mainService.saveNode(host, dto.getPath(), nameAndValue[0], rslValue);
     }
-
+    
     /**
      * CRUD && HTTP - DELETE
      * Delete node in ZooKeeper. (Node == path).
@@ -93,10 +93,10 @@ public class CRUDController {
     @Log
     public @ResponseBody
     boolean deleteNode(@PathVariable String host, HttpServletRequest request)
-            throws HostProviderNotFoundException, NodeDeleteException, NodeSaveException, NodeReadException {
+            throws HostProviderNotFoundException, NodeDeleteException, NodeReadException {
         String fullPath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         String path = fullPath.substring(fullPath.indexOf(host) + host.length());
         return mainService.deleteNode(host, path);
     }
-
+    
 }

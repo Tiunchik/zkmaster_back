@@ -10,6 +10,7 @@ import java.util.StringJoiner;
  *
  * @see APIController
  */
+@Deprecated
 public class InjectionDTO {
     private String sourceHost;
     private String sourceNodePath;

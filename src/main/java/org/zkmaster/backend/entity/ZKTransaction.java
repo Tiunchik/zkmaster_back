@@ -2,6 +2,8 @@ package org.zkmaster.backend.entity;
 
 import org.apache.zookeeper.Transaction;
 
+import java.util.LinkedList;
+
 /**
  * Warp default {@link Transaction} API into comfortable API.
  * <p>
@@ -25,4 +27,22 @@ public interface ZKTransaction {
      */
     <E extends Exception> boolean commit(String errMsg, E exception) throws E;
 
+    
+    /* Utility static methods */
+    
+    
+    /**
+     * Reverse iterate on {@param deletePaths} and push each (Node path) into transaction.
+     *
+     * @param transaction -
+     * @param deletePaths paths for delete.
+     * @return {@param transaction}.
+     */
+    static ZKTransaction pushDeleteListReverse(ZKTransaction transaction, LinkedList<String> deletePaths) {
+        while (!deletePaths.isEmpty()) {
+            transaction.delete(deletePaths.removeLast());
+        }
+        return transaction;
+    }
+    
 }
