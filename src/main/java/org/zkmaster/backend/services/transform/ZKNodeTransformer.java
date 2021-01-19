@@ -23,11 +23,11 @@ public interface ZKNodeTransformer {
     List<String> exportHost(ZKNode hostValue);
 
     /**
-     * Import data into {@param transaction}. Fill transaction by import data.
+     * Import content into {@param transaction}. Fill transaction by import content.
      *
-     * @param data        import data.
-     * @param transaction filled up by {@param data} transaction, ready to commit.
+     * @param content        import content.
+     * @param transaction filled up by {@param content} transaction, ready to commit.
      */
-    void importData(List<String> data, ZKTransaction transaction);
+    void importData(String nodePath,List<String> content , ZKTransaction transaction);
 
 }

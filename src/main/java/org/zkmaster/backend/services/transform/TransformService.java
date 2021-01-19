@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Service
 public interface TransformService {
-
+    
     /**
      * Export host-value by provided params.
      * For: {@link TransformController}.
@@ -27,24 +27,26 @@ public interface TransformService {
      * @param type type for Export host-value.
      *             * use for pick correct {@link ZKNodeTransformer}
      * @return Export success OR throw Exception.
+     *
      * @throws NodeReadException -
      */
-    List<String> exportHost(String host, String type) throws NodeReadException;
-
-
+    List<String> exportHost(String host, String nodePath, String type) throws NodeReadException;
+    
+    
     /**
-     * Import data into {@param transaction}. Fill transaction by import data.
+     * Import content into {@param transaction}. Fill transaction by import content.
      *
-     * @param host target-host.
-     *             * use for throw Exception if something was wrong.
-     * @param type type for Export host-value.
-     *             * use for pick correct {@link ZKNodeTransformer}
-     * @param data import data.
+     * @param host    target-host.
+     *                * use for throw Exception if something was wrong.
+     * @param type    type for Export host-value.
+     *                * use for pick correct {@link ZKNodeTransformer}
+     * @param content import content.
      * @return Import success OR Throw Exception.
+     *
      * @throws HostProviderNotFoundException -
      * @throws DataImportFailException       -
      */
-    boolean importData(String host, String type, List<String> data)
+    boolean importData(String host, String nodePath, String type, List<String> content)
             throws DataImportFailException, HostProviderNotFoundException;
 
 }

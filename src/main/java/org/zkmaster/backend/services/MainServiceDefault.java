@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.exceptions.HostCloseException;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.HostWrongAddressException;
 import org.zkmaster.backend.exceptions.node.*;
@@ -57,7 +58,7 @@ public class MainServiceDefault implements MainService {
     }
 
     @Override
-    public void deleteConnectionAndCache(String host) {
+    public void deleteConnectionAndCache(String host) throws HostCloseException {
         ctx.deleteHostAndCache(host);
     }
 

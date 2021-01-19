@@ -7,6 +7,7 @@ import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.ZKWatcherDefault;
 import org.zkmaster.backend.events.EventServerClose;
 import org.zkmaster.backend.events.EventServerStateChange;
+import org.zkmaster.backend.exceptions.HostCloseException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
 import org.zkmaster.backend.services.MainService;
 
@@ -31,7 +32,7 @@ public class ServerEventListenerDefault implements ServerEventListener {
 
     @Override
     @Log
-    public void serverClose(EventServerClose serverClose) {
+    public void serverClose(EventServerClose serverClose) throws HostCloseException {
         mainService.deleteConnectionAndCache(serverClose.getHostUrl());
     }
 

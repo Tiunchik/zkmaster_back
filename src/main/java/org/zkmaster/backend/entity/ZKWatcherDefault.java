@@ -2,12 +2,17 @@ package org.zkmaster.backend.entity;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.zkmaster.backend.events.EventServerClose;
 import org.zkmaster.backend.events.EventServerStateChange;
+
+import java.util.StringJoiner;
+import java.util.function.Predicate;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -20,29 +25,28 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Component("watcherDefault")
 @Scope(SCOPE_PROTOTYPE)
 public class ZKWatcherDefault implements Watcher {
-
     private final ApplicationContext context;
-
+    
     /**
      * This watcher catch all events from real server by this host-connection.
      */
     private String host;
-
+    
     @Autowired
     public ZKWatcherDefault(ApplicationContext context) {
         this.context = context;
     }
-
+    
     /**
-     * TODO process all events from real server.
+     * TODO process {@link Watcher.Event.KeeperState#Expired} - event.
      *
      * <p>Need to processes {@link WatchedEvent#keeperState}:
-     * {@link Watcher.Event.KeeperState#Disconnected}
+     * {@link Watcher.Event.KeeperState#Disconnected} - lost connection with real-server.
+     * {@link Watcher.Event.KeeperState#Closed} - then method invoke:
+     * {@link ZooKeeper#close()}
      * {@link Watcher.Event.KeeperState#SyncConnected}
      * - connection is created success.
      * {@link Watcher.Event.KeeperState#Expired} - ?????????????????????
-     * TODO skazano 4to: kidaetsja, kogda u classtera eta Sessija prosro4ena ↑↑↑(zna4ki: ↓)
-     * TODO zna4ki: https://www.alt-codes.net/
      *
      *
      * <p>Need to processes {@link WatchedEvent#eventType}:
@@ -64,56 +68,71 @@ public class ZKWatcherDefault implements Watcher {
      */
     @Override
     public void process(WatchedEvent event) {
-        System.out.println("ZKWatcherDefault :: Event watched:");
-        System.out.println("ZKWatcherDefault :: host = " + host);
-
-        if (event.getState() == Event.KeeperState.SyncConnected
-                && event.getType() == Event.EventType.None
-                && event.getPath() == null) {
-
-            System.out.println("ZKWatcherDefault :: event = Connection created.");
-            System.out.println("ZKWatcherDefault :: event informer.");
-
-        } else if (event.getState() == Event.KeeperState.SyncConnected
-                && event.getType() == Event.EventType.NodeDataChanged
-                && event.getPath().equals("/")) {
-
-            System.out.println("ZKWatcherDefault :: event = " + event);
-            System.out.println("ZKWatcherDefault :: event published.");
-            context.publishEvent(new EventServerClose(host));
-
-        } else if (event.getState() == Event.KeeperState.Disconnected) {
-
-            System.out.println("ZKWatcherDefault :: event = " + event);
-            System.out.println("ZKWatcherDefault :: event published.");
-            context.publishEvent(new EventServerClose(host));
-
-//        } else if (event.getType() == Event.EventType.NodeCreated
-//                || event.getType() == Event.EventType.NodeDeleted
-//                || event.getType() == Event.EventType.NodeDataChanged
-//                || event.getType() == Event.EventType.NodeChildrenChanged) {
-        } else if (
-//                event.getType() == Event.EventType.NodeCreated
-//                || event.getType() == Event.EventType.NodeDeleted
-//                || event.getType() == Event.EventType.NodeDataChanged
-//                ||
-                event.getType() == Event.EventType.NodeChildrenChanged
-        ) {
-            System.out.println("ZKWatcherDefault :: event = " + event);
-            System.out.println("ZKWatcherDefault :: event published.");
-            context.publishEvent(new EventServerStateChange(host));
+        var watcherMsg = new StringJoiner(System.lineSeparator());
+        watcherMsg.add(EVENT_WATCHED);
+        watcherMsg.add(EVENT_HOST + host);
+        
+        if (CONNECTED.test(event)) {
+            watcherMsg.add(MSG_CONNECTION_CREATED);
+            watcherMsg.add(MSG_PROCESSING_IGNORED + "(inform event)");
+            
+        } else if (NODE_CHANGED.test(event)) {
+            publishEvent(event, new EventServerStateChange(host), watcherMsg);
+            
+        } else if (NODE_CHILDREN_CHANGED.test(event)) {
+            publishEvent(event, new EventServerStateChange(host), watcherMsg);
+            
+        } else if (DISCONNECTED.test(event)) {
+            publishEvent(event, new EventServerClose(host), watcherMsg);
+            
         } else {
-            System.out.println("ZKWatcherDefault :: event = " + event);
-            System.out.println("ZKWatcherDefault :: event ignored.");
+            watcherMsg.add(EVENT_INFO + event);
+            watcherMsg.add(MSG_PROCESSING_IGNORED);
         }
+        System.out.println(watcherMsg.toString());
     }
-
-    public void setHost(String host) {
-        this.host = host;
+    
+    private void publishEvent(WatchedEvent comeEvent, ApplicationEvent publishEvent, StringJoiner watcherMsg) {
+        watcherMsg.add(EVENT_INFO + comeEvent);
+        watcherMsg.add(MSG_PROCESSING_PUBLISHED);
+        context.publishEvent(publishEvent);
     }
-
+    
     public String getHost() {
         return host;
     }
-
+    
+    /* Processing Events */
+    
+    private static final Predicate<WatchedEvent> CONNECTED = (event) ->
+            event.getState() == Event.KeeperState.SyncConnected
+                    && event.getType() == Event.EventType.None;
+    
+    private static final Predicate<WatchedEvent> NODE_CHANGED = (event) ->
+            event.getState() == Event.KeeperState.SyncConnected
+                    && event.getType() == Event.EventType.NodeDataChanged;
+    
+    private static final Predicate<WatchedEvent> NODE_CHILDREN_CHANGED = (event) ->
+            event.getState() == Event.KeeperState.SyncConnected
+                    && event.getType() == Event.EventType.NodeChildrenChanged;
+    
+    private static final Predicate<WatchedEvent> DISCONNECTED = (event) ->
+            event.getState() == Event.KeeperState.Disconnected
+                    && event.getType() == Event.EventType.None;
+    
+    public void setHost(String host) {
+        this.host = host;
+    }
+    
+    /* msg && Logger Constants */
+    
+    private static final String LOG_PREFIX = "ZKWatcherDefault :: ";
+    private static final String EVENT_WATCHED = LOG_PREFIX + "Event watched:";
+    private static final String EVENT_HOST = LOG_PREFIX + "host = ";
+    private static final String EVENT_INFO = LOG_PREFIX + "event = ";
+    
+    private static final String MSG_CONNECTION_CREATED = EVENT_INFO + "Connection created";
+    private static final String MSG_PROCESSING_PUBLISHED = LOG_PREFIX + "processing = event published";
+    private static final String MSG_PROCESSING_IGNORED = LOG_PREFIX + "processing = event ignored";
+    
 }

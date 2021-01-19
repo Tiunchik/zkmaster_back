@@ -3,6 +3,7 @@ package org.zkmaster.backend.repositories;
 import org.zkmaster.backend.entity.Host;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKTransaction;
+import org.zkmaster.backend.exceptions.HostCloseException;
 import org.zkmaster.backend.exceptions.node.*;
 
 /**
@@ -59,5 +60,7 @@ public interface HostProvider {
      * @see ZKTransaction
      */
     ZKTransaction transaction();
+    
+    void close() throws HostCloseException;
 
 }

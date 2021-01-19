@@ -2,6 +2,7 @@ package org.zkmaster.backend.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.zkmaster.backend.devutil.DevLog;
@@ -15,6 +16,7 @@ import org.zkmaster.backend.exceptions.node.*;
  * Transform Java exceptions into HTTP protocol answers.
  */
 @ControllerAdvice
+@CrossOrigin(value = {"*"})
 public class ExceptionHandlersController {
     
     

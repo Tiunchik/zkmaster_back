@@ -5,6 +5,7 @@ import org.zkmaster.backend.entity.Host;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKTransaction;
 import org.zkmaster.backend.entity.utils.ZKNodes;
+import org.zkmaster.backend.exceptions.HostCloseException;
 import org.zkmaster.backend.exceptions.node.*;
 
 import java.util.LinkedList;
@@ -107,7 +108,7 @@ public class HostFake implements Host {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws HostCloseException {
         System.out.println("HostFake :: method=close() - invoked");
     }
 

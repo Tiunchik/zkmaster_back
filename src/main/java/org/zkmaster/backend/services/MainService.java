@@ -4,6 +4,7 @@ import org.zkmaster.backend.controllers.APIController;
 import org.zkmaster.backend.controllers.CRUDController;
 import org.zkmaster.backend.controllers.TransformController;
 import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.exceptions.HostCloseException;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.HostWrongAddressException;
 import org.zkmaster.backend.exceptions.node.*;
@@ -145,8 +146,7 @@ public interface MainService {
      *
      * @param host -
      */
-    @Deprecated(since = "not use in program, Maybe in future.")
-    void deleteConnectionAndCache(String host);
+    void deleteConnectionAndCache(String host) throws HostCloseException;
 
     /**
      * IMPORTANT: Need to discuss about "how we delete and keep connections"

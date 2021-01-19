@@ -3,6 +3,7 @@ package org.zkmaster.backend.listeners;
 import org.springframework.context.event.EventListener;
 import org.zkmaster.backend.events.EventServerClose;
 import org.zkmaster.backend.events.EventServerStateChange;
+import org.zkmaster.backend.exceptions.HostCloseException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
 
 public interface ServerEventListener {
@@ -10,6 +11,6 @@ public interface ServerEventListener {
     void eventProcess(EventServerStateChange serverStateChange) throws NodeReadException;
 
     @EventListener
-    void serverClose(EventServerClose serverClose);
+    void serverClose(EventServerClose serverClose) throws HostCloseException;
 
 }

@@ -3,6 +3,7 @@ package org.zkmaster.backend.repositories;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKTransaction;
+import org.zkmaster.backend.exceptions.HostCloseException;
 import org.zkmaster.backend.exceptions.node.*;
 
 import java.util.concurrent.locks.ReadWriteLock;
@@ -76,5 +77,15 @@ public class HostProviderRWL implements HostProvider {
         }
         return rsl;
     }
-
+    
+    @Override
+    public void close() throws HostCloseException {
+        readWriteLock.writeLock().lock();
+        try {
+            provider.close();
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
+    }
+    
 }

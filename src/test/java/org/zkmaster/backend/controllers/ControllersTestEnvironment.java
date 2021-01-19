@@ -14,28 +14,12 @@ import org.zkmaster.backend.repositories.HostContextDefault;
 
 import java.util.List;
 
-/**
- * CRUD
- * Create - WORK
- * Read - WORK
- * Update(setValue) -  WORK
- * Update(rename) -  WORK
- * Update(rename & setValue) -  WORK
- * Update cascade(rename & setValue) -  WORK
- * Delete -  WORK
- * Delete cascade -  WORK
- * <p>
- * Transform
- * Export - WORK
- * Import - WORK
- * <p>
- * API
- * HealthCheck - WORK
- * Injection save values - WORK
- * Injection update values - WORK
- */
 @TestComponent("template")
 public class ControllersTestEnvironment {
+    public static final String CRUD_CONTROLLER_URL = "/api/zkm/data";
+    public static final String API_CONTROLLER_URL = "/api/zkm";
+    public static final String TRANSFORM_CONTROLLER_URL = "/api/zkm/transform/localhost:2181";
+    
     private ZKNode testRoot;
     @Autowired
     @Qualifier("hostFactoryFake")
@@ -44,7 +28,7 @@ public class ControllersTestEnvironment {
     @Qualifier("hostContextDefault")
     @Autowired
     private HostContext ctx;
-
+    
     /**
      * Reset all inner state on default.
      */
@@ -65,39 +49,39 @@ public class ControllersTestEnvironment {
                         ))
                 ));
         testHost = new HostFake("localhost:2181", testRoot);
-
+        
         factorySetHostFake(testHost);
     }
-
+    
     /**
      * Don't set Host for {object ControllersTestEnvironment}, use setter for set ${testHost}
      */
     public void factorySetHostFake(Host newFakeHost) {
         var castFactory = (HostFactoryFake) testFactory;
         castFactory.setHostFake(newFakeHost);
-
+        
         var castCtx = (HostContextDefault) ctx;
         castCtx.setHostFactory(testFactory);
     }
-
+    
     public void printRoot() {
         DevLog.print("Temple", "print root", testRoot);
     }
-
+    
     public void clearEnvironmentContext() {
         ctx.clearContext();
     }
-
+    
     public ZKNode getTestRoot() {
         return testRoot;
     }
-
+    
     public HostFactory getTestFactory() {
         return testFactory;
     }
-
+    
     public Host getTestHost() {
         return testHost;
     }
-
+    
 }

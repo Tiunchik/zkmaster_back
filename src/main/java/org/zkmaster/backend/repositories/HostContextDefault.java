@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.entity.dto.ContextStateInfo;
+import org.zkmaster.backend.entity.utils.ZKNodes;
+import org.zkmaster.backend.exceptions.HostCloseException;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.HostWrongAddressException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
@@ -72,11 +75,20 @@ public class HostContextDefault implements HostContext {
     }
 
     @Override
-    public void deleteHostAndCache(String host) {
-        providers.remove(host);
+    public void deleteHostAndCache(String host) throws HostCloseException {
+        providers.remove(host).close();
         caches.remove(host);
     }
-
+    
+    @Override
+    public ContextStateInfo getState() throws NodeReadException {
+        Map<String, Integer> hostsAndNodeCount = new HashMap<>();
+        for (String eachHost : providers.keySet()) {
+            hostsAndNodeCount.put(eachHost, ZKNodes.treeNodeCount(getActualHostValue(eachHost)));
+        }
+        return new ContextStateInfo(providers.size(), hostsAndNodeCount);
+    }
+    
     @Override
     public Map<String, Boolean> containsHostAll(List<String> hosts) {
         var rsl = new HashMap<String, Boolean>();

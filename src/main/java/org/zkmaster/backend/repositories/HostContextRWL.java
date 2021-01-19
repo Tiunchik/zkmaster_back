@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.zkmaster.backend.entity.ZKNode;
+import org.zkmaster.backend.entity.dto.ContextStateInfo;
+import org.zkmaster.backend.exceptions.HostCloseException;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.HostWrongAddressException;
 import org.zkmaster.backend.exceptions.node.NodeReadException;
@@ -85,7 +87,7 @@ public class HostContextRWL implements HostContext {
     }
 
     @Override
-    public void deleteHostAndCache(String host) {
+    public void deleteHostAndCache(String host) throws HostCloseException {
         readWriteLock.writeLock().lock();
         try {
             ctx.deleteHostAndCache(host);
@@ -105,7 +107,19 @@ public class HostContextRWL implements HostContext {
         }
         return rsl;
     }
-
+    
+    @Override
+    public ContextStateInfo getState() throws NodeReadException {
+        readWriteLock.readLock().lock();
+       ContextStateInfo rsl;
+        try {
+            rsl = ctx.getState();
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
+        return rsl;
+    }
+    
     @Override
     public void setHostFactory(HostFactory hostFactory) {
         readWriteLock.writeLock().lock();
@@ -125,5 +139,6 @@ public class HostContextRWL implements HostContext {
             readWriteLock.writeLock().unlock();
         }
     }
-
+    
+   
 }

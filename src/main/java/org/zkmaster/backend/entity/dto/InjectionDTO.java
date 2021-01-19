@@ -1,7 +1,9 @@
 package org.zkmaster.backend.entity.dto;
 
 import org.zkmaster.backend.controllers.APIController;
+import org.zkmaster.backend.entity.ZKNode;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -10,66 +12,44 @@ import java.util.StringJoiner;
  *
  * @see APIController
  */
-@Deprecated
 public class InjectionDTO {
-    private String sourceHost;
-    private String sourceNodePath;
+    private List<ZKNode> createNodeList;
+    private List<ZKNode> updateNodeList;
     private String targetHost;
-    private String targetNodePath;
-    private boolean updOldValues;
-
+    
     public InjectionDTO() {
     }
-
-    public InjectionDTO(String sourceHost, String sourceNodePath,
-                        String targetHost, String targetNodePath, boolean updOldValues) {
-        this.sourceHost = sourceHost;
-        this.sourceNodePath = sourceNodePath;
+    
+    public InjectionDTO(List<ZKNode> createNodeList, List<ZKNode> updateNodeList, String targetHost) {
+        this.createNodeList = createNodeList;
+        this.updateNodeList = updateNodeList;
         this.targetHost = targetHost;
-        this.targetNodePath = targetNodePath;
-        this.updOldValues = updOldValues;
     }
-
-    public String getSourceHost() {
-        return sourceHost;
+    
+    public List<ZKNode> getCreateNodeList() {
+        return createNodeList;
     }
-
-    public void setSourceHost(String sourceHost) {
-        this.sourceHost = sourceHost;
+    
+    public void setCreateNodeList(List<ZKNode> createNodeList) {
+        this.createNodeList = createNodeList;
     }
-
-    public String getSourceNodePath() {
-        return sourceNodePath;
+    
+    public List<ZKNode> getUpdateNodeList() {
+        return updateNodeList;
     }
-
-    public void setSourceNodePath(String sourceNodePath) {
-        this.sourceNodePath = sourceNodePath;
+    
+    public void setUpdateNodeList(List<ZKNode> updateNodeList) {
+        this.updateNodeList = updateNodeList;
     }
-
+    
     public String getTargetHost() {
         return targetHost;
     }
-
+    
     public void setTargetHost(String targetHost) {
         this.targetHost = targetHost;
     }
-
-    public String getTargetNodePath() {
-        return targetNodePath;
-    }
-
-    public void setTargetNodePath(String targetNodePath) {
-        this.targetNodePath = targetNodePath;
-    }
-
-    public boolean isUpdOldValues() {
-        return updOldValues;
-    }
-
-    public void setUpdOldValues(boolean updOldValues) {
-        this.updOldValues = updOldValues;
-    }
-
+    
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -78,27 +58,24 @@ public class InjectionDTO {
         if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        InjectionDTO injectionDTO = (InjectionDTO) object;
-        return updOldValues == injectionDTO.updOldValues
-                && Objects.equals(sourceHost, injectionDTO.sourceHost)
-                && Objects.equals(sourceNodePath, injectionDTO.sourceNodePath)
-                && Objects.equals(targetHost, injectionDTO.targetHost)
-                && Objects.equals(targetNodePath, injectionDTO.targetNodePath);
+        InjectionDTO that = (InjectionDTO) object;
+        return Objects.equals(createNodeList, that.createNodeList)
+                && Objects.equals(updateNodeList, that.updateNodeList)
+                && Objects.equals(targetHost, that.targetHost);
     }
-
+    
     @Override
     public int hashCode() {
-        return Objects.hash(sourceHost, sourceNodePath, targetHost, targetNodePath, updOldValues);
+        return Objects.hash(createNodeList, updateNodeList, targetHost);
     }
-
+    
     @Override
     public String toString() {
         return new StringJoiner(", ", InjectionDTO.class.getSimpleName() + "[", "]")
-                .add("sourceHost='" + sourceHost + "'")
-                .add("sourceNodePath='" + sourceNodePath + "'")
+                .add("createNodeList=" + createNodeList)
+                .add("updateNodeList=" + updateNodeList)
                 .add("targetHost='" + targetHost + "'")
-                .add("targetNodePath='" + targetNodePath + "'")
-                .add("saveOldValues=" + updOldValues)
                 .toString();
     }
+    
 }

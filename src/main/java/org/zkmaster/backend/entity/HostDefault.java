@@ -3,6 +3,7 @@ package org.zkmaster.backend.entity;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.zkmaster.backend.entity.utils.ZKNodes;
+import org.zkmaster.backend.exceptions.HostCloseException;
 import org.zkmaster.backend.exceptions.node.*;
 
 import java.io.IOException;
@@ -185,8 +186,13 @@ public class HostDefault implements Host {
     }
 
     @Override
-    public void close() throws Exception {
-        zoo.close();
+    public void close() throws HostCloseException {
+        try {
+            zoo.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new HostCloseException(hostAddress);
+        }
     }
 
 }

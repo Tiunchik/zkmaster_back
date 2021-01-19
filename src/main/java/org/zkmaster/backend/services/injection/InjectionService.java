@@ -14,7 +14,4 @@ public interface InjectionService {
     void injection(List<ZKNode> createNodeList, List<ZKNode> updateNodeList, String trgHost)
             throws InjectionFailException, HostProviderNotFoundException;
 
-//    @Deprecated
-//    boolean injectFromTo(InjectionDTO dto) throws InjectionFailException;
-
 }

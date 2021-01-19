@@ -17,13 +17,13 @@ import java.io.IOException;
 @Service
 public class HostFactoryDefault implements HostFactory {
     private final ApplicationContext context;
-
+    
     @Autowired
     public HostFactoryDefault(ApplicationContext context) {
         this.context = context;
     }
-
-
+    
+    
     @Override
     public HostProvider makeHostProvider(String host) throws HostWrongAddressException {
         HostProvider rsl;
@@ -41,10 +41,10 @@ public class HostFactoryDefault implements HostFactory {
             e.printStackTrace();
             throw new HostWrongAddressException(host);
         }
-        DevLog.print("Factory", "init HostFactoryDefault");
+        DevLog.print("DefaultFactory", "make host(" + host + ')');
         return rsl;
     }
-
+    
     private static final String EXCEPTION_FAIL_CREATE_CONN =
             "Fail to create connection with real ZooKeeper server!"
                     + "Connection details: " + System.lineSeparator()
