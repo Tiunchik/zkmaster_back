@@ -19,8 +19,6 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 /**
  * This class must to process all events from server.
  * Process - do correct logic things, do correct code.
- * <p>
- * TODO - доделать - через Map, как завещал Пётр - I didn't start it.
  */
 @Component("watcherDefault")
 @Scope(SCOPE_PROTOTYPE)
@@ -38,8 +36,6 @@ public class ZKWatcherDefault implements Watcher {
     }
     
     /**
-     * TODO process {@link Watcher.Event.KeeperState#Expired} - event.
-     *
      * <p>Need to processes {@link WatchedEvent#keeperState}:
      * {@link Watcher.Event.KeeperState#Disconnected} - lost connection with real-server.
      * {@link Watcher.Event.KeeperState#Closed} - then method invoke:

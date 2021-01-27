@@ -23,10 +23,7 @@ public class HostFake implements Host {
         this.hostAddress = hostAddress;
         this.root = root;
     }
-
-    /**
-     * TODO - repair for CRUD tests.
-     */
+    
     @Override
     public boolean create(String path, String value) throws NodeExistsException, NodeCreateException {
         String parentNodePath = ZKNodes.parentNodePath(path);

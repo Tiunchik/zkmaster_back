@@ -47,6 +47,7 @@ class TransformControllerTest {
     void export() throws Exception {
         final var requestBodyJson
                 = "{\n"
+//                + "  \"nodePath\": \"/1\",\n"
                 + "  \"nodePath\": \"/1/2-1\",\n"
                 + "  \"type\": \"TXT\"\n"
                 + "}";
@@ -57,7 +58,8 @@ class TransformControllerTest {
                 .andReturn();
         
         var temp = rsl.getResponse().getContentAsString();
-        System.out.println(temp);
+//        System.out.println("TEST RSL:");
+//        System.out.println(temp);
         
         assertTrue(temp.contains("/2-1 : v"));
         assertTrue(temp.contains("/2-1/3-1 : v"));

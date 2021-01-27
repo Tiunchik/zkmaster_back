@@ -5,11 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.zkmaster.backend.services.MainServiceDefault;
 
 /**
- * TODO - try to refactoring RWL(try-catch block).
- * TODO - split {@link MainServiceDefault} to several services.
- * TODO - test Expired event & timeout for ZooKeeper
- *
- * TODO - discuss about "Expired event".
+ * TODO - (low) try to refactoring RWL(try-catch block).
+ * TODO - (low) split {@link MainServiceDefault} to several services.
  *
  * possible features:
  * - Save cache then server have been close.

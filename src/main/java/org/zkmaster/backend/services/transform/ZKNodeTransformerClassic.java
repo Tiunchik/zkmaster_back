@@ -1,7 +1,6 @@
 package org.zkmaster.backend.services.transform;
 
 import org.springframework.stereotype.Component;
-import org.zkmaster.backend.devutil.DevLog;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.ZKTransaction;
 import org.zkmaster.backend.entity.utils.ZKNodes;
@@ -17,22 +16,25 @@ public class ZKNodeTransformerClassic implements ZKNodeTransformer {
      */
     @Override
     public List<String> exportHost(ZKNode exportNode) {
-        DevLog.print("ZKNodeTransformerClassic", "method run");
-        DevLog.print("ZKNodeTransformerClassic", "exportNode", exportNode);
+//        DevLog.print("ZKNodeTransformerClassic", "method run");
+//        DevLog.print("ZKNodeTransformerClassic", "exportNode", exportNode);
         List<String> rsl = new LinkedList<>();
-    
+        
         String parentPath = ZKNodes.parentNodePath(exportNode.getPath());
-        DevLog.print("ZKNodeTransformerClassic", "parentPath", parentPath);
-    
+//        DevLog.print("ZKNodeTransformerClassic", "parentPath", parentPath);
+        
         ZKNodes.treeIterateWidthList(exportNode, (currentNode -> {
-            String currPath = currentNode.getPath().replace(parentPath, "");
+            String currPath = ("/".equals(parentPath))
+                    ? currentNode.getPath()
+                    : currentNode.getPath().replace(parentPath, "");
             rsl.add(currPath + " : " + currentNode.getValue());
         }));
-    
-        DevLog.print("ZKNodeTransformerClassic", "method END");
+        
+//        DevLog.print("ZKNodeTransformerClassic", "rsl", rsl);
+//        DevLog.print("ZKNodeTransformerClassic", "method END");
         return rsl;
     }
-
+    
     @Override
     public void importData(String nodePath, List<String> content, ZKTransaction transaction) {
         nodePath = ("/".equals(nodePath)) ? "/" : nodePath;
@@ -42,5 +44,4 @@ public class ZKNodeTransformerClassic implements ZKNodeTransformer {
         }
     }
     
-
 }
