@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.events.EventServerClose;
 import org.zkmaster.backend.events.EventServerStateChange;
 
@@ -62,6 +63,7 @@ public class ZKWatcherDefault implements Watcher {
      *
      * @param event - server event.
      */
+    @Log
     @Override
     public void process(WatchedEvent event) {
         var watcherMsg = new StringJoiner(System.lineSeparator());

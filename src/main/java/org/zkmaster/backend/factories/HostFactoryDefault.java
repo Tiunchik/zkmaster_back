@@ -3,7 +3,7 @@ package org.zkmaster.backend.factories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import org.zkmaster.backend.devutil.DevLog;
+import org.zkmaster.backend.aop.Log;
 import org.zkmaster.backend.entity.Host;
 import org.zkmaster.backend.entity.HostDefault;
 import org.zkmaster.backend.entity.ZKWatcherDefault;
@@ -24,6 +24,7 @@ public class HostFactoryDefault implements HostFactory {
     }
     
     
+    @Log
     @Override
     public HostProvider makeHostProvider(String host) throws HostWrongAddressException {
         HostProvider rsl;
@@ -41,7 +42,6 @@ public class HostFactoryDefault implements HostFactory {
             e.printStackTrace();
             throw new HostWrongAddressException(host);
         }
-        DevLog.print("DefaultFactory", "make host(" + host + ')');
         return rsl;
     }
     

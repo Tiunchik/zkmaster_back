@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.zkmaster.backend.BackendApplication;
+import org.zkmaster.backend.devutil.DevLog;
 import org.zkmaster.backend.entity.ZKNode;
 import org.zkmaster.backend.entity.utils.ZKNodes;
 import org.zkmaster.backend.mocks.HostFake;
@@ -142,7 +143,7 @@ class APIControllerTest {
                 .content(requestBodyJson))
                 .andExpect(status().isOk());
 
-//        DevLog.print("TEST", "print secondFakeServerRoot", secondFakeServerRoot);
+        DevLog.print("TEST", "print secondFakeServerRoot", secondFakeServerRoot);
         
         assertNodeChanged(secondFakeServerRoot, "/1", "test value - 1111111");
         assertNodeChanged(secondFakeServerRoot, "/1/2-2", "test value - 2222222");
