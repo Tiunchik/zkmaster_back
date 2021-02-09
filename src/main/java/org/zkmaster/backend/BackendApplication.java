@@ -11,9 +11,6 @@ import org.zkmaster.backend.services.MainServiceDefault;
  * TODO - (low) try to refactoring RWL(try-catch block).
  * TODO - (low) split {@link MainServiceDefault} to several services.
  *
- * TODO - discus: how to use encode API.
- * TODO - discus: how to read encoded value.
- *
  * possible features:
  * - Save cache then server have been close.
  * - Delete cache anyway if Front-end doesn't send approve that we still need this connection.

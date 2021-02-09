@@ -24,17 +24,17 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Component("watcherDefault")
 @Scope(SCOPE_PROTOTYPE)
 public class ZKWatcherDefault implements Watcher {
-    private final ApplicationContext context;
+    private static final String TEXT_COLOUR_PURPLE = "\u001B[35m";
+    private static final String TEXT_COLOUR_RESET = "\u001B[0m";
+    private static final String LOG_SEPARATOR = "=================================================================";
+    
+    @Autowired
+    private ApplicationContext context;
     
     /**
      * This watcher catch all events from real server by this host-connection.
      */
     private String host;
-    
-    @Autowired
-    public ZKWatcherDefault(ApplicationContext context) {
-        this.context = context;
-    }
     
     /**
      * <p>Need to processes {@link WatchedEvent#keeperState}:
@@ -67,6 +67,7 @@ public class ZKWatcherDefault implements Watcher {
     @Override
     public void process(WatchedEvent event) {
         var watcherMsg = new StringJoiner(System.lineSeparator());
+        watcherMsg.add(TEXT_COLOUR_PURPLE + LOG_SEPARATOR);
         watcherMsg.add(EVENT_WATCHED);
         watcherMsg.add(EVENT_HOST + host);
         
@@ -87,6 +88,7 @@ public class ZKWatcherDefault implements Watcher {
             watcherMsg.add(EVENT_INFO + event);
             watcherMsg.add(MSG_PROCESSING_IGNORED);
         }
+        watcherMsg.add(LOG_SEPARATOR + TEXT_COLOUR_RESET);
         System.out.println(watcherMsg.toString());
     }
     

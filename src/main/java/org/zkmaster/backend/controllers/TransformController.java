@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/api/zkm/transform/{host}")
 @CrossOrigin(value = {"*"})
 public class TransformController {
-    TransformService transformService;
+    private final TransformService transformService;
     
     @Autowired
     public TransformController(TransformService transformService) {

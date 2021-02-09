@@ -10,6 +10,7 @@ import org.zkmaster.backend.entity.dto.RequestDTO;
 import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
 import org.zkmaster.backend.exceptions.InjectionFailException;
 import org.zkmaster.backend.services.MainService;
+import org.zkmaster.backend.services.cypto.CryptoService;
 import org.zkmaster.backend.services.injection.InjectionService;
 
 import java.util.List;
@@ -19,14 +20,17 @@ import java.util.Map;
 @RequestMapping("/api/zkm")
 @CrossOrigin(value = {"*"})
 public class APIController {
-    MainService mainService;
-    InjectionService injectionService;
+    private final MainService mainService;
+    private final InjectionService injectionService;
+    private final CryptoService cryptoService;
     
     @Autowired
     public APIController(@Qualifier("mainServiceDefault") MainService mainService,
-                         InjectionService injectionService) {
+                         InjectionService injectionService,
+                         CryptoService cryptoService) {
         this.mainService = mainService;
         this.injectionService = injectionService;
+        this.cryptoService = cryptoService;
     }
     
     /**
@@ -56,5 +60,17 @@ public class APIController {
         injectionService.injection(dto.getCreateNodeList(), dto.getUpdateNodeList(), dto.getTargetHost());
     }
     
+    /**
+     * @param value {@link String} to be encoded.
+     * @return encrypted {@param value}.
+     *
+     * @throws Exception -
+     */
+    @GetMapping("/crypto/enc/{value}")
+    @Log
+    public @ResponseBody
+    String encodeValue(@PathVariable String value) throws Exception {
+        return cryptoService.encode(value);
+    }
     
 }

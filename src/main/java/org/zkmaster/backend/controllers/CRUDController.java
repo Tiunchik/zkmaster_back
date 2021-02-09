@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/api/zkm/data/{host}")
 @CrossOrigin(value = {"*"})
 public class CRUDController {
-    MainService mainService;
+    private final MainService mainService;
     
     @Autowired
     public CRUDController(@Qualifier("mainServiceDefault") MainService mainService) {

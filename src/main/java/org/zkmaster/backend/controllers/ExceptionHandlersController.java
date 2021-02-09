@@ -5,11 +5,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.zkmaster.backend.devutil.DevLog;
-import org.zkmaster.backend.exceptions.DataImportFailException;
-import org.zkmaster.backend.exceptions.HostProviderNotFoundException;
-import org.zkmaster.backend.exceptions.HostWrongAddressException;
-import org.zkmaster.backend.exceptions.InjectionFailException;
+import org.zkmaster.backend.aop.Log;
+import org.zkmaster.backend.exceptions.*;
 import org.zkmaster.backend.exceptions.node.*;
 
 /**
@@ -81,14 +78,20 @@ public class ExceptionHandlersController {
         ex.printStackTrace();
     }
     
+    @ExceptionHandler(CryptoFailException.class)
+    @ResponseStatus(value = HttpStatus.CONFLICT, reason = "Fail to encode|decode value, why? IDK. -\\_(-_-)_/-")
+    public void handleErrorCryptoFailException(Exception ex) {
+        ex.printStackTrace();
+    }
+    
     
     /* Unexpected(all other) Exceptions */
     
     
+    @Log
     @ExceptionHandler({Exception.class})
     @ResponseStatus(value = HttpStatus.CONFLICT, reason = "IDK, see reason in Back-end logs.")
-    public void handleError(Exception ex) {
-        DevLog.print("ExceptionHandlersController", "Unexpected exception");
+    public void handleUnexpectedException(Exception ex) {
         ex.printStackTrace();
     }
     
