@@ -4,6 +4,15 @@ Back-end service that provide API for work with any real ZooKeepers servers.
 Work in pair with
 [front-end part](https://github.com/Tiunchik/zkmaster_front "front-end part")
 
+## Technology
+* Java 11
+* Spring
+* * Boot
+* * MVC
+* * Test
+* * AOP
+* org.apache.zookeeper
+
 ## Features
 * See all nodes(path + value) as tree-node for one command.
 * Atomic cascade nodes delete from real server.
@@ -184,4 +193,6 @@ localhost:2181 - ip & port your server. (change it for your environment)
   ```
 
 ## Contacts
-Write to contributors emails. ))
+Write to contributors emails:
+* Daniils Loputevs(main developer): laiwiense@gmail.com
+* Maksim Tiunchik: ...
