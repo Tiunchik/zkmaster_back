@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.zkmaster.backend.controllers.ControllersTestEnvironment.CRUD_CONTROLLER_URL;
+import static org.zkmaster.backend.controllers.ControllersTestEnvironment.FAKE_SERVER_URL;
 
 @SpringBootTest(classes = BackendApplication.class)
 @AutoConfigureMockMvc
@@ -33,7 +34,7 @@ public class CRUDControllerTest {
     public void setUp() throws Exception {
         template.initNewTestTempleState();
         
-        this.mockMvc.perform(get(CRUD_CONTROLLER_URL))
+        this.mockMvc.perform(get(CRUD_CONTROLLER_URL + FAKE_SERVER_URL))
                 .andExpect(status().isOk());
     }
     
@@ -44,7 +45,7 @@ public class CRUDControllerTest {
     
     @Test
     public void getHostValue() throws Exception {
-        var rsl = this.mockMvc.perform(get(CRUD_CONTROLLER_URL))
+        var rsl = this.mockMvc.perform(get(CRUD_CONTROLLER_URL + FAKE_SERVER_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -59,7 +60,7 @@ public class CRUDControllerTest {
                 + "  \"path\": \"/crud-test-node\",\n"
                 + "  \"value\": \"value\"\n"
                 + "}";
-        this.mockMvc.perform(post(CRUD_CONTROLLER_URL)
+        this.mockMvc.perform(post(CRUD_CONTROLLER_URL + FAKE_SERVER_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyJson))
                 .andExpect(status().isOk())
@@ -76,7 +77,7 @@ public class CRUDControllerTest {
                 + "  \"path\": \"/1/2-1\",\n"
                 + "  \"value\": \"2-1&value-update\"\n"
                 + "}";
-        this.mockMvc.perform(put(CRUD_CONTROLLER_URL)
+        this.mockMvc.perform(put(CRUD_CONTROLLER_URL + FAKE_SERVER_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyJson))
                 .andExpect(status().isOk())
@@ -94,7 +95,7 @@ public class CRUDControllerTest {
                 + "  \"path\": \"/1/2-2\",\n"
                 + "  \"value\": \"crud-test-node-update&v\"\n"
                 + "}";
-        this.mockMvc.perform(put(CRUD_CONTROLLER_URL)
+        this.mockMvc.perform(put(CRUD_CONTROLLER_URL + FAKE_SERVER_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyJson))
                 .andDo(print())
@@ -114,7 +115,7 @@ public class CRUDControllerTest {
                 + "  \"path\": \"/1/2-2\",\n"
                 + "  \"value\": \"crud-test-node-update&value-update\"\n"
                 + "}";
-        this.mockMvc.perform(put(CRUD_CONTROLLER_URL)
+        this.mockMvc.perform(put(CRUD_CONTROLLER_URL + FAKE_SERVER_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyJson))
                 .andExpect(status().isOk())
@@ -133,7 +134,7 @@ public class CRUDControllerTest {
                 + "  \"path\": \"/1/2-1\",\n"
                 + "  \"value\": \"crud-test-node-update&value-update\"\n"
                 + "}";
-        this.mockMvc.perform(put(CRUD_CONTROLLER_URL)
+        this.mockMvc.perform(put(CRUD_CONTROLLER_URL + FAKE_SERVER_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyJson))
                 .andExpect(status().isOk())
@@ -155,7 +156,7 @@ public class CRUDControllerTest {
     public void deleteNode() throws Exception {
         assertNotNull(ZKNodes.getSubNode(template.getTestRoot(), "/1/2-2"));
         
-        this.mockMvc.perform(delete(CRUD_CONTROLLER_URL + "/1/2-2"))
+        this.mockMvc.perform(delete(CRUD_CONTROLLER_URL + FAKE_SERVER_URL + "/1/2-2"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
         
@@ -166,7 +167,7 @@ public class CRUDControllerTest {
     public void deleteNodeCascade() throws Exception {
         assertNotNull(ZKNodes.getSubNode(template.getTestRoot(), "/1/2-1"));
         
-        this.mockMvc.perform(delete(CRUD_CONTROLLER_URL + "/1/2-1"))
+        this.mockMvc.perform(delete(CRUD_CONTROLLER_URL + FAKE_SERVER_URL + "/1/2-1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
         

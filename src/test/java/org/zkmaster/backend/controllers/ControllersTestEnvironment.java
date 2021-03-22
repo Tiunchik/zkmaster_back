@@ -19,6 +19,7 @@ public class ControllersTestEnvironment {
     public static final String CRUD_CONTROLLER_URL = "/api/zkm/data";
     public static final String API_CONTROLLER_URL = "/api/zkm";
     public static final String TRANSFORM_CONTROLLER_URL = "/api/zkm/transform/localhost:2181";
+    public static final String FAKE_SERVER_URL = "/localhost:2181";
     
     private ZKNode testRoot;
     @Autowired

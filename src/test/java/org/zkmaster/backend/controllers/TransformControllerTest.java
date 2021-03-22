@@ -60,6 +60,11 @@ class TransformControllerTest {
         var temp = rsl.getResponse().getContentAsString();
 //        System.out.println("TEST RSL:");
 //        System.out.println(temp);
+    
+    
+        System.out.println("RSL START");
+        System.out.println(rsl.getResponse().getContentAsString());
+        System.out.println("RSL END");
         
         assertTrue(temp.contains("/2-1 : v"));
         assertTrue(temp.contains("/2-1/3-1 : v"));
