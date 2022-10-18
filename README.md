@@ -4,6 +4,9 @@ Back-end service that provide API for work with any real ZooKeepers servers.
 Work in pair with
 [front-end part](https://github.com/Tiunchik/zkmaster_front "front-end part")
 
+## For recruiters
+You can work with multiple servers at the same time. View the full status of servers with a single command, copy nodes from server to server, and more.
+
 ## Technology
 * Java 11
 * Spring
